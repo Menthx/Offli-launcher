@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs'
-import { mkdir, open, readdir, rm, writeFile } from 'node:fs/promises'
+import { mkdir, open, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import { basename, extname, join } from 'node:path'
 import type { Game, Settings } from '../shared/types'
 import { NDS_BANNER_ICON_SIZE, ndsBannerOffset, ndsIconToPng } from './ndsIcon'
@@ -45,8 +45,8 @@ async function download(url: string, headers: Record<string, string> = {}): Prom
 /**
  * Résout l'image d'un jeu, dans cet ordre :
  * 1. image choisie par l'utilisateur
- * 2. image posée à côté du jeu (cover.png, <rom>.png)
- * 3. fangame : écran titre dans Graphics/Titles
+ * 2. image posée à côté du jeu (cover.png, <rom>.png, capture mGBA <rom>-0.png)
+ * 3. fangame : écran titre dans Graphics/Titles, sinon Icon.png ou project_icon.png
  * 4. SteamGridDB (si activé avec une clé)
  * 5. romhack : jaquette du jeu de base (libretro-thumbnails)
  * 6. romhack NDS : icône embarquée dans la ROM
@@ -110,7 +110,8 @@ export class CoverResolver {
   private async localImage(game: Game): Promise<string | null> {
     const files = await listDir(game.dir)
     const stem = basename(game.path, extname(game.path)).toLowerCase()
-    const wanted = game.kind !== 'fangame' ? [stem, 'cover'] : ['cover', 'folder']
+    // ROM : cover.png, <rom>.png, puis la capture d'écran de mGBA (<rom>-0.png)
+    const wanted = game.kind !== 'fangame' ? ['cover', stem, `${stem}-0`] : ['cover', 'folder']
     for (const w of wanted) {
       const hit = files.find((f) => isImage(f) && basename(f, extname(f)).toLowerCase() === w)
       if (hit) return join(game.dir, hit)
@@ -118,13 +119,29 @@ export class CoverResolver {
     return null
   }
 
+  /**
+   * Écran titre d'un fangame : title.png dans Graphics/Titles, sinon la plus grande image
+   * qui n'est ni un crédit, ni un splash, ni un fond (bg_*) ; à défaut, l'icône du jeu
+   * (Icon.png, ou project_icon.png d'un projet Pokémon SDK).
+   */
   private async fangameTitle(game: Game): Promise<string | null> {
     const graphics = await findDirCi(game.dir, 'Graphics')
     const titles = graphics && (await findDirCi(graphics, 'Titles'))
-    if (!titles) return null
-    const images = (await listDir(titles)).filter(isImage)
-    const pick = images.find((f) => /title/i.test(f)) ?? images.find((f) => !/splash|intro/i.test(f)) ?? images[0]
-    return pick ? join(titles, pick) : null
+    if (titles) {
+      const images = (await listDir(titles)).filter(isImage)
+      const title = images.find((f) => basename(f, extname(f)).toLowerCase() === 'title')
+      if (title) return join(titles, title)
+      const candidates = images.filter((f) => !/^(credits|splash|bg_)/i.test(f))
+      let best: { file: string; size: number } | undefined
+      for (const f of candidates) {
+        const size = (await stat(join(titles, f)).catch(() => undefined))?.size ?? 0
+        if (!best || size > best.size) best = { file: f, size }
+      }
+      if (best) return join(titles, best.file)
+    }
+    const root = await listDir(game.dir)
+    const icon = ['icon.png', 'project_icon.png'].map((n) => root.find((f) => f.toLowerCase() === n)).find(Boolean)
+    return icon ? join(game.dir, icon) : null
   }
 
   /** Renvoie le fichier en cache `<stem>.<ext>` ou le télécharge une fois */
