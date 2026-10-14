@@ -200,13 +200,13 @@ export function LibraryView(p: Props): React.JSX.Element {
 
   return (
     <div className="lib">
-      <header className="lib-top">
+      <aside className="lib-side">
         <span className="brand">
           <span className="dot" aria-hidden="true" />
           Offli-Launcher
         </span>
-        <label className="searchbar">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+        <label className="searchbar" title="Ctrl+K pour chercher, Entrée lance le premier jeu, Échap vide la recherche">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <circle cx="7" cy="7" r="5" />
             <path d="M11 11l4 4" />
           </svg>
@@ -214,34 +214,36 @@ export function LibraryView(p: Props): React.JSX.Element {
             id="lib-search"
             ref={search}
             type="search"
-            placeholder="Rechercher un jeu… (Ctrl+K, Entrée pour lancer le premier)"
+            aria-label="Rechercher un jeu"
+            placeholder="Rechercher…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onSearchKey}
           />
         </label>
-        <button className="ghost" onClick={p.onRescan} disabled={p.scanning} title={p.libraryPaths.join('\n')}>
-          {p.scanning ? 'Scan…' : 'Rescanner'}
-        </button>
-        <button className="settings-btn" onClick={p.onOpenSettings} aria-label="Paramètres" title="Paramètres">
-          {/* Clé plate et écrou */}
-          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z" />
-            <path d="M19 15.5l2 1.15v2.3L19 20.1l-2-1.15v-2.3z" />
-          </svg>
-        </button>
-      </header>
-
-      <aside className="lib-side">
-        {FILTERS.map((f) => (
-          <div key={f.id} className="side-item">
-            {f.group && <h4>{f.group}</h4>}
-            <button className={filter === f.id ? 'on' : ''} onClick={() => setFilter(f.id)}>
-              <span>{f.label}</span>
-              <span className="count">{p.games.filter((g) => matches(f.id, g, p.stats[g.id])).length}</span>
-            </button>
-          </div>
-        ))}
+        <nav className="side-filters" aria-label="Filtres">
+          {FILTERS.map((f) => (
+            <div key={f.id} className="side-item">
+              {f.group && <h4>{f.group}</h4>}
+              <button className={filter === f.id ? 'on' : ''} onClick={() => setFilter(f.id)} aria-pressed={filter === f.id}>
+                <span>{f.label}</span>
+                <span className="count">{p.games.filter((g) => matches(f.id, g, p.stats[g.id])).length}</span>
+              </button>
+            </div>
+          ))}
+        </nav>
+        <div className="side-foot">
+          <button className="ghost" onClick={p.onRescan} disabled={p.scanning} title={p.libraryPaths.join('\n')}>
+            {p.scanning ? 'Scan…' : 'Rescanner'}
+          </button>
+          <button className="settings-btn" onClick={p.onOpenSettings} aria-label="Paramètres" title="Paramètres">
+            {/* Clé plate et écrou */}
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z" />
+              <path d="M19 15.5l2 1.15v2.3L19 20.1l-2-1.15v-2.3z" />
+            </svg>
+          </button>
+        </div>
       </aside>
 
       <main className="lib-main">
