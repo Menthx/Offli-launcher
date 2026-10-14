@@ -113,6 +113,12 @@ kbd { background: var(--panel-2); border: 1px solid var(--line); border-bottom-w
 .field-row { display: flex; gap: 8px; }
 .field input { flex: 1; min-width: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; color: var(--fg); font: 13px var(--f-mono); padding: 8px 10px; }
 .field input.args { flex: 0 0 140px; }
+.folders { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.folders li { display: flex; align-items: center; gap: 8px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 6px 6px 10px; }
+.folder-path { flex: 1; min-width: 0; font: 13px var(--f-mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex: none; background: none; border: 1px solid transparent; border-radius: 6px; color: var(--muted); cursor: pointer; }
+.icon-btn:hover { color: var(--fg); border-color: var(--line); }
+.add-folder { width: fit-content; }
 .check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; }
 .check input { margin-top: 4px; accent-color: var(--red); }
 

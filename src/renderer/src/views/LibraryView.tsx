@@ -47,7 +47,7 @@ function matches(f: Filter, g: Game, s: GameStats | undefined): boolean {
 }
 
 interface Props extends ViewProps {
-  libraryPath: string
+  libraryPaths: string[]
   scanning: boolean
   onRescan(): void
   onOpenSettings(): void
@@ -216,7 +216,7 @@ export function LibraryView(p: Props): React.JSX.Element {
             onKeyDown={onSearchKey}
           />
         </label>
-        <button className="ghost" onClick={p.onRescan} disabled={p.scanning} title={p.libraryPath}>
+        <button className="ghost" onClick={p.onRescan} disabled={p.scanning} title={p.libraryPaths.join('\n')}>
           {p.scanning ? 'Scan…' : 'Rescanner'}
         </button>
         <button className="ghost" onClick={p.onOpenSettings}>

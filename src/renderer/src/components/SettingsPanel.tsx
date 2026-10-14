@@ -51,21 +51,39 @@ export function SettingsPanel({
 
         <section>
           <h4>Bibliothèque</h4>
-          <div className="field">
-            <label htmlFor="set-lib">Dossier des jeux</label>
-            <div className="field-row">
-              <input id="set-lib" readOnly value={settings.libraryPath} />
-              <button
-                className="ghost"
-                onClick={async () => {
-                  const dir = await window.offli.pickFolder();
-                  if (dir) await onSave({ libraryPath: dir });
-                }}
-              >
-                Parcourir
-              </button>
-            </div>
-          </div>
+          <ul className="folders" aria-label="Dossiers des jeux">
+            {settings.libraryPaths.map((dir) => (
+              <li key={dir}>
+                <span className="folder-path" title={dir}>
+                  {dir}
+                </span>
+                <button
+                  className="icon-btn"
+                  aria-label={`Retirer ${dir}`}
+                  title="Retirer"
+                  onClick={() =>
+                    onSave({
+                      libraryPaths: settings.libraryPaths.filter((d) => d !== dir),
+                    })
+                  }
+                >
+                  <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </button>
+              </li>
+            ))}
+          </ul>
+          <button
+            className="ghost add-folder"
+            onClick={async () => {
+              const dir = await window.offli.pickFolder();
+              if (dir && !settings.libraryPaths.includes(dir))
+                await onSave({ libraryPaths: [...settings.libraryPaths, dir] });
+            }}
+          >
+            + Ajouter un dossier
+          </button>
         </section>
 
         <section>

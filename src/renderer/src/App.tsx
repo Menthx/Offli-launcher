@@ -59,7 +59,7 @@ export function App(): React.JSX.Element {
       setGames(cached);
       setStats(st);
       // L'index en cache s'affiche tout de suite, le scan le rafraîchit ensuite
-      if (s.libraryPath) void rescan();
+      if (s.libraryPaths.length) void rescan();
     })();
     return window.offli.onStatsChanged((s) => setStats({ ...s }));
   }, [rescan]);
@@ -73,7 +73,7 @@ export function App(): React.JSX.Element {
       "useBaseRomCovers" in patch
     )
       forgetCover();
-    if ("libraryPath" in patch) void rescan();
+    if ("libraryPaths" in patch) void rescan();
   };
 
   const launch = async (game: Game): Promise<void> => {
@@ -107,7 +107,7 @@ export function App(): React.JSX.Element {
 
   return (
     <>
-      {!settings.libraryPath ? (
+      {!settings.libraryPaths.length ? (
         <div className="onboarding">
           <h1>Offli-Launcher</h1>
           <p>
@@ -118,7 +118,7 @@ export function App(): React.JSX.Element {
             className="play"
             onClick={async () => {
               const dir = await window.offli.pickFolder();
-              if (dir) await save({ libraryPath: dir });
+              if (dir) await save({ libraryPaths: [dir] });
             }}
           >
             Choisir le dossier
@@ -127,7 +127,7 @@ export function App(): React.JSX.Element {
       ) : (
         <LibraryView
           {...props}
-          libraryPath={settings.libraryPath}
+          libraryPaths={settings.libraryPaths}
           scanning={scanning}
           onRescan={rescan}
           onOpenSettings={() => setShowSettings(true)}

@@ -45,7 +45,8 @@ export interface EmulatorConfig {
 }
 
 export interface Settings {
-  libraryPath: string
+  /** Dossiers de jeux, scannés dans l'ordre */
+  libraryPaths: string[]
   emulators: Record<EmulatorPlatform, EmulatorConfig>
   /** Commande utilisée pour lancer Game.exe hors Windows */
   winePath: string

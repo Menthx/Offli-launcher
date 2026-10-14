@@ -4,7 +4,7 @@ import { dirname } from 'node:path'
 import type { Game, GameStats, Settings } from '../shared/types'
 
 export const DEFAULT_SETTINGS: Settings = {
-  libraryPath: '',
+  libraryPaths: [],
   emulators: {
     gb: { path: '', args: ['{rom}'] },
     gbc: { path: '', args: ['{rom}'] },
@@ -52,11 +52,21 @@ export class JsonFile<T> {
 }
 
 export function mergeSettings(fallback: Settings, loaded: unknown): Settings {
-  // viewMode (mode Big Picture, retiré) peut encore traîner dans d'anciens fichiers
-  const { viewMode: _legacy, ...l } = (loaded ?? {}) as Partial<Settings> & { viewMode?: unknown }
+  // viewMode (mode Big Picture, retiré) peut encore traîner dans d'anciens fichiers ;
+  // libraryPath (un seul dossier) devient le premier élément de libraryPaths
+  const { viewMode: _legacy, libraryPath, ...l } = (loaded ?? {}) as Partial<Settings> & {
+    viewMode?: unknown
+    libraryPath?: unknown
+  }
+  const paths = Array.isArray(l.libraryPaths)
+    ? l.libraryPaths
+    : typeof libraryPath === 'string' && libraryPath
+      ? [libraryPath]
+      : fallback.libraryPaths
   return {
     ...fallback,
     ...l,
+    libraryPaths: [...paths],
     emulators: { ...fallback.emulators, ...(l.emulators ?? {}) },
     coverOverrides: { ...(l.coverOverrides ?? {}) },
     nameOverrides: { ...(l.nameOverrides ?? {}) }

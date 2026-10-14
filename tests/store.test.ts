@@ -4,9 +4,21 @@ import { DEFAULT_SETTINGS, applyNames, mergeSettings } from '../src/main/store'
 
 describe('mergeSettings', () => {
   it('complète un fichier partiel avec les valeurs par défaut', () => {
-    const s = mergeSettings(structuredClone(DEFAULT_SETTINGS), { libraryPath: 'D:\\Jeux' })
-    expect(s.libraryPath).toBe('D:\\Jeux')
+    const s = mergeSettings(structuredClone(DEFAULT_SETTINGS), { winePath: 'wine64' })
+    expect(s.winePath).toBe('wine64')
+    expect(s.libraryPaths).toEqual([])
     expect(s.emulators.gba.args).toEqual(['{rom}'])
+  })
+
+  it('migre l’ancien dossier unique vers la liste de dossiers', () => {
+    const s = mergeSettings(structuredClone(DEFAULT_SETTINGS), { libraryPath: 'D:\\Pokemon' })
+    expect(s.libraryPaths).toEqual(['D:\\Pokemon'])
+    expect('libraryPath' in s).toBe(false)
+  })
+
+  it('garde la liste de dossiers', () => {
+    const s = mergeSettings(structuredClone(DEFAULT_SETTINGS), { libraryPaths: ['D:\\A', 'E:\\B'] })
+    expect(s.libraryPaths).toEqual(['D:\\A', 'E:\\B'])
   })
 
   it("retire l'ancien réglage viewMode", () => {

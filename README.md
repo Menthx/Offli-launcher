@@ -2,7 +2,7 @@
 
 Launcher hors ligne pour fangames et romhacks Pokémon, sur Windows, Linux et macOS.
 
-Offli-Launcher parcourt un dossier, repère les fangames RPG Maker (`Game.exe`) et les ROMs (`.gb`, `.gbc`, `.gba`, `.nds`, `.3ds`), et les lance en un clic avec le bon émulateur.
+Offli-Launcher parcourt un ou plusieurs dossiers (Paramètres > Bibliothèque), repère les fangames RPG Maker (`Game.exe`) et les ROMs (`.gb`, `.gbc`, `.gba`, `.nds`, `.3ds`), et les lance en un clic avec le bon émulateur.
 
 ## Démarrer
 

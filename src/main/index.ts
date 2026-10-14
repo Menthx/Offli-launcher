@@ -75,7 +75,7 @@ app.whenReady().then(() => {
 
   ipcMain.handle('library:get', () => games())
   ipcMain.handle('library:scan', async () => {
-    library.data = await scanLibrary(settings.data.libraryPath, hashes.data)
+    library.data = await scanLibrary(settings.data.libraryPaths, hashes.data)
     await hashes.save()
     covers.invalidate()
     coverPaths.clear()

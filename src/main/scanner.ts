@@ -270,9 +270,22 @@ export function groupVersions(games: Game[]): Game[] {
   return out
 }
 
-export async function scanLibrary(root: string, hashes: HashCache = {}): Promise<Game[]> {
-  if (!root) return []
+/**
+ * Scanne un ou plusieurs dossiers de jeux et fusionne les résultats.
+ * L'id reste relatif à son dossier (les stats d'une bibliothèque à un seul dossier sont
+ * conservées) ; en cas de collision entre deux dossiers, celui du second inclut son dossier.
+ */
+export async function scanLibrary(roots: string | string[], hashes: HashCache = {}): Promise<Game[]> {
   const out: Game[] = []
-  await scanDir(root, root, 0, out, hashes)
+  const seen = new Set<string>()
+  for (const root of (Array.isArray(roots) ? roots : [roots]).filter(Boolean)) {
+    const found: Game[] = []
+    await scanDir(root, root, 0, found, hashes)
+    for (const g of found) {
+      const id = seen.has(g.id) ? createHash('sha1').update(`${root}\n${g.id}`).digest('hex').slice(0, 12) : g.id
+      seen.add(id)
+      out.push({ ...g, id })
+    }
+  }
   return groupVersions(out).sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }))
 }
