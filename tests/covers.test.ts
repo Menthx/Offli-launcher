@@ -40,6 +40,7 @@ beforeAll(async () => {
   await file('Renaissance/project_icon.png')
   await file('Odyssey/Odyssey (patched).gba')
   await file('Odyssey/Odyssey (patched)-0.png')
+  await file('Odyssey/Odyssey (patched).png')
   await file('Hunter/Hunter.gba')
   await file('Hunter/Hunter-0.png')
   await file('Hunter/cover.png')
@@ -65,11 +66,11 @@ describe('images des fangames', () => {
 })
 
 describe('images des romhacks', () => {
-  it("utilise la capture d'écran de mGBA", async () => {
-    expect(await pick(rom('Odyssey', 'Odyssey (patched).gba'))).toBe('Odyssey (patched)-0.png')
+  it("n'utilise jamais les captures d'émulateur (<rom>.png, <rom>-0.png)", async () => {
+    expect(await pick(rom('Odyssey', 'Odyssey (patched).gba'))).toBeNull()
   })
 
-  it('préfère cover.png à la capture', async () => {
+  it('utilise un cover.png posé dans le dossier', async () => {
     expect(await pick(rom('Hunter', 'Hunter.gba'))).toBe('cover.png')
   })
 })

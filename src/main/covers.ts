@@ -48,7 +48,7 @@ async function download(url: string, headers: Record<string, string> = {}): Prom
 /**
  * Résout l'image d'un jeu, dans cet ordre :
  * 1. image choisie par l'utilisateur
- * 2. image posée à côté du jeu (cover.png, <rom>.png, capture mGBA <rom>-0.png)
+ * 2. image posée volontairement dans le dossier du jeu (cover.png ; folder.png pour un fangame)
  * 3. fangame : écran titre dans Graphics/Titles, sinon Icon.png ou project_icon.png
  * 4. SteamGridDB (si activé avec une clé)
  * 5. romhack : jaquette du jeu de base (libretro-thumbnails)
@@ -112,9 +112,9 @@ export class CoverResolver {
 
   private async localImage(game: Game): Promise<string | null> {
     const files = await listDir(game.dir)
-    const stem = basename(game.path, extname(game.path)).toLowerCase()
-    // ROM : cover.png, <rom>.png, puis la capture d'écran de mGBA (<rom>-0.png)
-    const wanted = game.kind !== 'fangame' ? ['cover', stem, `${stem}-0`] : ['cover', 'folder']
+    // ROM : seulement un cover.png posé volontairement ; <rom>.png et <rom>-N.png sont
+    // en général des captures d'émulateur (mGBA), pas des jaquettes
+    const wanted = game.kind !== 'fangame' ? ['cover'] : ['cover', 'folder']
     for (const w of wanted) {
       const hit = files.find((f) => isImage(f) && basename(f, extname(f)).toLowerCase() === w)
       if (hit) return join(game.dir, hit)

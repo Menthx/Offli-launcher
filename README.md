@@ -30,7 +30,7 @@ npm run dist:win   # installeur Windows (aussi dist:linux, dist:mac)
 Pour chaque jeu, la première source trouvée est utilisée, puis mise en cache :
 
 1. l'image choisie dans Offli-Launcher (« Changer l'image ») ;
-2. une image posée à côté du jeu : `cover.png` dans le dossier d'un fangame ; pour une ROM, `cover.png`, `<nom de la rom>.png` ou la capture d'écran de mGBA `<nom de la rom>-0.png` ;
+2. une image posée à côté du jeu : `cover.png` dans le dossier d'un fangame ; `cover.png` pour une ROM (les captures d'émulateur comme `<rom>-0.png` ne sont jamais utilisées) ;
 3. pour un fangame, l'écran titre dans `Graphics/Titles` (`title.png`, sinon la plus grande image hors crédits, splash, intro, fonds et calques d’effet), sinon `Icon.png` ou `project_icon.png` ;
 4. SteamGridDB, si activé avec une clé API ;
 5. pour un romhack, la jaquette du jeu de base, téléchargée depuis [libretro-thumbnails](https://github.com/libretro-thumbnails) ;
