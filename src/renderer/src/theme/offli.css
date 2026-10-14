@@ -1,0 +1,52 @@
+/*
+ * Thème Offli : toutes les couleurs de l'interface.
+ * Un nouveau thème = un nouveau fichier qui redéfinit ces variables sous
+ * :root[data-theme="<nom>"], importé dans theme/index.ts.
+ */
+:root,
+:root[data-theme='offli'] {
+  color-scheme: dark;
+
+  /* fonds */
+  --bg: #0f1320;
+  --surface: #171c2c;
+  --surface-2: #1f2539;
+  --border: #2c3450;
+  --scrim: #0009;
+
+  /* texte */
+  --text: #e8eaf3;
+  --text-muted: #8f97b3;
+  --link: #8fc3ff;
+
+  /* accents */
+  --accent: #ef4f4f;
+  --accent-2: #f3c34f;
+  --focus: #f3c34f;
+  --danger: #ef4f4f;
+  --selected-bg: #ef4f4f22;
+  --selected-bar: #ef4f4f;
+  --selected-ring: #ef4f4f;
+
+  /* bouton Jouer */
+  --play: #ef4f4f;
+  --play-hover: #f26464;
+  --play-text: #fff;
+  --play-shadow: #a52a2a;
+
+  /* badges de plateforme */
+  --badge-fan: #f3c34f;
+  --badge-fan-border: #f3c34f55;
+  --badge-rom: #8fc3ff;
+  --badge-rom-border: #8fc3ff55;
+  --badge-overlay: #0f1320cc;
+
+  /* logo (Poké Ball) */
+  --logo-top: #ef4f4f;
+  --logo-band: #e8eaf3;
+  --logo-bottom: #fff;
+
+  /* ombres */
+  --shadow: #000;
+  --shadow-soft: #000a;
+}
