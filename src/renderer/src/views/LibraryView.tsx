@@ -86,7 +86,7 @@ export function LibraryView(p: Props): React.JSX.Element {
       <header className="lib-top">
         <span className="brand">
           <span className="dot" aria-hidden="true" />
-          Offli
+          Offli-Launcher
         </span>
         <label className="searchbar">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
@@ -105,9 +105,6 @@ export function LibraryView(p: Props): React.JSX.Element {
         </label>
         <button className="ghost" onClick={p.onRescan} disabled={p.scanning} title={p.libraryPath}>
           {p.scanning ? 'Scan…' : 'Rescanner'}
-        </button>
-        <button className="ghost" onClick={p.onSwitchMode}>
-          Big Picture
         </button>
         <button className="ghost" onClick={p.onOpenSettings}>
           Paramètres

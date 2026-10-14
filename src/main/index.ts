@@ -143,7 +143,7 @@ function createWindow(): void {
     minHeight: 600,
     backgroundColor: '#0f1320',
     autoHideMenuBar: true,
-    title: 'Offli',
+    title: 'Offli-Launcher',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: true,

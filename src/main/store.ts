@@ -5,7 +5,6 @@ import type { GameStats, Settings } from '../shared/types'
 
 export const DEFAULT_SETTINGS: Settings = {
   libraryPath: '',
-  viewMode: 'library',
   emulators: {
     gb: { path: '', args: ['{rom}'] },
     gbc: { path: '', args: ['{rom}'] },
@@ -52,7 +51,8 @@ export class JsonFile<T> {
 }
 
 export function mergeSettings(fallback: Settings, loaded: unknown): Settings {
-  const l = (loaded ?? {}) as Partial<Settings>
+  // viewMode (mode Big Picture, retiré) peut encore traîner dans d'anciens fichiers
+  const { viewMode: _legacy, ...l } = (loaded ?? {}) as Partial<Settings> & { viewMode?: unknown }
   return {
     ...fallback,
     ...l,

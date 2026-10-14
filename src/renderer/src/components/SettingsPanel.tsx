@@ -66,23 +66,6 @@ export function SettingsPanel({
               </button>
             </div>
           </div>
-          <div className="field">
-            <span className="label">Affichage au démarrage</span>
-            <div className="seg">
-              <button
-                className={settings.viewMode === "library" ? "on" : ""}
-                onClick={() => onSave({ viewMode: "library" })}
-              >
-                Bibliothèque
-              </button>
-              <button
-                className={settings.viewMode === "bigpicture" ? "on" : ""}
-                onClick={() => onSave({ viewMode: "bigpicture" })}
-              >
-                Big Picture
-              </button>
-            </div>
-          </div>
         </section>
 
         <section>

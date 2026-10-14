@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Game, GameStats, Settings } from "../../shared/types";
 import { forgetCover } from "./components/Cover";
 import { SettingsPanel } from "./components/SettingsPanel";
-import { BigPictureView } from "./views/BigPictureView";
 import { LibraryView } from "./views/LibraryView";
 
 export interface Toast {
@@ -17,7 +16,6 @@ export interface ViewProps {
   onSelect(id: string): void;
   onLaunch(game: Game): void;
   onFavorite(game: Game): void;
-  onSwitchMode(): void;
 }
 
 export function App(): React.JSX.Element {
@@ -100,20 +98,16 @@ export function App(): React.JSX.Element {
     onSelect: setSelectedId,
     onLaunch: launch,
     onFavorite: favorite,
-    onSwitchMode: () =>
-      void save({
-        viewMode: settings.viewMode === "library" ? "bigpicture" : "library",
-      }),
   };
 
   return (
     <>
       {!settings.libraryPath ? (
         <div className="onboarding">
-          <h1>Offli</h1>
+          <h1>Offli-Launcher</h1>
           <p>
             Choisis le dossier où sont rangés tes fangames et tes romhacks.
-            Offli le parcourt et les range pour toi.
+            Offli-Launcher le parcourt et les range pour toi.
           </p>
           <button
             className="play"
@@ -125,8 +119,6 @@ export function App(): React.JSX.Element {
             Choisir le dossier
           </button>
         </div>
-      ) : settings.viewMode === "bigpicture" ? (
-        <BigPictureView {...props} />
       ) : (
         <LibraryView
           {...props}

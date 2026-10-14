@@ -1,5 +1,5 @@
 appId: fr.menthx.offli
-productName: Offli
+productName: Offli-Launcher
 directories:
   buildResources: resources
 files:

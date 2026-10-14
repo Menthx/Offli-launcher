@@ -28,8 +28,6 @@ export interface GameStats {
   favorite: boolean
 }
 
-export type ViewMode = 'library' | 'bigpicture'
-
 export type EmulatorPlatform = Exclude<Platform, 'pc'>
 
 export interface EmulatorConfig {
@@ -41,7 +39,6 @@ export interface EmulatorConfig {
 
 export interface Settings {
   libraryPath: string
-  viewMode: ViewMode
   emulators: Record<EmulatorPlatform, EmulatorConfig>
   /** Commande utilisée pour lancer Game.exe hors Windows */
   winePath: string
