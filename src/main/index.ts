@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url'
 import type { Game, GameStats, LaunchResult, Settings } from '../shared/types'
 import { CoverResolver } from './covers'
 import type { HashCache } from './baseRoms'
-import { buildCommand, runCommand } from './launcher'
+import { buildCommand, resolveAssociation, runCommand } from './launcher'
 import { scanLibrary } from './scanner'
 import { DEFAULT_SETTINGS, JsonFile, applyNames, emptyStats, mergeSettings } from './store'
 
@@ -133,7 +133,9 @@ app.whenReady().then(() => {
     if (!game) return { ok: false, error: 'Jeu introuvable, relance un scan.' }
     const built = buildCommand(game, settings.data)
     if (!built.ok) return { ok: false, error: built.error }
-    const error = await runCommand(built.command, (seconds) => {
+    // ROM sans émulateur configuré : l'application associée (mGBA…) est lancée directement
+    const command = await resolveAssociation(built.command)
+    const error = await runCommand(command, (seconds) => {
       statsOf(id).playtimeSec += seconds
       void stats.save()
       pushStats()

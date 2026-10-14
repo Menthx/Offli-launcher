@@ -97,9 +97,8 @@ export function SettingsPanel({
         <section>
           <h4>Émulateurs</h4>
           <p className="muted">
-            Les arguments acceptent <code>{"{rom}"}</code>, remplacé par le
-            chemin de la ROM. Exemple pour mGBA en plein écran :{" "}
-            <code>-f {"{rom}"}</code>
+            Laisser vide pour utiliser l'application par défaut. Les arguments
+            acceptent <code>{"{rom}"}</code>, remplacé par le chemin de la ROM.
           </p>
           {EMULATORS.map((e) => (
             <div className="field" key={e.id}>
@@ -111,7 +110,7 @@ export function SettingsPanel({
                   id={`emu-${e.id}`}
                   readOnly
                   value={settings.emulators[e.id].path}
-                  placeholder="Non configuré"
+                  placeholder="Application par défaut"
                 />
                 <input
                   id={`emu-${e.id}-args`}
@@ -133,6 +132,18 @@ export function SettingsPanel({
                 >
                   Parcourir
                 </button>
+                {settings.emulators[e.id].path && (
+                  <button
+                    className="icon-btn"
+                    aria-label={`Utiliser l'application par défaut pour ${e.label}`}
+                    title="Utiliser l'application par défaut"
+                    onClick={() => setEmulator(e.id, { path: "" })}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+                      <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                )}
               </div>
             </div>
           ))}
