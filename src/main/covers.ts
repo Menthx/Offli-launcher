@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs'
-import { mkdir, open, readdir, writeFile } from 'node:fs/promises'
+import { mkdir, open, readdir, rm, writeFile } from 'node:fs/promises'
 import { basename, extname, join } from 'node:path'
 import type { Game, Settings } from '../shared/types'
 import { NDS_BANNER_ICON_SIZE, ndsBannerOffset, ndsIconToPng } from './ndsIcon'
@@ -63,6 +63,12 @@ export class CoverResolver {
   invalidate(id?: string): void {
     if (id) this.memo.delete(id)
     else this.memo.clear()
+  }
+
+  /** Oublie l'image SteamGridDB d'un jeu (cherchée par son nom, qui a changé) */
+  async dropSteamGridDb(id: string): Promise<void> {
+    this.memo.delete(id)
+    for (const ext of IMAGE_EXT) await rm(join(this.cacheDir, `${id}-sgdb${ext}`), { force: true })
   }
 
   resolve(game: Game): Promise<string | null> {

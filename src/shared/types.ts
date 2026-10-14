@@ -20,6 +20,8 @@ export interface Game {
   /** Dossier du jeu (pour un fangame) ou dossier contenant la ROM */
   dir: string
   baseRom?: BaseRom
+  /** Nom détecté au scan, présent seulement si l'utilisateur a renommé le jeu */
+  originalName?: string
 }
 
 export interface GameStats {
@@ -48,6 +50,8 @@ export interface Settings {
   useBaseRomCovers: boolean
   /** Image choisie par l'utilisateur, par id de jeu */
   coverOverrides: Record<string, string>
+  /** Nom choisi par l'utilisateur, par id de jeu */
+  nameOverrides: Record<string, string>
 }
 
 export interface LaunchResult {
@@ -68,6 +72,8 @@ export interface OffliApi {
   toggleFavorite(id: string): Promise<GameStats>
   resolveCover(id: string): Promise<string | null>
   setCover(id: string, path: string | null): Promise<string | null>
+  /** Renomme un jeu (null rétablit le nom détecté) et renvoie la liste à jour */
+  renameGame(id: string, name: string | null): Promise<Game[]>
   launch(id: string): Promise<LaunchResult>
   openFolder(id: string): Promise<void>
   onStatsChanged(cb: (stats: Record<string, GameStats>) => void): () => void

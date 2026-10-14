@@ -5,7 +5,7 @@ import type { Game, GameStats, LaunchResult, Settings } from '../shared/types'
 import { CoverResolver } from './covers'
 import { buildCommand, runCommand } from './launcher'
 import { scanLibrary } from './scanner'
-import { DEFAULT_SETTINGS, JsonFile, emptyStats, mergeSettings } from './store'
+import { DEFAULT_SETTINGS, JsonFile, applyNames, emptyStats, mergeSettings } from './store'
 
 const COVER_SCHEME = 'offli-img'
 
@@ -22,13 +22,15 @@ app.whenReady().then(() => {
   const data = app.getPath('userData')
   const settings = new JsonFile<Settings>(join(data, 'settings.json'), structuredClone(DEFAULT_SETTINGS), mergeSettings)
   const stats = new JsonFile<Record<string, GameStats>>(join(data, 'stats.json'), {})
+  // library.json garde les noms détectés ; les noms choisis sont appliqués à la lecture
   const library = new JsonFile<Game[]>(join(data, 'library.json'), [])
   const covers = new CoverResolver(join(data, 'covers'), () => settings.data)
   // Chemins d'images servis au rendu : seul ce qui a été résolu ici est accessible
   const coverPaths = new Map<string, string>()
   let coverVersion = 0
 
-  const findGame = (id: string): Game | undefined => library.data.find((g) => g.id === id)
+  const games = (): Game[] => applyNames(library.data, settings.data.nameOverrides)
+  const findGame = (id: string): Game | undefined => games().find((g) => g.id === id)
   const statsOf = (id: string): GameStats => (stats.data[id] ??= emptyStats())
   const pushStats = (): void => win?.webContents.send('stats:changed', stats.data)
 
@@ -68,14 +70,14 @@ app.whenReady().then(() => {
     return r.canceled ? null : r.filePaths[0]
   })
 
-  ipcMain.handle('library:get', () => library.data)
+  ipcMain.handle('library:get', () => games())
   ipcMain.handle('library:scan', async () => {
     library.data = await scanLibrary(settings.data.libraryPath)
     covers.invalidate()
     coverPaths.clear()
     coverVersion++
     await library.save()
-    return library.data
+    return games()
   })
 
   ipcMain.handle('stats:get', () => stats.data)
@@ -106,6 +108,20 @@ app.whenReady().then(() => {
     if (!resolved) return null
     coverPaths.set(id, resolved)
     return `${COVER_SCHEME}://cover/${id}?v=${coverVersion}`
+  })
+
+  ipcMain.handle('game:rename', async (_e, id: string, name: string | null) => {
+    const clean = name?.trim()
+    if (clean) settings.data.nameOverrides[id] = clean
+    else delete settings.data.nameOverrides[id]
+    await settings.save()
+    // L'image SteamGridDB est cherchée par nom : on la recherchera avec le nouveau
+    if (settings.data.useSteamGridDb) {
+      await covers.dropSteamGridDb(id)
+      coverPaths.delete(id)
+      coverVersion++
+    }
+    return games()
   })
 
   ipcMain.handle('game:launch', async (_e, id: string): Promise<LaunchResult> => {

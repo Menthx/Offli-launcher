@@ -88,6 +88,12 @@ kbd { background: var(--panel-2); border: 1px solid var(--line); border-bottom-w
 .card-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
 .lib-detail { border-left: 1px solid var(--line); background: var(--panel); padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
 .lib-detail h3 { font: 800 22px/1.1 var(--f-display); margin: 0; }
+.name-editor { display: flex; flex-direction: column; gap: 4px; }
+.name-btn { font: inherit; background: none; border: 0; padding: 0; text-align: left; cursor: text; display: inline-flex; align-items: baseline; gap: 8px; }
+.name-btn svg { opacity: 0; flex: none; color: var(--muted); transition: opacity .15s; }
+.name-btn:hover svg, .name-btn:focus-visible svg { opacity: 1; }
+.name-input { font: 800 22px/1.1 var(--f-display); color: var(--fg); background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; width: 100%; }
+.link { font: inherit; background: none; border: 0; padding: 0; color: var(--blue); text-decoration: underline; cursor: pointer; }
 .facts { display: grid; grid-template-columns: auto 1fr; gap: 5px 14px; font-size: 13.5px; margin: 0; }
 .facts dt { color: var(--muted); }
 .facts dd { margin: 0; font: 12.5px var(--f-mono); overflow-wrap: anywhere; user-select: text; }

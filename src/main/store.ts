@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { mkdir, rename, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
-import type { GameStats, Settings } from '../shared/types'
+import type { Game, GameStats, Settings } from '../shared/types'
 
 export const DEFAULT_SETTINGS: Settings = {
   libraryPath: '',
@@ -16,7 +16,8 @@ export const DEFAULT_SETTINGS: Settings = {
   useSteamGridDb: false,
   steamGridDbKey: '',
   useBaseRomCovers: true,
-  coverOverrides: {}
+  coverOverrides: {},
+  nameOverrides: {}
 }
 
 /** Petit fichier JSON écrit de façon atomique (fichier temporaire puis renommage) */
@@ -57,8 +58,19 @@ export function mergeSettings(fallback: Settings, loaded: unknown): Settings {
     ...fallback,
     ...l,
     emulators: { ...fallback.emulators, ...(l.emulators ?? {}) },
-    coverOverrides: { ...(l.coverOverrides ?? {}) }
+    coverOverrides: { ...(l.coverOverrides ?? {}) },
+    nameOverrides: { ...(l.nameOverrides ?? {}) }
   }
+}
+
+/** Applique les noms choisis par l'utilisateur, puis trie par nom affiché */
+export function applyNames(games: Game[], overrides: Record<string, string>): Game[] {
+  return games
+    .map((g) => {
+      const name = overrides[g.id]?.trim()
+      return name && name !== g.name ? { ...g, name, originalName: g.name } : g
+    })
+    .sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }))
 }
 
 export function emptyStats(): GameStats {

@@ -83,6 +83,11 @@ export function App(): React.JSX.Element {
       notify({ text: r.error ?? "Le lancement a échoué.", error: true });
   };
 
+  const rename = async (game: Game, name: string | null): Promise<void> => {
+    setGames(await window.offli.renameGame(game.id, name));
+    if (settings?.useSteamGridDb) forgetCover(game.id);
+  };
+
   const favorite = async (game: Game): Promise<void> => {
     const s = await window.offli.toggleFavorite(game.id);
     setStats((prev) => ({ ...prev, [game.id]: s }));
@@ -127,6 +132,7 @@ export function App(): React.JSX.Element {
           onRescan={rescan}
           onOpenSettings={() => setShowSettings(true)}
           onCoverChanged={(id) => forgetCover(id)}
+          onRename={rename}
         />
       )}
       {showSettings && (

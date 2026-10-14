@@ -12,6 +12,7 @@ const api: OffliApi = {
   toggleFavorite: (id) => ipcRenderer.invoke("stats:favorite", id),
   resolveCover: (id) => ipcRenderer.invoke("cover:resolve", id),
   setCover: (id, path) => ipcRenderer.invoke("cover:set", id, path),
+  renameGame: (id, name) => ipcRenderer.invoke("game:rename", id, name),
   launch: (id) => ipcRenderer.invoke("game:launch", id),
   openFolder: (id) => ipcRenderer.invoke("game:folder", id),
   onStatsChanged: (cb) => {

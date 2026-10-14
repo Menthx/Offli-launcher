@@ -40,6 +40,70 @@ interface Props extends ViewProps {
   onRescan(): void
   onOpenSettings(): void
   onCoverChanged(id: string): void
+  onRename(game: Game, name: string | null): void
+}
+
+/** Nom du jeu, modifiable d'un clic : Entrée valide, Échap annule, vide rétablit le nom détecté */
+function NameEditor({ game, onRename }: { game: Game; onRename(game: Game, name: string | null): void }): React.JSX.Element {
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(game.name)
+  const cancelled = useRef(false)
+
+  useEffect(() => setEditing(false), [game.id])
+
+  const start = (): void => {
+    cancelled.current = false
+    setDraft(game.name)
+    setEditing(true)
+  }
+  const commit = (): void => {
+    setEditing(false)
+    if (cancelled.current) return
+    const name = draft.trim()
+    if (name === game.name) return
+    const original = game.originalName ?? game.name
+    onRename(game, !name || name === original ? null : name)
+  }
+
+  return (
+    <div className="name-editor">
+      {editing ? (
+        <input
+          className="name-input"
+          aria-label="Nom du jeu"
+          autoFocus
+          value={draft}
+          onFocus={(e) => e.currentTarget.select()}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') e.currentTarget.blur()
+            if (e.key === 'Escape') {
+              cancelled.current = true
+              e.currentTarget.blur()
+            }
+          }}
+        />
+      ) : (
+        <h3>
+          <button className="name-btn" onClick={start} title="Renommer le jeu">
+            {game.name}
+            <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M11.5 1.5l3 3-9 9H2.5v-3z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </h3>
+      )}
+      {game.originalName && (
+        <p className="muted">
+          Nom d'origine : {game.originalName} ·{' '}
+          <button className="link" onClick={() => onRename(game, null)}>
+            Rétablir
+          </button>
+        </p>
+      )}
+    </div>
+  )
 }
 
 export function LibraryView(p: Props): React.JSX.Element {
@@ -61,7 +125,7 @@ export function LibraryView(p: Props): React.JSX.Element {
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return p.games.filter((g) => matches(filter, g, p.stats[g.id]) && (!q || g.name.toLowerCase().includes(q)))
+    return p.games.filter((g) => matches(filter, g, p.stats[g.id]) && (!q || g.name.toLowerCase().includes(q) || !!g.originalName?.toLowerCase().includes(q)))
   }, [p.games, p.stats, filter, query])
 
   const recent = useMemo(
@@ -180,7 +244,7 @@ export function LibraryView(p: Props): React.JSX.Element {
         {sel && (
           <>
             <Cover game={sel} wide />
-            <h3>{sel.name}</h3>
+            <NameEditor game={sel} onRename={p.onRename} />
             <button className="play" onClick={() => p.onLaunch(sel)}>
               <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
                 <path d="M3 1.5v13l11-6.5z" fill="currentColor" />
