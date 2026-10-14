@@ -16,7 +16,7 @@ npm run dist:win   # installeur Windows (aussi dist:linux, dist:mac)
 
 ## Fonctionnement
 
-- **Bibliothèque** : grille, filtres par plateforme, recherche (Ctrl+K) et fiche détaillée du jeu sélectionné.
+- **Bibliothèque** : grille, filtres par plateforme, recherche (Ctrl+K) et fiche détaillée du jeu sélectionné. « Tous les jeux » est rangé en sections (Fangames, Romhacks GBA, NDS, GB / GBC, 3DS) ; un clic sur le titre d'une section applique le filtre correspondant.
 - **Scan** : l'index du dernier scan s'affiche tout de suite au démarrage, puis le dossier est rescanné en arrière-plan.
 - **Jeu de base des romhacks** : lu dans l'en-tête de la ROM (code `BPRE` = Rouge Feu, `BPEE` = Émeraude, titre `PM_CRYSTAL` = Cristal, `IREO` = Noir 2…).
 - **Lancement** : `Game.exe` directement sous Windows, via Wine sous Linux et macOS. Les ROMs passent par l'émulateur configuré pour leur plateforme (`{rom}` dans les arguments est remplacé par le chemin du fichier).

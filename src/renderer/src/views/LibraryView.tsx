@@ -17,6 +17,15 @@ const FILTERS: { id: Filter; label: string; group?: string }[] = [
   { id: '3ds', label: '3DS' }
 ]
 
+/** Sections de « Tous les jeux », dans l'ordre de la barre latérale */
+const SECTIONS: { filter: Filter; label: string }[] = [
+  { filter: 'fangame', label: 'Fangames' },
+  { filter: 'gba', label: 'Romhacks GBA' },
+  { filter: 'nds', label: 'Romhacks NDS' },
+  { filter: 'gb', label: 'Romhacks GB / GBC' },
+  { filter: '3ds', label: 'Romhacks 3DS' }
+]
+
 function matches(f: Filter, g: Game, s: GameStats | undefined): boolean {
   switch (f) {
     case 'all':
@@ -41,6 +50,36 @@ interface Props extends ViewProps {
   onOpenSettings(): void
   onCoverChanged(id: string): void
   onRename(game: Game, name: string | null): void
+}
+
+interface GridProps {
+  games: Game[]
+  stats: Record<string, GameStats>
+  selectedId: string | undefined
+  onSelect(id: string): void
+  onLaunch(game: Game): void
+}
+
+function GameGrid(p: GridProps): React.JSX.Element {
+  return (
+    <div className="grid">
+      {p.games.map((g) => (
+        <button
+          key={g.id}
+          className={`card ${g.id === p.selectedId ? 'sel' : ''}`}
+          onClick={() => p.onSelect(g.id)}
+          onDoubleClick={() => p.onLaunch(g)}
+        >
+          <Cover game={g} />
+          <span className="card-title">{g.name}</span>
+          <span className="card-meta">
+            <span>{kindLabel(g)}</span>
+            <span>{playtime(p.stats[g.id]?.playtimeSec ?? 0)}</span>
+          </span>
+        </button>
+      ))}
+    </div>
+  )
 }
 
 /** Nom du jeu, modifiable d'un clic : Entrée valide, Échap annule, vide rétablit le nom détecté */
@@ -140,8 +179,12 @@ export function LibraryView(p: Props): React.JSX.Element {
   const sel = p.selected
   const selStats = sel ? p.stats[sel.id] : undefined
 
+  const gridProps = { stats: p.stats, selectedId: sel?.id, onSelect: p.onSelect, onLaunch: p.onLaunch }
+
   const onSearchKey = (e: React.KeyboardEvent): void => {
-    if (e.key === 'Enter' && visible[0]) p.onLaunch(visible[0])
+    // En vue par sections, le premier jeu affiché est celui de la première section non vide
+    const first = filter === 'all' ? SECTIONS.flatMap((sec) => visible.filter((g) => matches(sec.filter, g, undefined)))[0] : visible[0]
+    if (e.key === 'Enter' && first) p.onLaunch(first)
     if (e.key === 'Escape') setQuery('')
   }
 
@@ -206,11 +249,9 @@ export function LibraryView(p: Props): React.JSX.Element {
             </div>
           </section>
         )}
-        <section className="stack-s">
-          <h5>
-            {FILTERS.find((f) => f.id === filter)!.label} · {visible.length}
-          </h5>
-          {visible.length === 0 ? (
+        {visible.length === 0 ? (
+          <section className="stack-s">
+            <h5>{FILTERS.find((f) => f.id === filter)!.label} · 0</h5>
             <p className="muted">
               {p.games.length === 0
                 ? p.scanning
@@ -218,26 +259,31 @@ export function LibraryView(p: Props): React.JSX.Element {
                   : 'Aucun jeu trouvé dans ce dossier. Vérifie le chemin dans les paramètres.'
                 : 'Aucun jeu ne correspond.'}
             </p>
-          ) : (
-            <div className="grid">
-              {visible.map((g) => (
-                <button
-                  key={g.id}
-                  className={`card ${g.id === sel?.id ? 'sel' : ''}`}
-                  onClick={() => p.onSelect(g.id)}
-                  onDoubleClick={() => p.onLaunch(g)}
-                >
-                  <Cover game={g} />
-                  <span className="card-title">{g.name}</span>
-                  <span className="card-meta">
-                    <span>{kindLabel(g)}</span>
-                    <span>{playtime(p.stats[g.id]?.playtimeSec ?? 0)}</span>
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-        </section>
+          </section>
+        ) : filter === 'all' ? (
+          SECTIONS.map((sec) => {
+            const games = visible.filter((g) => matches(sec.filter, g, p.stats[g.id]))
+            if (games.length === 0) return null
+            return (
+              <section key={sec.filter} className="stack-s">
+                <h5>
+                  <button className="section-link" onClick={() => setFilter(sec.filter)} title={`Afficher seulement : ${sec.label}`}>
+                    {sec.label}
+                  </button>{' '}
+                  · {games.length}
+                </h5>
+                <GameGrid {...gridProps} games={games} />
+              </section>
+            )
+          })
+        ) : (
+          <section className="stack-s">
+            <h5>
+              {FILTERS.find((f) => f.id === filter)!.label} · {visible.length}
+            </h5>
+            <GameGrid {...gridProps} games={visible} />
+          </section>
+        )}
       </main>
 
       <aside className="lib-detail">
