@@ -35,16 +35,24 @@ export function SettingsPanel({
     });
 
   return (
-    <div className="modal-back" onClick={onClose}>
+    <div
+      className="modal-back"
+      onClick={onClose}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") onClose();
+      }}
+    >
       <div
         className="modal"
         role="dialog"
+        aria-modal="true"
         aria-label="Paramètres"
         onClick={(e) => e.stopPropagation()}
       >
         <header className="modal-head">
           <h2>Paramètres</h2>
-          <button className="ghost" onClick={onClose}>
+          {/* Le focus arrive sur « Fermer » : Échap ou Entrée referment la fenêtre */}
+          <button className="ghost" onClick={onClose} autoFocus>
             Fermer
           </button>
         </header>
