@@ -6,11 +6,11 @@ import type { Game, GameStats, Settings } from '../shared/types'
 export const DEFAULT_SETTINGS: Settings = {
   libraryPaths: [],
   emulators: {
-    gb: { path: '', args: ['{rom}'] },
-    gbc: { path: '', args: ['{rom}'] },
-    gba: { path: '', args: ['{rom}'] },
-    nds: { path: '', args: ['{rom}'] },
-    '3ds': { path: '', args: ['{rom}'] }
+    gb: { path: '' },
+    gbc: { path: '' },
+    gba: { path: '' },
+    nds: { path: '' },
+    '3ds': { path: '' }
   },
   winePath: 'wine',
   useSteamGridDb: false,
@@ -51,6 +51,16 @@ export class JsonFile<T> {
   }
 }
 
+/** Garde seulement le chemin de chaque émulateur (l'ancien champ args est ignoré) */
+function mergeEmulators(fallback: Settings['emulators'], loaded: unknown): Settings['emulators'] {
+  const out = { ...fallback }
+  for (const key of Object.keys(out) as (keyof Settings['emulators'])[]) {
+    const path = (loaded as Record<string, { path?: unknown }> | undefined)?.[key]?.path
+    out[key] = { path: typeof path === 'string' ? path : '' }
+  }
+  return out
+}
+
 export function mergeSettings(fallback: Settings, loaded: unknown): Settings {
   // viewMode (mode Big Picture, retiré) peut encore traîner dans d'anciens fichiers ;
   // libraryPath (un seul dossier) devient le premier élément de libraryPaths
@@ -67,7 +77,7 @@ export function mergeSettings(fallback: Settings, loaded: unknown): Settings {
     ...fallback,
     ...l,
     libraryPaths: [...paths],
-    emulators: { ...fallback.emulators, ...(l.emulators ?? {}) },
+    emulators: mergeEmulators(fallback.emulators, l.emulators),
     coverOverrides: { ...(l.coverOverrides ?? {}) },
     nameOverrides: { ...(l.nameOverrides ?? {}) }
   }

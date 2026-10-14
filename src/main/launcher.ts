@@ -96,11 +96,8 @@ export function buildCommand(game: Game, settings: Settings, os: NodeJS.Platform
   const emu = settings.emulators[platform]
   // Sans émulateur configuré, la ROM s'ouvre avec l'application associée (mGBA, melonDS…)
   if (!emu?.path) return { ok: true, command: defaultAppCommand(game.path, game.dir, os) }
-  const args = emu.args.length ? emu.args : ['{rom}']
-  return {
-    ok: true,
-    command: { cmd: emu.path, args: args.map((a) => a.replaceAll('{rom}', game.path)), cwd: game.dir }
-  }
+  // La ROM est le seul argument : c'est ce qu'attendent mGBA, melonDS, DeSmuME, Citra, SameBoy…
+  return { ok: true, command: { cmd: emu.path, args: [game.path], cwd: game.dir } }
 }
 
 /**

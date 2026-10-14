@@ -40,8 +40,6 @@ export type EmulatorPlatform = Exclude<Platform, 'pc'>
 export interface EmulatorConfig {
   /** Chemin de l'exécutable de l'émulateur */
   path: string
-  /** Arguments, {rom} est remplacé par le chemin de la ROM */
-  args: string[]
 }
 
 export interface Settings {

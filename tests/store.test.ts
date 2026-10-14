@@ -7,7 +7,13 @@ describe('mergeSettings', () => {
     const s = mergeSettings(structuredClone(DEFAULT_SETTINGS), { winePath: 'wine64' })
     expect(s.winePath).toBe('wine64')
     expect(s.libraryPaths).toEqual([])
-    expect(s.emulators.gba.args).toEqual(['{rom}'])
+    expect(s.emulators.gba).toEqual({ path: '' })
+  })
+
+  it("ignore l'ancien champ args des émulateurs", () => {
+    const s = mergeSettings(structuredClone(DEFAULT_SETTINGS), { emulators: { gba: { path: 'C:/mGBA/mGBA.exe', args: ['-f', '{rom}'] } } })
+    expect(s.emulators.gba).toEqual({ path: 'C:/mGBA/mGBA.exe' })
+    expect(s.emulators.nds).toEqual({ path: '' })
   })
 
   it('migre l’ancien dossier unique vers la liste de dossiers', () => {

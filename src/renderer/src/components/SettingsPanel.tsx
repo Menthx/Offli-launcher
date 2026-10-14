@@ -97,8 +97,7 @@ export function SettingsPanel({
         <section>
           <h4>Émulateurs</h4>
           <p className="muted">
-            Laisser vide pour utiliser l'application par défaut. Les arguments
-            acceptent <code>{"{rom}"}</code>, remplacé par le chemin de la ROM.
+            Laisser vide pour utiliser l'application par défaut.
           </p>
           {EMULATORS.map((e) => (
             <div className="field" key={e.id}>
@@ -111,17 +110,6 @@ export function SettingsPanel({
                   readOnly
                   value={settings.emulators[e.id].path}
                   placeholder="Application par défaut"
-                />
-                <input
-                  id={`emu-${e.id}-args`}
-                  className="args"
-                  defaultValue={settings.emulators[e.id].args.join(" ")}
-                  onBlur={(ev) =>
-                    setEmulator(e.id, {
-                      args: ev.target.value.split(" ").filter(Boolean),
-                    })
-                  }
-                  aria-label={`Arguments ${e.label}`}
                 />
                 <button
                   className="ghost"

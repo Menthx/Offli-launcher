@@ -35,11 +35,11 @@ describe('buildCommand', () => {
     expect(linux.ok && [linux.command.cmd, linux.command.playtime]).toEqual(['xdg-open', 'none'])
   })
 
-  it('remplace {rom} dans les arguments', () => {
+  it("passe la ROM comme seul argument de l'émulateur", () => {
     const s = settings()
-    s.emulators.gba = { path: 'C:/mGBA/mGBA.exe', args: ['-f', '{rom}'] }
+    s.emulators.gba = { path: 'C:/mGBA/mGBA.exe' }
     const r = buildCommand(rom, s, 'win32')
-    expect(r.ok && r.command.args).toEqual(['-f', '/g/Unbound.gba'])
+    expect(r.ok && r.command).toEqual({ cmd: 'C:/mGBA/mGBA.exe', args: ['/g/Unbound.gba'], cwd: '/g' })
   })
 })
 
@@ -63,13 +63,14 @@ describe('runCommand', () => {
 
 describe('parseAssocCommand', () => {
   const rom = 'D:/Jeux/Pokémon & co/Unbound (v2).gba'
+  const mgba = String.raw`C:\Program Files\mGBA\mGBA.exe`
 
   it('remplace %1 par la ROM', () => {
-    expect(parseAssocCommand('"C:\Program Files\mGBA\mGBA.exe" "%1"', rom)).toEqual({ cmd: 'C:\Program Files\mGBA\mGBA.exe', args: [rom] })
+    expect(parseAssocCommand(`"${mgba}" "%1"`, rom)).toEqual({ cmd: mgba, args: [rom] })
   })
 
   it('retire les autres variables et ajoute la ROM si %1 manque', () => {
-    expect(parseAssocCommand('C:\melonDS.exe %*', rom)).toEqual({ cmd: 'C:\melonDS.exe', args: [rom] })
-    expect(parseAssocCommand('"C:\emu.exe" -f "%L"', rom)).toEqual({ cmd: 'C:\emu.exe', args: ['-f', rom] })
+    expect(parseAssocCommand(String.raw`C:\melonDS.exe %*`, rom)).toEqual({ cmd: String.raw`C:\melonDS.exe`, args: [rom] })
+    expect(parseAssocCommand(String.raw`"C:\emu.exe" -f "%L"`, rom)).toEqual({ cmd: String.raw`C:\emu.exe`, args: ['-f', rom] })
   })
 })
