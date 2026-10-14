@@ -177,6 +177,9 @@ export function LibraryView(p: Props): React.JSX.Element {
   )
 
   const sel = p.selected
+  // Version choisie dans la fiche pour un fangame qui en a plusieurs (la plus récente par défaut)
+  const [picked, setPicked] = useState<Record<string, string>>({})
+  const target = (sel && sel.versions?.find((v) => v.id === picked[sel.id])) ?? sel
   const selStats = sel ? p.stats[sel.id] : undefined
 
   const gridProps = { stats: p.stats, selectedId: sel?.id, onSelect: p.onSelect, onLaunch: p.onLaunch }
@@ -291,13 +294,35 @@ export function LibraryView(p: Props): React.JSX.Element {
           <>
             <Cover game={sel} wide />
             <NameEditor game={sel} onRename={p.onRename} />
-            <button className="play" onClick={() => p.onLaunch(sel)}>
+            <button className="play" onClick={() => p.onLaunch(target!)}>
               <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
                 <path d="M3 1.5v13l11-6.5z" fill="currentColor" />
               </svg>
               JOUER
             </button>
             <dl className="facts">
+              {sel.versions && (
+                <>
+                  <dt>
+                    <label htmlFor="version-select">Version</label>
+                  </dt>
+                  <dd>
+                    <select
+                      id="version-select"
+                      className="version-select"
+                      value={target!.id}
+                      onChange={(e) => setPicked({ ...picked, [sel.id]: e.target.value })}
+                    >
+                      {sel.versions.map((v, i) => (
+                        <option key={v.id} value={v.id}>
+                          {v.variant}
+                          {i === 0 ? ' (la plus récente)' : ''}
+                        </option>
+                      ))}
+                    </select>
+                  </dd>
+                </>
+              )}
               <dt>Type</dt>
               <dd>
                 {kindLabel(sel)} · {PLATFORM_LABEL[sel.platform]}
@@ -309,7 +334,7 @@ export function LibraryView(p: Props): React.JSX.Element {
                 </>
               )}
               <dt>Fichier</dt>
-              <dd>{sel.path}</dd>
+              <dd>{target!.path}</dd>
               <dt>Dernière session</dt>
               <dd>{lastPlayed(selStats?.lastPlayed)}</dd>
               <dt>Temps de jeu</dt>
@@ -319,7 +344,7 @@ export function LibraryView(p: Props): React.JSX.Element {
               <button className="ghost" onClick={() => p.onFavorite(sel)}>
                 {selStats?.favorite ? '★ Favori' : '☆ Ajouter aux favoris'}
               </button>
-              <button className="ghost" onClick={() => window.offli.openFolder(sel.id)}>
+              <button className="ghost" onClick={() => window.offli.openFolder(target!.id)}>
                 Ouvrir le dossier
               </button>
               <button

@@ -20,6 +20,7 @@ npm run dist:win   # installeur Windows (aussi dist:linux, dist:mac)
 - **Scan** : l'index du dernier scan s'affiche tout de suite au démarrage, puis le dossier est rescanné en arrière-plan.
 - **Jeu de base des romhacks** : lu dans l'en-tête de la ROM (code `BPRE` = Rouge Feu, `BPEE` = Émeraude, titre `PM_CRYSTAL` = Cristal, `IREO` = Noir 2…).
 - **Lancement** : `Game.exe` directement sous Windows, via Wine sous Linux et macOS. Les ROMs passent par l'émulateur configuré pour leur plateforme (`{rom}` dans les arguments est remplacé par le chemin du fichier).
+- **Versions** : plusieurs dossiers du même fangame (même titre) donnent une seule carte, la version la plus récente d'après le nom du dossier (« Fr 1.1.3 ») ; les autres se choisissent dans la fiche.
 - **Renommer un jeu** : clic sur son nom dans la fiche. Le nom choisi est gardé d'un scan à l'autre ; « Rétablir » revient au nom détecté.
 - **Temps de jeu** et dernière session sont mesurés à la fermeture du jeu.
 

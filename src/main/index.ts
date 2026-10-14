@@ -30,7 +30,8 @@ app.whenReady().then(() => {
   let coverVersion = 0
 
   const games = (): Game[] => applyNames(library.data, settings.data.nameOverrides)
-  const findGame = (id: string): Game | undefined => games().find((g) => g.id === id)
+  // Une version plus ancienne d'un fangame se lance et se résout comme un jeu à part entière
+  const findGame = (id: string): Game | undefined => games().flatMap((g) => g.versions ?? [g]).find((g) => g.id === id)
   const statsOf = (id: string): GameStats => (stats.data[id] ??= emptyStats())
   const pushStats = (): void => win?.webContents.send('stats:changed', stats.data)
 

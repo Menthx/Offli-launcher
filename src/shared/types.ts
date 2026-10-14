@@ -20,6 +20,10 @@ export interface Game {
   /** Dossier du jeu (pour un fangame) ou dossier contenant la ROM */
   dir: string
   baseRom?: BaseRom
+  /** Dossier de cette version, quand plusieurs versions du même fangame existent */
+  variant?: string
+  /** Toutes les versions du jeu, la plus récente en premier (celle-ci comprise) */
+  versions?: Game[]
   /** Nom détecté au scan, présent seulement si l'utilisateur a renommé le jeu */
   originalName?: string
 }
