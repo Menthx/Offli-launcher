@@ -28,6 +28,9 @@ beforeAll(async () => {
   await file('Fusion/Graphics/Titles/credits1.png', 9000)
   await file('Fusion/Graphics/Titles/splash.png', 8000)
   await file('Fusion/Graphics/Titles/bg_clouds.png', 7000)
+  await file('Fusion/Graphics/Titles/gen1_bg.png', 9500)
+  await file('Fusion/Graphics/Titles/gen_6_overlay.png', 9400)
+  await file('Fusion/Graphics/Titles/intro1.png', 9300)
   await file('Fusion/Graphics/Titles/InfiniteFusionHoenn.png', 5000)
   await file('Fusion/Graphics/Titles/pokelogo.png', 100)
   await file('Fallen/Graphics/Titles/title.png', 10)
@@ -51,7 +54,7 @@ describe('images des fangames', () => {
     expect(await pick(fangame('Fallen'))).toBe('title.png')
   })
 
-  it('prend sinon la plus grande image hors crédits, splash et fonds', async () => {
+  it('prend sinon la plus grande image hors crédits, splash, intro, fonds et calques', async () => {
     expect(await pick(fangame('Fusion'))).toBe('InfiniteFusionHoenn.png')
   })
 

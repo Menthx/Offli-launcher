@@ -8,6 +8,9 @@ import { readRomHeader } from './scanner'
 
 const IMAGE_EXT = ['.png', '.jpg', '.jpeg', '.webp']
 
+/** Images de Graphics/Titles qui ne sont pas l'écran titre : crédits, splash, intro, fonds et calques d'effet */
+const NOT_A_TITLE = /^(credits|splash|intro)|(^|[_\s-])(bg\d*|background|overlay|effect|eff|shine|shade)([_\s-]|$)/i
+
 async function listDir(dir: string): Promise<string[]> {
   try {
     return await readdir(dir)
@@ -121,7 +124,7 @@ export class CoverResolver {
 
   /**
    * Écran titre d'un fangame : title.png dans Graphics/Titles, sinon la plus grande image
-   * qui n'est ni un crédit, ni un splash, ni un fond (bg_*) ; à défaut, l'icône du jeu
+   * qui n'est ni un crédit, ni un splash, ni une intro, ni un fond ou un calque ; à défaut, l'icône du jeu
    * (Icon.png, ou project_icon.png d'un projet Pokémon SDK).
    */
   private async fangameTitle(game: Game): Promise<string | null> {
@@ -131,7 +134,7 @@ export class CoverResolver {
       const images = (await listDir(titles)).filter(isImage)
       const title = images.find((f) => basename(f, extname(f)).toLowerCase() === 'title')
       if (title) return join(titles, title)
-      const candidates = images.filter((f) => !/^(credits|splash|bg_)/i.test(f))
+      const candidates = images.filter((f) => !NOT_A_TITLE.test(basename(f, extname(f))))
       let best: { file: string; size: number } | undefined
       for (const f of candidates) {
         const size = (await stat(join(titles, f)).catch(() => undefined))?.size ?? 0
