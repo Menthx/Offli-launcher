@@ -115,7 +115,7 @@ export function App(): React.JSX.Element {
             Offli-Launcher le parcourt et les range pour toi.
           </p>
           <button
-            className="play"
+            className="cta"
             onClick={async () => {
               const dir = await window.offli.pickFolder();
               if (dir) await save({ libraryPaths: [dir] });

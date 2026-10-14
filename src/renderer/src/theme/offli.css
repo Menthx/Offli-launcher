@@ -32,11 +32,17 @@
   --selected-bar: #d6955b;
   --selected-ring: #feeaa1;
 
-  /* bouton Jouer */
-  --play: #d6955b;
-  --play-hover: #e0a571;
-  --play-text: #0d2e2c;
-  --play-shadow: #9a6235;
+  /* bouton Jouer : vert façon Steam, assez foncé pour un texte blanc à 4,5:1 */
+  --play: linear-gradient(#4a8419, #3d6e13);
+  --play-hover: linear-gradient(#4a8419, #467d16);
+  --play-text: #fff;
+  --play-shadow: #2b4c0e;
+
+  /* bouton d'action principal (hors lancement) */
+  --cta: #d6955b;
+  --cta-hover: #e0a571;
+  --cta-text: #0d2e2c;
+  --cta-shadow: #9a6235;
 
   /* badges de plateforme */
   --badge-fan: #d6955b;

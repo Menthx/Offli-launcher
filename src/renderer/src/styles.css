@@ -24,6 +24,9 @@ kbd { background: var(--surface-2); border: 1px solid var(--border); border-bott
 .play { display: flex; align-items: center; justify-content: center; gap: 10px; font: 800 17px var(--f-display); letter-spacing: .02em; color: var(--play-text); background: var(--play); border: 0; border-radius: 10px; padding: 13px 22px; cursor: pointer; box-shadow: 0 6px 0 -1px var(--play-shadow); }
 .play:hover { background: var(--play-hover); }
 .play:active { transform: translateY(2px); box-shadow: 0 3px 0 -1px var(--play-shadow); }
+.cta { font: 800 17px var(--f-display); color: var(--cta-text); background: var(--cta); border: 0; border-radius: 10px; padding: 13px 22px; cursor: pointer; box-shadow: 0 6px 0 -1px var(--cta-shadow); }
+.cta:hover { background: var(--cta-hover); }
+.cta:active { transform: translateY(2px); box-shadow: 0 3px 0 -1px var(--cta-shadow); }
 .row-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .dot { display: inline-block; width: .7em; height: .7em; border-radius: 50%; background: linear-gradient(var(--logo-top) 0 46%, var(--logo-band) 46% 54%, var(--logo-bottom) 54%); box-shadow: inset 0 0 0 .08em var(--bg); }
 
