@@ -4,7 +4,7 @@ import type { ViewProps } from '../App'
 import { Cover } from '../components/Cover'
 import { PLATFORM_LABEL, kindLabel, lastPlayed, playtime } from '../format'
 
-type Filter = 'all' | 'fav' | 'fangame' | 'gba' | 'nds' | 'gb' | '3ds' | 'new'
+type Filter = 'all' | 'fav' | 'fangame' | 'gba' | 'nds' | 'gb' | '3ds' | 'new' | 'base'
 
 const FILTERS: { id: Filter; label: string; group?: string }[] = [
   { id: 'all', label: 'Tous les jeux', group: 'Bibliothèque' },
@@ -14,7 +14,8 @@ const FILTERS: { id: Filter; label: string; group?: string }[] = [
   { id: 'gba', label: 'GBA' },
   { id: 'nds', label: 'NDS' },
   { id: 'gb', label: 'GB / GBC' },
-  { id: '3ds', label: '3DS' }
+  { id: '3ds', label: '3DS' },
+  { id: 'base', label: 'ROMs de base', group: 'Autres' }
 ]
 
 /** Sections de « Tous les jeux », dans l'ordre de la barre latérale */
@@ -27,6 +28,8 @@ const SECTIONS: { filter: Filter; label: string }[] = [
 ]
 
 function matches(f: Filter, g: Game, s: GameStats | undefined): boolean {
+  // Les ROMs officielles non modifiées ne sont pas des jeux de la bibliothèque : elles ont leur propre entrée
+  if (g.kind === 'baserom' || f === 'base') return f === 'base' && g.kind === 'baserom'
   switch (f) {
     case 'all':
       return true
@@ -327,7 +330,7 @@ export function LibraryView(p: Props): React.JSX.Element {
               <dd>
                 {kindLabel(sel)} · {PLATFORM_LABEL[sel.platform]}
               </dd>
-              {sel.kind === 'romhack' && (
+              {sel.kind !== 'fangame' && (
                 <>
                   <dt>Base</dt>
                   <dd>{sel.baseRom ? `${sel.baseRom.name} (${sel.baseRom.code})` : 'Non reconnue'}</dd>

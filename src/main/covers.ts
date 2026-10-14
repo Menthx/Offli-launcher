@@ -98,7 +98,7 @@ export class CoverResolver {
       if (sgdb) return sgdb
     }
 
-    if (game.kind === 'romhack' && game.baseRom && s.useBaseRomCovers) {
+    if (game.kind !== 'fangame' && game.baseRom && s.useBaseRomCovers) {
       const base = await this.baseRomCover(game)
       if (base) return base
     }
@@ -110,7 +110,7 @@ export class CoverResolver {
   private async localImage(game: Game): Promise<string | null> {
     const files = await listDir(game.dir)
     const stem = basename(game.path, extname(game.path)).toLowerCase()
-    const wanted = game.kind === 'romhack' ? [stem, 'cover'] : ['cover', 'folder']
+    const wanted = game.kind !== 'fangame' ? [stem, 'cover'] : ['cover', 'folder']
     for (const w of wanted) {
       const hit = files.find((f) => isImage(f) && basename(f, extname(f)).toLowerCase() === w)
       if (hit) return join(game.dir, hit)

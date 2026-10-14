@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import type { Game, GameStats, LaunchResult, Settings } from '../shared/types'
 import { CoverResolver } from './covers'
+import type { HashCache } from './baseRoms'
 import { buildCommand, runCommand } from './launcher'
 import { scanLibrary } from './scanner'
 import { DEFAULT_SETTINGS, JsonFile, applyNames, emptyStats, mergeSettings } from './store'
@@ -24,6 +25,7 @@ app.whenReady().then(() => {
   const stats = new JsonFile<Record<string, GameStats>>(join(data, 'stats.json'), {})
   // library.json garde les noms détectés ; les noms choisis sont appliqués à la lecture
   const library = new JsonFile<Game[]>(join(data, 'library.json'), [])
+  const hashes = new JsonFile<HashCache>(join(data, 'hashes.json'), {})
   const covers = new CoverResolver(join(data, 'covers'), () => settings.data)
   // Chemins d'images servis au rendu : seul ce qui a été résolu ici est accessible
   const coverPaths = new Map<string, string>()
@@ -73,7 +75,8 @@ app.whenReady().then(() => {
 
   ipcMain.handle('library:get', () => games())
   ipcMain.handle('library:scan', async () => {
-    library.data = await scanLibrary(settings.data.libraryPath)
+    library.data = await scanLibrary(settings.data.libraryPath, hashes.data)
+    await hashes.save()
     covers.invalidate()
     coverPaths.clear()
     coverVersion++

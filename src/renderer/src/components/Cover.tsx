@@ -40,7 +40,7 @@ export function Cover({ game, wide = false }: { game: Game; wide?: boolean }): R
   const url = useCover(game.id)
   const [pixel, setPixel] = useState(false)
   // Jaquette de romhack : affichée entière et centrée, sur un fond flouté de la même image
-  const fit = game.kind === 'romhack' && !pixel
+  const fit = game.kind !== 'fangame' && !pixel
   return (
     <div className={`cover ${wide ? 'wide' : ''} ${url ? '' : 'empty'} ${url && fit ? 'fit' : ''}`}>
       {url && fit && <img src={url} alt="" aria-hidden="true" draggable={false} className="backdrop" />}

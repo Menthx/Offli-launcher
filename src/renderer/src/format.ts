@@ -10,7 +10,7 @@ export const PLATFORM_LABEL: Record<Game['platform'], string> = {
 }
 
 export function kindLabel(g: Game): string {
-  return g.kind === 'fangame' ? 'Fangame' : 'Romhack'
+  return g.kind === 'fangame' ? 'Fangame' : g.kind === 'baserom' ? 'ROM de base' : 'Romhack'
 }
 
 export function playtime(sec: number): string {

@@ -1,6 +1,7 @@
 export type Platform = 'pc' | 'gb' | 'gbc' | 'gba' | 'nds' | '3ds'
 
-export type GameKind = 'fangame' | 'romhack'
+/** baserom : ROM officielle non modifiée, rangée à part des jeux */
+export type GameKind = 'fangame' | 'romhack' | 'baserom'
 
 export interface BaseRom {
   /** Code ou titre lu dans l'en-tête de la ROM (ex. BPRE, PM_CRYSTAL) */

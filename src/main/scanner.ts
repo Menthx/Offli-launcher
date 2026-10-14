@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { open, readdir, readFile } from 'node:fs/promises'
 import { basename, dirname, extname, join, relative } from 'node:path'
 import type { Game, Platform } from '../shared/types'
+import { type HashCache, identifyBaseRom } from './baseRoms'
 import { headerSize, readHeader, toBaseRom } from './romHeader'
 
 const ROM_EXTENSIONS: Record<string, Platform> = {
@@ -159,7 +160,7 @@ export async function detectFangame(dir: string, files: string[], dirs: string[]
   return { exe, title }
 }
 
-async function scanDir(root: string, dir: string, depth: number, out: Game[]): Promise<void> {
+async function scanDir(root: string, dir: string, depth: number, out: Game[], hashes: HashCache): Promise<void> {
   let entries
   try {
     entries = await readdir(dir, { withFileTypes: true })
@@ -194,6 +195,16 @@ async function scanDir(root: string, dir: string, depth: number, out: Game[]): P
     } catch {
       baseRom = undefined
     }
+    let official: string | undefined
+    try {
+      official = platform === '3ds' ? undefined : await identifyBaseRom(path, hashes)
+    } catch {
+      official = undefined
+    }
+    if (official) {
+      out.push({ id: gameId(root, path), name: official, kind: 'baserom', platform, path, dir, baseRom })
+      continue
+    }
     out.push({
       id: gameId(root, path),
       // Une ROM patchée qui garde le nom du jeu de base prend le nom de son dossier
@@ -208,7 +219,7 @@ async function scanDir(root: string, dir: string, depth: number, out: Game[]): P
 
   if (depth >= MAX_DEPTH) return
   for (const d of dirs) {
-    if (!d.startsWith('.') && !SKIP_DIRS.has(d.toLowerCase())) await scanDir(root, join(dir, d), depth + 1, out)
+    if (!d.startsWith('.') && !SKIP_DIRS.has(d.toLowerCase())) await scanDir(root, join(dir, d), depth + 1, out, hashes)
   }
 }
 
@@ -259,9 +270,9 @@ export function groupVersions(games: Game[]): Game[] {
   return out
 }
 
-export async function scanLibrary(root: string): Promise<Game[]> {
+export async function scanLibrary(root: string, hashes: HashCache = {}): Promise<Game[]> {
   if (!root) return []
   const out: Game[] = []
-  await scanDir(root, root, 0, out)
+  await scanDir(root, root, 0, out, hashes)
   return groupVersions(out).sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }))
 }
