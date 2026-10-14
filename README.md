@@ -38,6 +38,26 @@ Pour chaque jeu, la première source trouvée est utilisée, puis mise en cache 
 
 Sans image, la carte reste vide avec le nom du jeu.
 
+## Thème
+
+Toutes les couleurs sont dans `src/renderer/src/theme/` : un fichier par thème, qui définit des variables sémantiques (`--bg`, `--surface`, `--text`, `--accent`, `--play`, `--focus`…). Pour ajouter un thème, il suffit d'ajouter un fichier sous `:root[data-theme="<nom>"]` et de l'importer dans `theme/index.ts`.
+
+Le thème Offli utilise la palette #18534F, #226D68, #ECF8F6, #FEEAA1 et #D6955B. Contrastes vérifiés (WCAG AA : 4,5:1 pour le texte, 3:1 pour les composants et le texte large) :
+
+| Premier plan | Fond | Usage | Ratio |
+| --- | --- | --- | --- |
+| #ECF8F6 texte | #0D2E2C fond | texte de la grille | 13,38 |
+| #ECF8F6 texte | #18534F surface | barres, fiche, paramètres | 8,09 |
+| #ECF8F6 texte | #226D68 surface 2 | boutons, champs | 5,59 |
+| #ECF8F6 texte | filtre actif (#D6955B à 20 % sur #18534F) | barre latérale | 6,45 |
+| #CBE8E4 texte secondaire | #0D2E2C / #18534F / #226D68 | compteurs, métadonnées | 11,22 / 6,78 / 4,69 |
+| #FEEAA1 liens, accent | #18534F / #226D68 | liens de la fiche | 7,32 / 5,06 |
+| #D6955B titres de section | #0D2E2C | liens de section, badges fangame | 5,75 |
+| #FEEAA1 anneau de focus | #0D2E2C / #18534F / #226D68 | focus clavier | 12,12 / 7,32 / 5,06 |
+| #D6955B barre du filtre actif | #18534F | indicateur | 3,48 |
+| #5FA8A2 bordures | #18534F / #0D2E2C | contour des champs | 3,19 / 5,27 |
+| #FF9C8F erreur | #226D68 | bordure du message d'erreur | 3,01 |
+
 ## Structure
 
 ```

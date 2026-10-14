@@ -2,48 +2,52 @@
  * Thème Offli : toutes les couleurs de l'interface.
  * Un nouveau thème = un nouveau fichier qui redéfinit ces variables sous
  * :root[data-theme="<nom>"], importé dans theme/index.ts.
+ *
+ * Palette : #18534F (sarcelle profond), #226D68 (sarcelle), #ECF8F6 (blanc menthe),
+ * #FEEAA1 (jaune pâle), #D6955B (orange). Contrastes WCAG AA vérifiés : texte ≥ 4,5:1,
+ * composants d'interface ≥ 3:1 (détail dans le README).
  */
 :root,
 :root[data-theme='offli'] {
   color-scheme: dark;
 
   /* fonds */
-  --bg: #0f1320;
-  --surface: #171c2c;
-  --surface-2: #1f2539;
-  --border: #2c3450;
-  --scrim: #0009;
+  --bg: #0d2e2c;
+  --surface: #18534f;
+  --surface-2: #226d68;
+  --border: #5fa8a2;
+  --scrim: #061716cc;
 
   /* texte */
-  --text: #e8eaf3;
-  --text-muted: #8f97b3;
-  --link: #8fc3ff;
+  --text: #ecf8f6;
+  --text-muted: #cbe8e4;
+  --link: #feeaa1;
 
   /* accents */
-  --accent: #ef4f4f;
-  --accent-2: #f3c34f;
-  --focus: #f3c34f;
-  --danger: #ef4f4f;
-  --selected-bg: #ef4f4f22;
-  --selected-bar: #ef4f4f;
-  --selected-ring: #ef4f4f;
+  --accent: #feeaa1;
+  --accent-2: #d6955b;
+  --focus: #feeaa1;
+  --danger: #ff9c8f;
+  --selected-bg: #d6955b33;
+  --selected-bar: #d6955b;
+  --selected-ring: #feeaa1;
 
   /* bouton Jouer */
-  --play: #ef4f4f;
-  --play-hover: #f26464;
-  --play-text: #fff;
-  --play-shadow: #a52a2a;
+  --play: #d6955b;
+  --play-hover: #e0a571;
+  --play-text: #0d2e2c;
+  --play-shadow: #9a6235;
 
   /* badges de plateforme */
-  --badge-fan: #f3c34f;
-  --badge-fan-border: #f3c34f55;
-  --badge-rom: #8fc3ff;
-  --badge-rom-border: #8fc3ff55;
-  --badge-overlay: #0f1320cc;
+  --badge-fan: #d6955b;
+  --badge-fan-border: #d6955b99;
+  --badge-rom: #feeaa1;
+  --badge-rom-border: #feeaa199;
+  --badge-overlay: #0d2e2ce6;
 
   /* logo (Poké Ball) */
-  --logo-top: #ef4f4f;
-  --logo-band: #e8eaf3;
+  --logo-top: #d6955b;
+  --logo-band: #ecf8f6;
   --logo-bottom: #fff;
 
   /* ombres */

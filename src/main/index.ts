@@ -161,7 +161,7 @@ function createWindow(): void {
     height: 800,
     minWidth: 900,
     minHeight: 600,
-    backgroundColor: '#0f1320',
+    backgroundColor: '#0d2e2c',
     autoHideMenuBar: true,
     title: 'Offli-Launcher',
     webPreferences: {
