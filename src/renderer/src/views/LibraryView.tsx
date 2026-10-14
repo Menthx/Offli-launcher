@@ -18,8 +18,12 @@ const FILTERS: { id: Filter; label: string; group?: string }[] = [
   { id: 'base', label: 'ROMs de base', group: 'Autres' }
 ]
 
-/** Sections de « Tous les jeux », dans l'ordre de la barre latérale */
+/**
+ * Sections de « Tous les jeux » : les favoris en tête (un favori reste aussi dans
+ * sa catégorie), puis les catégories dans l'ordre de la barre latérale
+ */
 const SECTIONS: { filter: Filter; label: string }[] = [
+  { filter: 'fav', label: 'Favoris' },
   { filter: 'fangame', label: 'Fangames' },
   { filter: 'gba', label: 'Romhacks GBA' },
   { filter: 'nds', label: 'Romhacks NDS' },
@@ -189,7 +193,7 @@ export function LibraryView(p: Props): React.JSX.Element {
 
   const onSearchKey = (e: React.KeyboardEvent): void => {
     // En vue par sections, le premier jeu affiché est celui de la première section non vide
-    const first = filter === 'all' ? SECTIONS.flatMap((sec) => visible.filter((g) => matches(sec.filter, g, undefined)))[0] : visible[0]
+    const first = filter === 'all' ? SECTIONS.flatMap((sec) => visible.filter((g) => matches(sec.filter, g, p.stats[g.id])))[0] : visible[0]
     if (e.key === 'Enter' && first) p.onLaunch(first)
     if (e.key === 'Escape') setQuery('')
   }
