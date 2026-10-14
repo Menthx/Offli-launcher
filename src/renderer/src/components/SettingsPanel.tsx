@@ -1,30 +1,47 @@
-import { useState } from 'react'
-import type { EmulatorPlatform, Settings } from '../../../shared/types'
+import { useState } from "react";
+import type { EmulatorPlatform, Settings } from "../../../shared/types";
 
 const EMULATORS: { id: EmulatorPlatform; label: string; hint: string }[] = [
-  { id: 'gba', label: 'Game Boy Advance', hint: 'mGBA conseillé' },
-  { id: 'gb', label: 'Game Boy', hint: 'mGBA ou SameBoy' },
-  { id: 'gbc', label: 'Game Boy Color', hint: 'mGBA ou SameBoy' },
-  { id: 'nds', label: 'Nintendo DS', hint: 'melonDS conseillé' },
-  { id: '3ds', label: 'Nintendo 3DS', hint: 'Azahar' }
-]
+  { id: "gba", label: "Game Boy Advance", hint: "mGBA conseillé" },
+  { id: "gb", label: "Game Boy", hint: "mGBA ou SameBoy" },
+  { id: "gbc", label: "Game Boy Color", hint: "mGBA ou SameBoy" },
+  { id: "nds", label: "Nintendo DS", hint: "melonDS conseillé" },
+  { id: "3ds", label: "Nintendo 3DS", hint: "Azahar" },
+];
 
 interface Props {
-  settings: Settings
-  onSave(patch: Partial<Settings>): Promise<void>
-  onClose(): void
+  settings: Settings;
+  onSave(patch: Partial<Settings>): Promise<void>;
+  onClose(): void;
 }
 
-export function SettingsPanel({ settings, onSave, onClose }: Props): React.JSX.Element {
-  const [key, setKey] = useState(settings.steamGridDbKey)
-  const [wine, setWine] = useState(settings.winePath)
+export function SettingsPanel({
+  settings,
+  onSave,
+  onClose,
+}: Props): React.JSX.Element {
+  const [key, setKey] = useState(settings.steamGridDbKey);
+  const [wine, setWine] = useState(settings.winePath);
 
-  const setEmulator = (id: EmulatorPlatform, patch: Partial<Settings['emulators'][EmulatorPlatform]>): Promise<void> =>
-    onSave({ emulators: { ...settings.emulators, [id]: { ...settings.emulators[id], ...patch } } })
+  const setEmulator = (
+    id: EmulatorPlatform,
+    patch: Partial<Settings["emulators"][EmulatorPlatform]>,
+  ): Promise<void> =>
+    onSave({
+      emulators: {
+        ...settings.emulators,
+        [id]: { ...settings.emulators[id], ...patch },
+      },
+    });
 
   return (
     <div className="modal-back" onClick={onClose}>
-      <div className="modal" role="dialog" aria-label="Paramètres" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="modal"
+        role="dialog"
+        aria-label="Paramètres"
+        onClick={(e) => e.stopPropagation()}
+      >
         <header className="modal-head">
           <h2>Paramètres</h2>
           <button className="ghost" onClick={onClose}>
@@ -41,8 +58,8 @@ export function SettingsPanel({ settings, onSave, onClose }: Props): React.JSX.E
               <button
                 className="ghost"
                 onClick={async () => {
-                  const dir = await window.offli.pickFolder()
-                  if (dir) await onSave({ libraryPath: dir })
+                  const dir = await window.offli.pickFolder();
+                  if (dir) await onSave({ libraryPath: dir });
                 }}
               >
                 Parcourir
@@ -53,14 +70,14 @@ export function SettingsPanel({ settings, onSave, onClose }: Props): React.JSX.E
             <span className="label">Affichage au démarrage</span>
             <div className="seg">
               <button
-                className={settings.viewMode === 'library' ? 'on' : ''}
-                onClick={() => onSave({ viewMode: 'library' })}
+                className={settings.viewMode === "library" ? "on" : ""}
+                onClick={() => onSave({ viewMode: "library" })}
               >
                 Bibliothèque
               </button>
               <button
-                className={settings.viewMode === 'bigpicture' ? 'on' : ''}
-                onClick={() => onSave({ viewMode: 'bigpicture' })}
+                className={settings.viewMode === "bigpicture" ? "on" : ""}
+                onClick={() => onSave({ viewMode: "bigpicture" })}
               >
                 Big Picture
               </button>
@@ -71,8 +88,9 @@ export function SettingsPanel({ settings, onSave, onClose }: Props): React.JSX.E
         <section>
           <h4>Émulateurs</h4>
           <p className="muted">
-            Les arguments acceptent <code>{'{rom}'}</code>, remplacé par le chemin de la ROM. Exemple pour mGBA en plein
-            écran : <code>-f {'{rom}'}</code>
+            Les arguments acceptent <code>{"{rom}"}</code>, remplacé par le
+            chemin de la ROM. Exemple pour mGBA en plein écran :{" "}
+            <code>-f {"{rom}"}</code>
           </p>
           {EMULATORS.map((e) => (
             <div className="field" key={e.id}>
@@ -80,19 +98,28 @@ export function SettingsPanel({ settings, onSave, onClose }: Props): React.JSX.E
                 {e.label} <span className="muted">· {e.hint}</span>
               </label>
               <div className="field-row">
-                <input id={`emu-${e.id}`} readOnly value={settings.emulators[e.id].path} placeholder="Non configuré" />
+                <input
+                  id={`emu-${e.id}`}
+                  readOnly
+                  value={settings.emulators[e.id].path}
+                  placeholder="Non configuré"
+                />
                 <input
                   id={`emu-${e.id}-args`}
                   className="args"
-                  defaultValue={settings.emulators[e.id].args.join(' ')}
-                  onBlur={(ev) => setEmulator(e.id, { args: ev.target.value.split(' ').filter(Boolean) })}
+                  defaultValue={settings.emulators[e.id].args.join(" ")}
+                  onBlur={(ev) =>
+                    setEmulator(e.id, {
+                      args: ev.target.value.split(" ").filter(Boolean),
+                    })
+                  }
                   aria-label={`Arguments ${e.label}`}
                 />
                 <button
                   className="ghost"
                   onClick={async () => {
-                    const path = await window.offli.pickFile('executable')
-                    if (path) await setEmulator(e.id, { path })
+                    const path = await window.offli.pickFile("executable");
+                    if (path) await setEmulator(e.id, { path });
                   }}
                 >
                   Parcourir
@@ -102,9 +129,15 @@ export function SettingsPanel({ settings, onSave, onClose }: Props): React.JSX.E
           ))}
           <div className="field">
             <label htmlFor="set-wine">
-              Wine (Linux et macOS) <span className="muted">· pour lancer les Game.exe</span>
+              Wine (Linux et macOS){" "}
+              <span className="muted">· pour lancer les Game.exe</span>
             </label>
-            <input id="set-wine" value={wine} onChange={(e) => setWine(e.target.value)} onBlur={() => onSave({ winePath: wine })} />
+            <input
+              id="set-wine"
+              value={wine}
+              onChange={(e) => setWine(e.target.value)}
+              onBlur={() => onSave({ winePath: wine })}
+            />
           </div>
         </section>
 
@@ -117,7 +150,8 @@ export function SettingsPanel({ settings, onSave, onClose }: Props): React.JSX.E
               checked={settings.useBaseRomCovers}
               onChange={(e) => onSave({ useBaseRomCovers: e.target.checked })}
             />
-            Pour les romhacks, utiliser la jaquette du jeu de base (téléchargée une fois depuis libretro-thumbnails)
+            Pour les romhacks, utiliser la jaquette du jeu de base (téléchargée
+            une fois depuis libretro-thumbnails)
           </label>
           <label className="check">
             <input
@@ -141,12 +175,8 @@ export function SettingsPanel({ settings, onSave, onClose }: Props): React.JSX.E
               />
             </div>
           )}
-          <p className="muted">
-            Ordre de recherche : ton image, une image posée à côté du jeu (cover.png ou le nom de la ROM), l'écran titre
-            du fangame, SteamGridDB, puis la jaquette du jeu de base.
-          </p>
         </section>
       </div>
     </div>
-  )
+  );
 }
