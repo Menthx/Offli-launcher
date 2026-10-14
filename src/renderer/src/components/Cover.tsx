@@ -39,14 +39,17 @@ export function useCover(id: string): string | null {
 export function Cover({ game, wide = false }: { game: Game; wide?: boolean }): React.JSX.Element {
   const url = useCover(game.id)
   const [pixel, setPixel] = useState(false)
+  // Jaquette de romhack : affichée entière et centrée, sur un fond flouté de la même image
+  const fit = game.kind === 'romhack' && !pixel
   return (
-    <div className={`cover ${wide ? 'wide' : ''} ${url ? '' : 'empty'}`}>
+    <div className={`cover ${wide ? 'wide' : ''} ${url ? '' : 'empty'} ${url && fit ? 'fit' : ''}`}>
+      {url && fit && <img src={url} alt="" aria-hidden="true" draggable={false} className="backdrop" />}
       {url ? <img
           src={url}
           alt=""
           loading="lazy"
           draggable={false}
-          className={pixel ? 'pixel' : undefined}
+          className={pixel ? 'main pixel' : 'main'}
           // Les petites icônes (NDS 32×32) restent nettes et entières
           onLoad={(e) => setPixel(e.currentTarget.naturalWidth <= 64)}
         /> : <span className="cover-name">{game.name}</span>}
