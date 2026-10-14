@@ -1,0 +1,8 @@
+{
+  "name": "rimraf",
+  "version": "2.7.1-offli.0",
+  "description": "Remplaçant minimal de rimraf v2 basé sur fs.rm natif (utilisé uniquement par la dépendance « temp » d'electron-builder)",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true
+}

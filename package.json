@@ -25,6 +25,7 @@
     "electron": "^44.7.2",
     "electron-builder": "^26.15.3",
     "electron-vite": "^6.0.0",
+    "rimraf": "file:./tools/shims/rimraf",
     "typescript": "^5.9.3",
     "vite": "^8.3.4",
     "vitest": "^5.0.4"
@@ -35,5 +36,12 @@
     "@fontsource/jetbrains-mono": "^5.3.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
+  },
+  "overrides": {
+    "@electron/asar": "^4.3.1",
+    "@electron/get": "^5.1.0",
+    "temp": {
+      "rimraf": "$rimraf"
+    }
   }
 }

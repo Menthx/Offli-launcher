@@ -46,3 +46,11 @@ tests/          tests Vitest
 ```
 
 Les données (paramètres, statistiques, index, cache d'images) sont dans le dossier utilisateur d'Electron. `OFFLI_USER_DATA` permet d'en choisir un autre.
+
+## Dépendances
+
+Les paquets dépréciés tirés indirectement par `electron-builder` sont remplacés via `overrides` dans `package.json` :
+
+- `@electron/asar` 4 (au lieu de 3, qui tirait `glob` 7 et `inflight`) ;
+- `@electron/get` 5 (au lieu de 3, qui tirait `global-agent` et `boolean`) ;
+- `rimraf` 2 (utilisé par `temp`) est remplacé par `tools/shims/rimraf`, une petite implémentation basée sur `fs.rm` natif.
