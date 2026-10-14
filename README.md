@@ -7,7 +7,7 @@ Offli parcourt un dossier, repère les fangames RPG Maker (`Game.exe`) et les RO
 ## Démarrer
 
 ```bash
-npm install
+npm install        # dépendances + binaire Electron (téléchargé par le postinstall)
 npm run dev        # appli en mode développement
 npm test           # tests unitaires
 npm run typecheck
