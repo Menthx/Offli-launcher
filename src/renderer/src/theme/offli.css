@@ -44,6 +44,11 @@
   --cta-text: #0d2e2c;
   --cta-shadow: #9a6235;
 
+  /* bouton Paramètres : icône sur fond orange */
+  --settings-bg: #d6955b;
+  --settings-bg-hover: #e0a571;
+  --settings-icon: #0d2e2c;
+
   /* badges de plateforme */
   --badge-fan: #d6955b;
   --badge-fan-border: #d6955b99;

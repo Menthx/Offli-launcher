@@ -58,6 +58,8 @@ Le thème Offli utilise la palette #18534F, #226D68, #ECF8F6, #FEEAA1 et #D6955B
 | #5FA8A2 bordures | #18534F / #0D2E2C | contour des champs | 3,19 / 5,27 |
 | #FFFFFF texte du bouton Jouer | dégradé #4A8419 → #3D6E13 | JOUER | 4,56 → 6,11 |
 | #0D2E2C texte | #D6955B | bouton « Choisir le dossier » | 5,75 |
+| #0D2E2C icône Paramètres | #D6955B | bouton Paramètres | 5,75 |
+| #D6955B fond du bouton Paramètres | #18534F barre du haut | contour du bouton | 3,48 |
 | #FF9C8F erreur | #226D68 | bordure du message d'erreur | 3,01 |
 
 ## Structure

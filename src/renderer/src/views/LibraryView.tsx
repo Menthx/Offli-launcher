@@ -223,8 +223,12 @@ export function LibraryView(p: Props): React.JSX.Element {
         <button className="ghost" onClick={p.onRescan} disabled={p.scanning} title={p.libraryPaths.join('\n')}>
           {p.scanning ? 'Scan…' : 'Rescanner'}
         </button>
-        <button className="ghost" onClick={p.onOpenSettings}>
-          Paramètres
+        <button className="settings-btn" onClick={p.onOpenSettings} aria-label="Paramètres" title="Paramètres">
+          {/* Clé plate et écrou */}
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z" />
+            <path d="M19 15.5l2 1.15v2.3L19 20.1l-2-1.15v-2.3z" />
+          </svg>
         </button>
       </header>
 
