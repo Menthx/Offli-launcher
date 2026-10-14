@@ -47,12 +47,37 @@ export async function readRomHeader(path: string, platform: Platform, size = hea
   }
 }
 
+/** Lit un fichier texte en UTF-8, ou en Latin-1 s'il n'est pas de l'UTF-8 valide (vieux .ini RPG Maker) */
 async function readText(path: string): Promise<string | undefined> {
   try {
-    return await readFile(path, 'utf8')
+    const buf = await readFile(path)
+    const utf8 = buf.toString('utf8')
+    return utf8.includes('�') ? buf.toString('latin1') : utf8
   } catch {
     return undefined
   }
+}
+
+/** Titre inutilisable : vide, « Untitled » ou identifiant technique (infinitefusion-hoenn) */
+export function isPlaceholderTitle(title: string | undefined): boolean {
+  if (!title?.trim()) return true
+  return /^untitled$/i.test(title.trim()) || /^[a-z0-9]+(?:[-_][a-z0-9]+)+$/.test(title.trim())
+}
+
+/** Titre d'un projet Pokémon SDK (project.studio) */
+async function readStudioTitle(dir: string, file: string | undefined): Promise<string | undefined> {
+  if (!file) return undefined
+  try {
+    const title = (JSON.parse((await readText(join(dir, file))) ?? '{}') as { title?: unknown }).title
+    return typeof title === 'string' && !isPlaceholderTitle(title) ? title.trim() : undefined
+  } catch {
+    return undefined
+  }
+}
+
+/** ROM nommée comme le jeu de base (« Pokemon - Emerald Version (USA, Europe) (patched).gba ») */
+export function isBaseLikeRomName(name: string): boolean {
+  return /\(patched\)/i.test(name) || /^pok[eé]mon - .*(version|edition|edici[oó]n|versione)\b/i.test(name)
 }
 
 export interface RgssIni {
@@ -128,8 +153,10 @@ export async function detectFangame(dir: string, files: string[], dirs: string[]
 
   const exe = pickFangameExe(files, inis)
   if (!exe) return undefined
+  // Le titre du projet Pokémon SDK passe avant celui du .ini (souvent « Untitled »)
   const ini = inis.find((i) => stem(i.file).toLowerCase() === stem(exe).toLowerCase()) ?? inis[0]
-  return { exe, title: ini?.title }
+  const title = (await readStudioTitle(dir, names.get('project.studio'))) ?? (isPlaceholderTitle(ini?.title) ? undefined : ini?.title)
+  return { exe, title }
 }
 
 async function scanDir(root: string, dir: string, depth: number, out: Game[]): Promise<void> {
@@ -169,7 +196,8 @@ async function scanDir(root: string, dir: string, depth: number, out: Game[]): P
     }
     out.push({
       id: gameId(root, path),
-      name: basename(file, extname(file)),
+      // Une ROM patchée qui garde le nom du jeu de base prend le nom de son dossier
+      name: isBaseLikeRomName(stem(file)) && dir !== root ? basename(dir) : stem(file),
       kind: 'romhack',
       platform,
       path,
