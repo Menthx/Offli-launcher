@@ -471,6 +471,71 @@ kbd {
   flex-direction: column;
   gap: 14px;
 }
+/* JOUER, favori et « Plus d'actions » sur une même ligne */
+.play-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.play-row .play {
+  flex: 1;
+}
+.game-actions {
+  position: relative;
+  display: flex;
+  gap: 8px;
+}
+.square-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  flex: none;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.square-btn:hover {
+  border-color: var(--text-muted);
+}
+.fav-btn.on {
+  color: var(--fav-on);
+}
+.action-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 5;
+  width: 236px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  background: var(--menu-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 16px 32px -8px var(--shadow);
+}
+.action-menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  text-align: left;
+  font: 600 14px var(--f-body);
+  color: var(--text);
+  background: none;
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+}
+.action-menu button:hover,
+.action-menu button:focus-visible {
+  background: var(--menu-hover);
+}
 .close-detail {
   position: absolute;
   top: 8px;

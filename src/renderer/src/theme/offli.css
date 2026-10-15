@@ -54,6 +54,11 @@
   --close-bg-hover: #ff8f85;
   --close-icon: #0d2e2c;
 
+  /* favori et menu « Plus d'actions » de la fiche */
+  --fav-on: #feeaa1;
+  --menu-bg: #0d2e2c;
+  --menu-hover: #18534f;
+
   /* badges de plateforme */
   --badge-fan: #d6955b;
   --badge-fan-border: #d6955b99;

@@ -2,7 +2,21 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Game, GameStats } from "../../../shared/types";
 import type { ViewProps } from "../App";
 import { Cover } from "../components/Cover";
+import { GameActions } from "../components/GameActions";
 import { PLATFORM_LABEL, kindLabel, lastPlayed, playtime } from "../format";
+
+/** Icônes du menu « Plus d'actions » (trait currentColor, masquées aux lecteurs d'écran) */
+const icon = (d: string): React.JSX.Element => (
+  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d={d} />
+  </svg>
+);
+
+const ICONS = {
+  folder: icon("M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"),
+  image: icon("M4 5h16v14H4zM4 15l4.5-4.5 4 4L15 12l5 5M15.5 9.5h.01"),
+  reset: icon("M4 12a8 8 0 1 0 2.5-5.8M4 4v4h4"),
+};
 
 type Filter =
   | "all"
@@ -419,17 +433,54 @@ export function LibraryView(p: Props): React.JSX.Element {
             </button>
             <Cover game={sel} wide />
             <NameEditor game={sel} onRename={p.onRename} />
-            <button className="play" onClick={() => p.onLaunch(target!)}>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                aria-hidden="true"
-              >
-                <path d="M3 1.5v13l11-6.5z" fill="currentColor" />
-              </svg>
-              JOUER
-            </button>
+            <div className="play-row">
+              <button className="play" onClick={() => p.onLaunch(target!)}>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                >
+                  <path d="M3 1.5v13l11-6.5z" fill="currentColor" />
+                </svg>
+                JOUER
+              </button>
+              <GameActions
+                gameId={sel.id}
+                favorite={!!selStats?.favorite}
+                onFavorite={() => p.onFavorite(sel)}
+                actions={[
+                  {
+                    label: "Ouvrir le dossier",
+                    icon: ICONS.folder,
+                    run: () => window.offli.openFolder(target!.id),
+                  },
+                  {
+                    label: "Changer l'image",
+                    icon: ICONS.image,
+                    run: async () => {
+                      const img = await window.offli.pickFile("image");
+                      if (img) {
+                        await window.offli.setCover(sel.id, img);
+                        p.onCoverChanged(sel.id);
+                      }
+                    },
+                  },
+                  ...(p.customCovers[sel.id]
+                    ? [
+                        {
+                          label: "Réinitialiser l'image",
+                          icon: ICONS.reset,
+                          run: async () => {
+                            await window.offli.setCover(sel.id, null);
+                            p.onCoverChanged(sel.id);
+                          },
+                        },
+                      ]
+                    : []),
+                ]}
+              />
+            </div>
             <dl className="facts">
               {sel.versions && (
                 <>
@@ -476,40 +527,6 @@ export function LibraryView(p: Props): React.JSX.Element {
               <dt>Temps de jeu</dt>
               <dd>{playtime(selStats?.playtimeSec ?? 0)}</dd>
             </dl>
-            <div className="row-actions">
-              <button className="ghost" onClick={() => p.onFavorite(sel)}>
-                {selStats?.favorite ? "★ Favori" : "☆ Ajouter aux favoris"}
-              </button>
-              <button
-                className="ghost"
-                onClick={() => window.offli.openFolder(target!.id)}
-              >
-                Ouvrir le dossier
-              </button>
-              <button
-                className="ghost"
-                onClick={async () => {
-                  const img = await window.offli.pickFile("image");
-                  if (img) {
-                    await window.offli.setCover(sel.id, img);
-                    p.onCoverChanged(sel.id);
-                  }
-                }}
-              >
-                Changer l'image
-              </button>
-              {p.customCovers[sel.id] && (
-                <button
-                  className="ghost"
-                  onClick={async () => {
-                    await window.offli.setCover(sel.id, null);
-                    p.onCoverChanged(sel.id);
-                  }}
-                >
-                  Réinitialiser l'image
-                </button>
-              )}
-            </div>
           </>
         </aside>
       )}
