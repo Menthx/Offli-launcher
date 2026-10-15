@@ -594,6 +594,41 @@ kbd {
   padding: 4px 8px;
   width: 100%;
 }
+/* Chemin du fichier masqué (balise spoiler) */
+.spoiler {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  padding: 2px 8px;
+  font: inherit;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  overflow: hidden;
+}
+/* Bande floutée assez sombre pour que « Afficher » reste lisible par-dessus */
+.spoiler-blur {
+  color: var(--border);
+  opacity: 0.5;
+  filter: blur(5px);
+  white-space: nowrap;
+}
+.spoiler-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 600 12px var(--f-body);
+  color: var(--text);
+}
+.spoiler-shown {
+  user-select: text;
+}
 .link {
   font: inherit;
   background: none;

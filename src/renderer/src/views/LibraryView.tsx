@@ -5,6 +5,45 @@ import { Cover } from "../components/Cover";
 import { GameActions } from "../components/GameActions";
 import { PLATFORM_LABEL, kindLabel, lastPlayed, playtime } from "../format";
 
+/**
+ * Chemin du fichier masqué par défaut : tant qu'il n'est pas révélé, il n'est ni dans
+ * le DOM ni dans une infobulle. Remonté à chaque jeu (key), il se re-masque au changement
+ * de jeu et à la fermeture de la fiche.
+ */
+function PathSpoiler({ path }: { path: string }): React.JSX.Element {
+  const [shown, setShown] = useState(false);
+  if (!shown) {
+    return (
+      <button
+        className="spoiler"
+        onClick={() => setShown(true)}
+        aria-label="Afficher le chemin du fichier"
+        aria-expanded={false}
+      >
+        <span className="spoiler-blur" aria-hidden="true">
+          ████████ ██████ ███████████
+        </span>
+        <span className="spoiler-hint" aria-hidden="true">
+          Afficher
+        </span>
+      </button>
+    );
+  }
+  return (
+    <span className="spoiler-shown">
+      {path}{" "}
+      <button
+        className="link"
+        onClick={() => setShown(false)}
+        aria-label="Masquer le chemin du fichier"
+        aria-expanded={true}
+      >
+        Masquer
+      </button>
+    </span>
+  );
+}
+
 /** Icônes du menu « Plus d'actions » (trait currentColor, masquées aux lecteurs d'écran) */
 const icon = (d: string): React.JSX.Element => (
   <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -544,7 +583,9 @@ export function LibraryView(p: Props): React.JSX.Element {
                 </>
               )}
               <dt>Fichier</dt>
-              <dd>{target!.path}</dd>
+              <dd>
+                <PathSpoiler key={target!.id} path={target!.path} />
+              </dd>
               <dt>Dernière session</dt>
               <dd>{lastPlayed(selStats?.lastPlayed)}</dd>
               <dt>Temps de jeu</dt>
