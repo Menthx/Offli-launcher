@@ -81,6 +81,10 @@ Tes jeux ne sont jamais modifiés ni déplacés.
 **Est-ce que quelque chose est envoyé sur Internet ?**
 Non, sauf pour les jaquettes : les images des jeux de base sont téléchargées une fois (option désactivable dans Paramètres > Images), et SteamGridDB n'est contacté que si tu l'as activé avec ta clé. Rien d'autre ne sort de ton ordinateur.
 
+## Crédits
+
+Icône de l'application : « Équipe rouge » par [Icons8](https://icons8.com).
+
 ---
 
 Tu veux contribuer ? Tout est expliqué dans [docs/DEVELOPPEMENT.md](docs/DEVELOPPEMENT.md).

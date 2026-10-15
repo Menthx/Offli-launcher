@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Game, GameStats } from "../../../shared/types";
 import type { ViewProps } from "../App";
 import { Cover } from "../components/Cover";
+import logo from "../assets/logo.png";
 import { GameActions } from "../components/GameActions";
 import { SgdbPicker } from "../components/SgdbPicker";
 import { UpdateButton } from "../components/UpdateButton";
@@ -366,7 +367,7 @@ export function LibraryView(p: Props): React.JSX.Element {
     <div className={`lib ${sel ? "" : "no-detail"}`}>
       <aside className="lib-side">
         <span className="brand" onClick={() => changeFilter("all")}>
-          <span className="dot" aria-hidden="true" />
+          <img className="brand-logo" src={logo} alt="" aria-hidden="true" draggable={false} />
           Offli-Launcher
         </span>
         <label

@@ -158,17 +158,10 @@ kbd {
   flex-wrap: wrap;
   align-items: center;
 }
-.dot {
-  display: inline-block;
-  width: 0.7em;
-  height: 0.7em;
-  border-radius: 50%;
-  background: linear-gradient(
-    var(--logo-top) 0 46%,
-    var(--logo-band) 46% 54%,
-    var(--logo-bottom) 54%
-  );
-  box-shadow: inset 0 0 0 0.08em var(--bg);
+.brand-logo {
+  width: 1.2em;
+  height: 1.2em;
+  flex: none;
 }
 
 /* jaquettes */

@@ -5,6 +5,8 @@ directories:
 files:
   - out/**
   - package.json
+  # Icône de la fenêtre (BrowserWindow), lue depuis l'archive au lancement
+  - resources/icon.png
 # Noms de fichiers sans espaces, distincts pour l'installeur et la version portable
 artifactName: ${productName}-${version}-${os}-${arch}.${ext}
 win:

@@ -8,6 +8,8 @@ import type { HashCache } from './baseRoms'
 import { buildCommand, resolveAssociation, runCommand } from './launcher'
 import { scanLibrary } from './scanner'
 import { setupUpdater } from './updater'
+// Icône de la fenêtre et de la barre des tâches (Windows, Linux ; macOS prend celle de l'appli)
+import appIcon from '../../resources/icon.png?asset'
 import { SgdbError, type SgdbGrid, SteamGridDb } from './steamgriddb'
 import { DEFAULT_SETTINGS, JsonFile, applyNames, emptyStats, mergeSettings } from './store'
 
@@ -245,6 +247,7 @@ function createWindow(): void {
     backgroundColor: '#16122b',
     autoHideMenuBar: true,
     title: 'Offli-Launcher',
+    ...(process.platform === 'darwin' ? {} : { icon: appIcon }),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: true,
