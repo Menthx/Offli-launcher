@@ -3,6 +3,7 @@ import type { Game, GameStats, Settings, StartView } from "../../shared/types";
 import { forgetCover } from "./components/Cover";
 import { SettingsPanel } from "./components/SettingsPanel";
 import { applyTheme } from "./theme";
+import { animateSelection } from "./viewTransition";
 import { BigPictureView } from "./views/BigPictureView";
 import { LibraryView } from "./views/LibraryView";
 
@@ -132,7 +133,9 @@ export function App(): React.JSX.Element {
     games,
     stats,
     selected,
-    onSelect: setSelectedId,
+    // La jaquette de la carte vole vers la fiche (et revient à la fermeture)
+    onSelect: (id) =>
+      animateSelection(selected?.id, id, () => setSelectedId(id)),
     onLaunch: launch,
     onFavorite: favorite,
   };

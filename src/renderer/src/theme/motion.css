@@ -1,0 +1,66 @@
+/*
+ * Animations de la bibliothèque (View Transitions API), communes à tous les thèmes.
+ * Les durées sont des variables : un thème peut les redéfinir.
+ */
+:root {
+  --motion-duration: 280ms;
+  --motion-hero: 380ms;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* La fiche est un élément à part : elle glisse depuis la droite à l'ouverture, et inversement */
+.lib-detail {
+  view-transition-name: detail;
+}
+
+/* Le reste de la page ne fond pas : seuls les éléments nommés bougent */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-group(*) {
+  animation-duration: var(--motion-duration);
+  animation-timing-function: var(--motion-ease);
+}
+
+/* Jaquette partagée entre la carte et la fiche */
+::view-transition-group(hero-cover) {
+  animation-duration: var(--motion-hero);
+  /* Au-dessus de la fiche qui s'ouvre, sinon la jaquette passe dessous */
+  z-index: 10;
+}
+::view-transition-old(hero-cover),
+::view-transition-new(hero-cover) {
+  /* La jaquette change de proportions (3:4 → 16:10) : on garde l'image entière pendant le vol */
+  height: 100%;
+  object-fit: cover;
+}
+
+::view-transition-new(detail):only-child {
+  animation: vt-detail-in var(--motion-duration) var(--motion-ease) both;
+}
+::view-transition-old(detail):only-child {
+  animation: vt-detail-out var(--motion-duration) var(--motion-ease) both;
+}
+
+@keyframes vt-detail-in {
+  from {
+    opacity: 0;
+    transform: translateX(48px);
+  }
+}
+@keyframes vt-detail-out {
+  to {
+    opacity: 0;
+    transform: translateX(48px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

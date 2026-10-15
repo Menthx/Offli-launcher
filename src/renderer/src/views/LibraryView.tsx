@@ -128,8 +128,15 @@ interface Props extends ViewProps {
   onRename(game: Game, name: string | null): void;
 }
 
+/** Au-delà, les cartes ne sont pas animées une à une (fluidité des grandes bibliothèques) */
+const MAX_ANIMATED_CARDS = 120;
+
 interface GridProps {
   games: Game[];
+  /** Préfixe des noms de transition : un même jeu peut apparaître dans deux sections */
+  section: string;
+  /** Les cartes portent un nom de transition et glissent vers leur nouvelle place */
+  animated: boolean;
   stats: Record<string, GameStats>;
   selectedId: string | undefined;
   onSelect(id: string | undefined): void;
@@ -162,6 +169,12 @@ function GameGrid(p: GridProps): React.JSX.Element {
         <button
           key={g.id}
           className={`card ${g.id === p.selectedId ? "sel" : ""}`}
+          data-game={g.id}
+          style={
+            p.animated
+              ? ({ viewTransitionName: `card-${p.section}-${g.id}` } as React.CSSProperties)
+              : undefined
+          }
           {...cardActions(g, p)}
         >
           <Cover game={g} />
@@ -300,6 +313,7 @@ export function LibraryView(p: Props): React.JSX.Element {
   const selStats = sel ? p.stats[sel.id] : undefined;
 
   const gridProps = {
+    animated: visible.length <= MAX_ANIMATED_CARDS,
     stats: p.stats,
     selectedId: sel?.id,
     onSelect: p.onSelect,
@@ -467,7 +481,7 @@ export function LibraryView(p: Props): React.JSX.Element {
                   </button>{" "}
                   · {games.length}
                 </h5>
-                <GameGrid {...gridProps} games={games} />
+                <GameGrid {...gridProps} section={sec.filter} games={games} />
               </section>
             );
           })
@@ -476,7 +490,7 @@ export function LibraryView(p: Props): React.JSX.Element {
             <h5>
               {FILTERS.find((f) => f.id === filter)!.label} · {visible.length}
             </h5>
-            <GameGrid {...gridProps} games={visible} />
+            <GameGrid {...gridProps} section={filter} games={visible} />
           </section>
         )}
       </main>

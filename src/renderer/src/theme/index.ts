@@ -1,4 +1,5 @@
 import type { Theme } from '../../../shared/types'
+import './motion.css'
 import './console.css'
 import './electrique.css'
 import './emeraude.css'
