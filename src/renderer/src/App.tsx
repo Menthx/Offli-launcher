@@ -204,7 +204,8 @@ export function App(): React.JSX.Element {
           onClose={() => setShowSettings(false)}
         />
       )}
-      {tourOpen && settings.libraryPaths.length > 0 && view === "library" && (
+      {/* Premier lancement : le tutoriel s'ouvre aussi par-dessus l'écran « Choisis le dossier » */}
+      {tourOpen && view === "library" && (
         <Tour
           settings={settings}
           games={shownGames}

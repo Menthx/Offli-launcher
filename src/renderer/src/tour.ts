@@ -35,9 +35,12 @@ export function tourReduce(step: number, action: TourAction, count = TOUR_STEPS.
   return step >= count - 1 ? { done: "finished" } : { step: step + 1 };
 }
 
-/** Le tutoriel s'ouvre tout seul au premier lancement, une fois un dossier de jeux choisi */
-export function shouldAutoStartTour(settings: { tutorialDone: boolean; libraryPaths: string[] }): boolean {
-  return !settings.tutorialDone && settings.libraryPaths.length > 0;
+/**
+ * Le tutoriel s'ouvre tout seul au lancement tant qu'il n'a été ni terminé ni passé,
+ * même sans dossier de jeux : l'étape 2 sert alors à choisir le premier dossier.
+ */
+export function shouldAutoStartTour(settings: { tutorialDone: boolean }): boolean {
+  return !settings.tutorialDone;
 }
 
 /** Ligne d'état de l'étape « Où sont tes jeux ? » */

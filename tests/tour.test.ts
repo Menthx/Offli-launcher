@@ -21,10 +21,9 @@ describe('tutoriel', () => {
     expect(tourReduce(2, 'skip')).toEqual({ done: 'skipped' })
   })
 
-  it("s'ouvre seul seulement au premier lancement, une fois un dossier choisi", () => {
-    expect(shouldAutoStartTour({ tutorialDone: false, libraryPaths: ['D:\\Pokemon'] })).toBe(true)
-    expect(shouldAutoStartTour({ tutorialDone: false, libraryPaths: [] })).toBe(false)
-    expect(shouldAutoStartTour({ tutorialDone: true, libraryPaths: ['D:\\Pokemon'] })).toBe(false)
+  it("s'ouvre seul au lancement tant qu'il n'est ni terminé ni passé, même sans dossier", () => {
+    expect(shouldAutoStartTour({ tutorialDone: false })).toBe(true)
+    expect(shouldAutoStartTour({ tutorialDone: true })).toBe(false)
   })
 
   it('résume la bibliothèque', () => {

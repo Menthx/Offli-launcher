@@ -270,7 +270,8 @@ export function Tour({ settings, games, scanning, selectedId, onSelect, onSave, 
     return { top: Math.max(16, rect.top - PAD - 16 - cardH), left: Math.max(16, Math.min(rect.left, vw - BUBBLE_W - 16)) };
   };
 
-  const spotlight = current.kind === "spotlight";
+  // Sans élément à montrer (pas encore de dossier, pas de jeu), l'étape s'affiche en fenêtre centrée
+  const spotlight = current.kind === "spotlight" && !!rect;
 
   return (
     <div className={`tour ${spotlight ? "is-spotlight" : "is-modal"}`} onKeyDown={onKeyDown}>
@@ -285,7 +286,7 @@ export function Tour({ settings, games, scanning, selectedId, onSelect, onSave, 
       )}
       <div
         ref={dialog}
-        className={`tour-card ${spotlight ? "bubble" : "modal-card"} ${spotlight && rect ? `side-${current.side}` : ""}`}
+        className={`tour-card ${spotlight ? `bubble side-${current.side}` : "modal-card"}`}
         style={spotlight ? bubbleStyle() : undefined}
         role="dialog"
         aria-modal="true"
