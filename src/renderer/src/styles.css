@@ -1331,6 +1331,8 @@ input::placeholder {
 }
 .tour-card {
   position: fixed;
+  box-sizing: border-box;
+  max-width: calc(100vw - 32px);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1377,12 +1379,15 @@ input::placeholder {
   background: var(--accent);
   border-radius: 14px;
 }
+/* Points sur leur propre ligne, boutons alignés à droite et autorisés à passer à la ligne :
+   tout reste dans la carte, quelle que soit la largeur */
 .tour-foot {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: stretch;
   gap: 12px;
   margin-top: 6px;
+  min-width: 0;
 }
 .tour-dots {
   display: inline-flex;
@@ -1400,8 +1405,11 @@ input::placeholder {
   background: var(--accent);
 }
 .tour-actions {
-  display: inline-flex;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 8px;
+  min-width: 0;
 }
 .tour-actions .cta {
   padding: 9px 18px;
