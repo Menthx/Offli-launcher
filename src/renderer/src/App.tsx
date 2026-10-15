@@ -13,7 +13,7 @@ export interface ViewProps {
   games: Game[];
   stats: Record<string, GameStats>;
   selected: Game | undefined;
-  onSelect(id: string): void;
+  onSelect(id: string | undefined): void;
   onLaunch(game: Game): void;
   onFavorite(game: Game): void;
 }
@@ -101,7 +101,8 @@ export function App(): React.JSX.Element {
 
   if (!settings) return <div className="boot" />;
 
-  const selected = games.find((g) => g.id === selectedId) ?? games[0];
+  // Aucun jeu sélectionné par défaut : la fiche n'apparaît qu'après un clic
+  const selected = games.find((g) => g.id === selectedId);
   const props: ViewProps = {
     games,
     stats,

@@ -49,6 +49,11 @@
   --settings-bg-hover: #e0a571;
   --settings-icon: #0d2e2c;
 
+  /* bouton rouge « Fermer la fiche » : 3,46:1 sur #18534F, icône à 5,72:1 */
+  --close-bg: #ff7a6e;
+  --close-bg-hover: #ff8f85;
+  --close-icon: #0d2e2c;
+
   /* badges de plateforme */
   --badge-fan: #d6955b;
   --badge-fan-border: #d6955b99;

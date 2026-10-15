@@ -455,7 +455,12 @@ kbd {
   font-size: 12px;
   color: var(--text-muted);
 }
+/* Sans jeu sélectionné, la fiche disparaît et la grille prend sa place */
+.lib.no-detail {
+  grid-template-columns: 220px minmax(0, 1fr);
+}
 .lib-detail {
+  position: relative;
   border-left: 1px solid var(--border);
   background: var(--surface);
   padding: 16px;
@@ -463,6 +468,25 @@ kbd {
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+.close-detail {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  color: var(--close-icon);
+  background: var(--close-bg);
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.close-detail:hover {
+  background: var(--close-bg-hover);
 }
 .lib-detail h3 {
   font: 800 22px/1.1 var(--f-display);
@@ -662,6 +686,9 @@ kbd {
 @media (max-width: 1100px) {
   .lib {
     grid-template-columns: 190px minmax(0, 1fr) 260px;
+  }
+  .lib.no-detail {
+    grid-template-columns: 190px minmax(0, 1fr);
   }
   .brand {
     font-size: 17px;

@@ -73,8 +73,27 @@ interface GridProps {
   games: Game[];
   stats: Record<string, GameStats>;
   selectedId: string | undefined;
-  onSelect(id: string): void;
+  onSelect(id: string | undefined): void;
   onLaunch(game: Game): void;
+}
+
+/**
+ * Clic sur une carte : sélectionne le jeu, ou le désélectionne s'il l'était déjà.
+ * Double-clic : lance le jeu en le laissant sélectionné (le second clic du double-clic est ignoré).
+ */
+function cardActions(
+  g: Game,
+  p: Pick<GridProps, "selectedId" | "onSelect" | "onLaunch">,
+): Pick<React.ButtonHTMLAttributes<HTMLButtonElement>, "onClick" | "onDoubleClick"> {
+  return {
+    onClick: (e) => {
+      if (e.detail <= 1) p.onSelect(g.id === p.selectedId ? undefined : g.id);
+    },
+    onDoubleClick: () => {
+      p.onSelect(g.id);
+      p.onLaunch(g);
+    },
+  };
 }
 
 function GameGrid(p: GridProps): React.JSX.Element {
@@ -84,8 +103,7 @@ function GameGrid(p: GridProps): React.JSX.Element {
         <button
           key={g.id}
           className={`card ${g.id === p.selectedId ? "sel" : ""}`}
-          onClick={() => p.onSelect(g.id)}
-          onDoubleClick={() => p.onLaunch(g)}
+          {...cardActions(g, p)}
         >
           <Cover game={g} />
           <span className="card-title">{g.name}</span>
@@ -241,7 +259,7 @@ export function LibraryView(p: Props): React.JSX.Element {
   };
 
   return (
-    <div className="lib">
+    <div className={`lib ${sel ? "" : "no-detail"}`}>
       <aside className="lib-side">
         <span className="brand" onClick={() => setFilter("all")}>
           <span className="dot" aria-hidden="true" />
@@ -329,8 +347,7 @@ export function LibraryView(p: Props): React.JSX.Element {
                 <button
                   key={g.id}
                   className={`card ${g.id === sel?.id ? "sel" : ""}`}
-                  onClick={() => p.onSelect(g.id)}
-                  onDoubleClick={() => p.onLaunch(g)}
+                  {...cardActions(g, gridProps)}
                   title={g.name}
                 >
                   <Cover game={g} />
@@ -382,9 +399,24 @@ export function LibraryView(p: Props): React.JSX.Element {
         )}
       </main>
 
-      <aside className="lib-detail">
-        {sel && (
+      {sel && (
+        <aside className="lib-detail" aria-label={`Fiche de ${sel.name}`}>
           <>
+            <button
+              className="close-detail"
+              onClick={() => p.onSelect(undefined)}
+              aria-label="Fermer la fiche"
+              title="Fermer la fiche"
+            >
+              <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+                <path
+                  d="M4 4l8 8M12 4l-8 8"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
             <Cover game={sel} wide />
             <NameEditor game={sel} onRename={p.onRename} />
             <button className="play" onClick={() => p.onLaunch(target!)}>
@@ -479,8 +511,8 @@ export function LibraryView(p: Props): React.JSX.Element {
               )}
             </div>
           </>
-        )}
-      </aside>
+        </aside>
+      )}
     </div>
   );
 }
