@@ -87,7 +87,9 @@ export function mergeSettings(fallback: Settings, loaded: unknown): Settings {
           ? 'bigpicture'
           : fallback.startView,
     bigPictureFullscreen: typeof l.bigPictureFullscreen === 'boolean' ? l.bigPictureFullscreen : fallback.bigPictureFullscreen,
-    theme: l.theme === 'console' || l.theme === 'emeraude' ? l.theme : fallback.theme,
+    theme: (['console', 'electrique', 'pokeball', 'emeraude'] as const).includes(l.theme as Settings['theme'])
+      ? (l.theme as Settings['theme'])
+      : fallback.theme,
     emulators: mergeEmulators(fallback.emulators, l.emulators),
     coverOverrides: { ...(l.coverOverrides ?? {}) },
     nameOverrides: { ...(l.nameOverrides ?? {}) }

@@ -43,7 +43,7 @@ Sans image, la carte reste vide avec le nom du jeu.
 
 Toutes les couleurs sont dans `src/renderer/src/theme/` : un fichier par thème, qui définit des variables sémantiques (`--bg`, `--surface`, `--text`, `--accent`, `--play`, `--focus`…). Pour ajouter un thème, il suffit d'ajouter un fichier sous `:root[data-theme="<nom>"]` et de l'importer dans `theme/index.ts`.
 
-Deux thèmes, au choix dans Paramètres > Affichage > Thème : **Console** (par défaut, `theme/console.css`) et **Émeraude** (`theme/emeraude.css`). Le bouton JOUER reste vert dans les deux. Contrastes vérifiés (WCAG AA : 4,5:1 pour le texte, 3:1 pour les composants et le texte large).
+Quatre thèmes, au choix dans Paramètres > Affichage > Thème : **Console** (par défaut, `theme/console.css`), **Électrique** (`theme/electrique.css`), **Poké Ball** (`theme/pokeball.css`) et **Émeraude** (`theme/emeraude.css`). Le bouton JOUER reste vert dans tous. Contrastes vérifiés (WCAG AA : 4,5:1 pour le texte, 3:1 pour les composants et le texte large).
 
 ### Console
 
@@ -66,6 +66,38 @@ Palette #16122B, #241D47, #342A66, #F2EFFF, #C3BBEA, #FFCB05 et #9FB4FF.
 | #FF9C8F erreur | #342A66 | bordure du message d'erreur | 6,23 |
 
 La maquette proposait #6E62B0 pour les bordures : 3,01:1 sur le panneau, trop juste, d'où #7D71C2.
+
+### Électrique
+
+Palette #0E1729, #172440, #22355C, #EEF3FF, #B6C4E2, #FFD23F et #6FA8F0.
+
+| Premier plan | Fond | Usage | Ratio |
+| --- | --- | --- | --- |
+| #EEF3FF texte | #0E1729 / #172440 / #22355C | texte | 16,11 / 13,87 / 10,91 |
+| #B6C4E2 texte secondaire | #0E1729 / #172440 / #22355C | compteurs, métadonnées | 10,21 / 8,79 / 6,92 |
+| #FFD23F accent | #0E1729 / #172440 / #22355C | titres de section, filtre actif, étoile favori | 12,39 / 10,67 / 8,40 |
+| #6FA8F0 liens, focus | #0E1729 / #172440 / #22355C | liens, anneau de focus, badges ROM | 7,27 / 6,26 / 4,93 |
+| #6A84B6 bordures | #172440 / #0E1729 | contour des champs et menus | 4,10 / 4,76 |
+| #0E1729 icône et texte | #FFD23F | bouton Paramètres, « Choisir le dossier » | 12,39 |
+| #FF7A6E bouton « Fermer la fiche » | #172440 | contour du bouton | 6,06 |
+| #0E1729 croix | #FF7A6E | icône du bouton | 7,04 |
+| #FF9C8F erreur | #22355C | bordure du message d'erreur | 6,01 |
+
+### Poké Ball
+
+Palette #141518, #1F2126, #2C2F36, #F7F7F5, #BFC3CC, rouge et #FFFFFF. Le rouge #FF5C4D de la maquette ne fait que 4,40:1 sur la surface #2C2F36 : il passe à #FF6E60.
+
+| Premier plan | Fond | Usage | Ratio |
+| --- | --- | --- | --- |
+| #F7F7F5 texte | #141518 / #1F2126 / #2C2F36 | texte | 17,02 / 15,02 / 12,49 |
+| #BFC3CC texte secondaire | #141518 / #1F2126 / #2C2F36 | compteurs, métadonnées | 10,34 / 9,12 / 7,59 |
+| #FF6E60 accent rouge | #2C2F36 / #1F2126 / #141518 | titres de section, filtre actif, étoile favori | 4,88 / 5,87 / 6,65 |
+| #FFFFFF liens, focus | #141518 / #2C2F36 | liens, anneau de focus | 18,26 / 13,40 |
+| #767B87 bordures | #1F2126 / #141518 | contour des champs et menus | 3,80 / 4,31 |
+| #141518 icône et texte | #FF6E60 | bouton Paramètres, « Choisir le dossier » | 6,65 |
+| #FF7A6E bouton « Fermer la fiche » | #1F2126 | contour du bouton | 6,34 |
+| #141518 croix | #FF7A6E | icône du bouton | 7,18 |
+| #FF9C8F erreur | #2C2F36 | bordure du message d'erreur | 6,64 |
 
 ### Émeraude
 

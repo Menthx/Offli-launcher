@@ -36,7 +36,7 @@ export interface GameStats {
 }
 
 /** Thème de couleurs (un fichier dans src/renderer/src/theme) */
-export type Theme = 'console' | 'emeraude'
+export type Theme = 'console' | 'electrique' | 'pokeball' | 'emeraude'
 
 /** Affichage à l'ouverture de l'appli */
 export type StartView = 'library' | 'bigpicture'

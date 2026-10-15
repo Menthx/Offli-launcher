@@ -43,7 +43,9 @@ describe('mergeSettings', () => {
 
   it('prend le thème Console par défaut et garde un thème connu', () => {
     expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), {}).theme).toBe('console')
-    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { theme: 'emeraude' }).theme).toBe('emeraude')
+    for (const theme of ['electrique', 'pokeball', 'emeraude'] as const) {
+      expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { theme }).theme).toBe(theme)
+    }
     expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { theme: 'offli' }).theme).toBe('console')
   })
 

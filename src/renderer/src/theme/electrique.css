@@ -1,0 +1,81 @@
+/*
+ * Thème Électrique : fond #0E1729, panneau #172440, surface #22355C, texte #EEF3FF,
+ * texte secondaire #B6C4E2, accent jaune #FFD23F, focus et liens #6FA8F0.
+ * Contrastes WCAG AA vérifiés dans le README.
+ */
+:root[data-theme='electrique'] {
+  color-scheme: dark;
+
+  /* fonds */
+  --bg: #0e1729;
+  --surface: #172440;
+  --surface-2: #22355c;
+  --border: #6a84b6;
+  --scrim: #070b14cc;
+
+  /* texte */
+  --text: #eef3ff;
+  --text-muted: #b6c4e2;
+  --link: #6fa8f0;
+
+  /* accents */
+  --accent: #ffd23f;
+  --accent-2: #ffd23f;
+  --focus: #6fa8f0;
+  --danger: #ff9c8f;
+  --selected-bg: #ffd23f33;
+  --selected-bar: #ffd23f;
+  --selected-ring: #ffd23f;
+
+  /* bouton Jouer : reste vert dans tous les thèmes (texte blanc à 4,56:1 au minimum) */
+  --play: linear-gradient(#4a8419, #3d6e13);
+  --play-hover: linear-gradient(#4a8419, #467d16);
+  --play-text: #fff;
+  --play-shadow: #2b4c0e;
+
+  /* bouton d'action principal (hors lancement) */
+  --cta: #ffd23f;
+  --cta-hover: #ffdc66;
+  --cta-text: #0e1729;
+  --cta-shadow: #a88a1f;
+
+  /* bouton Paramètres : icône sombre sur l'accent */
+  --settings-bg: #ffd23f;
+  --settings-bg-hover: #ffdc66;
+  --settings-icon: #0e1729;
+
+  /* bouton rouge « Fermer la fiche » */
+  --close-bg: #ff7a6e;
+  --close-bg-hover: #ff8f85;
+  --close-icon: #0e1729;
+
+  /* favori et menu « Plus d'actions » de la fiche */
+  --fav-on: #ffd23f;
+  --menu-bg: #0e1729;
+  --menu-hover: #22355c;
+
+  /* Big Picture : pied de page et pastilles des boutons de manette */
+  --bp-foot-bg: #0e1729e6;
+  --pad-a: #4a8419;
+  --pad-a-text: #fff;
+  --pad-b: #ff7a6e;
+  --pad-b-text: #0e1729;
+  --pad-x: #ffd23f;
+  --pad-x-text: #0e1729;
+
+  /* badges de plateforme */
+  --badge-fan: #ffd23f;
+  --badge-fan-border: #ffd23f99;
+  --badge-rom: #6fa8f0;
+  --badge-rom-border: #6fa8f099;
+  --badge-overlay: #0e1729e6;
+
+  /* logo (Poké Ball) */
+  --logo-top: #ffd23f;
+  --logo-band: #0e1729;
+  --logo-bottom: #eef3ff;
+
+  /* ombres */
+  --shadow: #000;
+  --shadow-soft: #000a;
+}

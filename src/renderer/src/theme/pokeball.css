@@ -1,0 +1,82 @@
+/*
+ * Thème Poké Ball : fond #141518, panneau #1F2126, surface #2C2F36, texte #F7F7F5,
+ * texte secondaire #BFC3CC, accent rouge, focus #FFFFFF.
+ * Le rouge #FF5C4D de la maquette ne fait que 4,40:1 sur la surface : il passe à #FF6E60
+ * (4,88:1). Contrastes WCAG AA vérifiés dans le README.
+ */
+:root[data-theme='pokeball'] {
+  color-scheme: dark;
+
+  /* fonds */
+  --bg: #141518;
+  --surface: #1f2126;
+  --surface-2: #2c2f36;
+  --border: #767b87;
+  --scrim: #0a0a0ccc;
+
+  /* texte */
+  --text: #f7f7f5;
+  --text-muted: #bfc3cc;
+  --link: #ffffff;
+
+  /* accents */
+  --accent: #ff6e60;
+  --accent-2: #ff6e60;
+  --focus: #ffffff;
+  --danger: #ff9c8f;
+  --selected-bg: #ff5c4d33;
+  --selected-bar: #ff6e60;
+  --selected-ring: #ffffff;
+
+  /* bouton Jouer : reste vert dans tous les thèmes (texte blanc à 4,56:1 au minimum) */
+  --play: linear-gradient(#4a8419, #3d6e13);
+  --play-hover: linear-gradient(#4a8419, #467d16);
+  --play-text: #fff;
+  --play-shadow: #2b4c0e;
+
+  /* bouton d'action principal (hors lancement) */
+  --cta: #ff6e60;
+  --cta-hover: #ff8578;
+  --cta-text: #141518;
+  --cta-shadow: #a8352a;
+
+  /* bouton Paramètres : icône sombre sur l'accent */
+  --settings-bg: #ff6e60;
+  --settings-bg-hover: #ff8578;
+  --settings-icon: #141518;
+
+  /* bouton rouge « Fermer la fiche » */
+  --close-bg: #ff7a6e;
+  --close-bg-hover: #ff8f85;
+  --close-icon: #141518;
+
+  /* favori et menu « Plus d'actions » de la fiche */
+  --fav-on: #ff6e60;
+  --menu-bg: #141518;
+  --menu-hover: #2c2f36;
+
+  /* Big Picture : pied de page et pastilles des boutons de manette */
+  --bp-foot-bg: #141518e6;
+  --pad-a: #4a8419;
+  --pad-a-text: #fff;
+  --pad-b: #ff7a6e;
+  --pad-b-text: #141518;
+  --pad-x: #ffffff;
+  --pad-x-text: #141518;
+
+  /* badges de plateforme */
+  --badge-fan: #ff6e60;
+  --badge-fan-border: #ff6e6099;
+  --badge-rom: #ffffff;
+  --badge-rom-border: #ffffff99;
+  --badge-overlay: #141518e6;
+
+  /* logo (Poké Ball) */
+  --logo-top: #ff5c4d;
+  --logo-band: #141518;
+  --logo-bottom: #ffffff;
+
+  /* ombres */
+  --shadow: #000;
+  --shadow-soft: #000a;
+}
