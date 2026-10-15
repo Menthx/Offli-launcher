@@ -35,6 +35,9 @@ export interface GameStats {
   favorite: boolean
 }
 
+/** Affichage à l'ouverture de l'appli */
+export type StartView = 'library' | 'bigpicture'
+
 export type EmulatorPlatform = Exclude<Platform, 'pc'>
 
 export interface EmulatorConfig {
@@ -45,6 +48,7 @@ export interface EmulatorConfig {
 export interface Settings {
   /** Dossiers de jeux, scannés dans l'ordre */
   libraryPaths: string[]
+  startView: StartView
   emulators: Record<EmulatorPlatform, EmulatorConfig>
   /** Commande utilisée pour lancer Game.exe hors Windows */
   winePath: string
@@ -80,5 +84,9 @@ export interface OffliApi {
   renameGame(id: string, name: string | null): Promise<Game[]>
   launch(id: string): Promise<LaunchResult>
   openFolder(id: string): Promise<void>
+  /** Plein écran de la fenêtre (mode Big Picture) */
+  setFullScreen(on: boolean): Promise<void>
+  /** Raccourci F11 : bascule Bibliothèque / Big Picture */
+  onToggleView(cb: () => void): () => void
   onStatsChanged(cb: (stats: Record<string, GameStats>) => void): () => void
 }

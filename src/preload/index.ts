@@ -15,6 +15,12 @@ const api: OffliApi = {
   renameGame: (id, name) => ipcRenderer.invoke("game:rename", id, name),
   launch: (id) => ipcRenderer.invoke("game:launch", id),
   openFolder: (id) => ipcRenderer.invoke("game:folder", id),
+  setFullScreen: (on) => ipcRenderer.invoke("window:fullscreen", on),
+  onToggleView: (cb) => {
+    const listener = (): void => cb();
+    ipcRenderer.on("view:toggle", listener);
+    return () => ipcRenderer.removeListener("view:toggle", listener);
+  },
   onStatsChanged: (cb) => {
     const listener = (_e: unknown, stats: Record<string, GameStats>): void =>
       cb(stats);

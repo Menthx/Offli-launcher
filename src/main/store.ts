@@ -5,6 +5,7 @@ import type { Game, GameStats, Settings } from '../shared/types'
 
 export const DEFAULT_SETTINGS: Settings = {
   libraryPaths: [],
+  startView: 'library',
   emulators: {
     gb: { path: '' },
     gbc: { path: '' },
@@ -62,9 +63,9 @@ function mergeEmulators(fallback: Settings['emulators'], loaded: unknown): Setti
 }
 
 export function mergeSettings(fallback: Settings, loaded: unknown): Settings {
-  // viewMode (mode Big Picture, retiré) peut encore traîner dans d'anciens fichiers ;
-  // libraryPath (un seul dossier) devient le premier élément de libraryPaths
-  const { viewMode: _legacy, libraryPath, ...l } = (loaded ?? {}) as Partial<Settings> & {
+  // viewMode (ancien nom de startView) et libraryPath (un seul dossier, devenu libraryPaths)
+  // viennent d'anciens fichiers de réglages
+  const { viewMode, libraryPath, ...l } = (loaded ?? {}) as Partial<Settings> & {
     viewMode?: unknown
     libraryPath?: unknown
   }
@@ -77,6 +78,12 @@ export function mergeSettings(fallback: Settings, loaded: unknown): Settings {
     ...fallback,
     ...l,
     libraryPaths: [...paths],
+    startView:
+      l.startView === 'library' || l.startView === 'bigpicture'
+        ? l.startView
+        : viewMode === 'bigpicture'
+          ? 'bigpicture'
+          : fallback.startView,
     emulators: mergeEmulators(fallback.emulators, l.emulators),
     coverOverrides: { ...(l.coverOverrides ?? {}) },
     nameOverrides: { ...(l.nameOverrides ?? {}) }

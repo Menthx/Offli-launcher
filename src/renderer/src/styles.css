@@ -750,6 +750,157 @@ kbd {
   accent-color: var(--accent);
 }
 
+/* Bouton Big Picture du bas de la barre latérale */
+.icon-square {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.icon-square:hover {
+  border-color: var(--text-muted);
+}
+.field-inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+.field select,
+.field-inline select {
+  font: 14px var(--f-body);
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+.badge.fav {
+  color: var(--fav-on);
+  border-color: var(--badge-rom-border);
+}
+
+/* ===== Big Picture ===== */
+.bp {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  background: var(--bg);
+}
+.bp-bg {
+  position: absolute;
+  inset: -40px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(30px) saturate(1.2);
+  opacity: 0.45;
+  transition: background-image 0.3s;
+}
+.bp::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 20%, var(--bg) 90%);
+  z-index: 1;
+}
+.bp > :not(.bp-bg) {
+  position: relative;
+  z-index: 2;
+}
+.bp > .bp-exit {
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  z-index: 3;
+}
+.bp-hero {
+  padding: 0 48px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 900px;
+}
+.bp-hero h2 {
+  font: 800 clamp(36px, 6vw, 72px) / 1 var(--f-display);
+  margin: 0;
+  letter-spacing: -0.02em;
+  text-shadow: 0 4px 20px var(--shadow-soft);
+}
+.bp-last {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+.bp-rail {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  padding: 26px 48px 28px;
+  scrollbar-width: none;
+}
+.tile {
+  flex: none;
+  width: 170px;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.18s;
+}
+.tile .cover {
+  box-shadow: 0 10px 24px -10px var(--shadow);
+}
+.tile.cur {
+  transform: scale(1.1) translateY(-6px);
+}
+/* Le jeu courant porte l'anneau de focus : c'est lui que les flèches et la manette déplacent */
+.tile.cur .cover {
+  box-shadow:
+    0 0 0 3px var(--focus),
+    0 18px 40px -12px var(--shadow);
+}
+.bp-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  justify-content: flex-end;
+  padding: 12px 48px 18px;
+  font-size: 13px;
+  color: var(--text);
+  border-top: 1px solid var(--border);
+  background: var(--bp-foot-bg);
+}
+.pad {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font: 700 11px var(--f-mono);
+  margin-right: 6px;
+}
+.pad.a {
+  color: var(--pad-a-text);
+  background: var(--pad-a);
+}
+.pad.b {
+  color: var(--pad-b-text);
+  background: var(--pad-b);
+}
+.pad.x {
+  color: var(--pad-x-text);
+  background: var(--pad-x);
+}
+
 @media (max-width: 1100px) {
   .lib {
     grid-template-columns: 190px minmax(0, 1fr) 260px;

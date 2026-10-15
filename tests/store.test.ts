@@ -27,9 +27,16 @@ describe('mergeSettings', () => {
     expect(s.libraryPaths).toEqual(['D:\\A', 'E:\\B'])
   })
 
-  it("retire l'ancien réglage viewMode", () => {
+  it("migre l'ancien réglage viewMode vers startView", () => {
     const s = mergeSettings(structuredClone(DEFAULT_SETTINGS), { viewMode: 'bigpicture' })
+    expect(s.startView).toBe('bigpicture')
     expect('viewMode' in s).toBe(false)
+    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { viewMode: 'library' }).startView).toBe('library')
+  })
+
+  it('garde startView et ignore une valeur inconnue', () => {
+    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { startView: 'bigpicture' }).startView).toBe('bigpicture')
+    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { startView: 'grille' }).startView).toBe('library')
   })
 })
 

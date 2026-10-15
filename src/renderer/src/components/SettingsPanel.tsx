@@ -109,6 +109,23 @@ export function SettingsPanel({
         </section>
 
         <section>
+          <h4>Affichage</h4>
+          <div className="field field-inline">
+            <label htmlFor="set-start">Ouvrir au démarrage</label>
+            <select
+              id="set-start"
+              value={settings.startView}
+              onChange={(e) =>
+                onSave({ startView: e.target.value as Settings["startView"] })
+              }
+            >
+              <option value="library">Bibliothèque</option>
+              <option value="bigpicture">Big Picture</option>
+            </select>
+          </div>
+        </section>
+
+        <section>
           <h4>Émulateurs</h4>
           <p className="muted">
             Laisser vide pour utiliser l'application par défaut.

@@ -146,6 +146,7 @@ app.whenReady().then(() => {
     pushStats()
     return { ok: true }
   })
+  ipcMain.handle('window:fullscreen', (_e, on: boolean) => win?.setFullScreen(!!on))
   ipcMain.handle('game:folder', (_e, id: string) => {
     const game = findGame(id)
     if (game) shell.showItemInFolder(game.path)
@@ -174,6 +175,14 @@ function createWindow(): void {
   })
   win.on('closed', () => (win = null))
   // En développement : F12 (ou Ctrl+Maj+I, Cmd+Opt+I) ouvre et ferme les outils de développement
+  // F11 bascule Bibliothèque / Big Picture. Intercepté ici, sinon le menu par défaut
+  // d'Electron le prend pour son propre plein écran et la page ne le reçoit jamais.
+  win.webContents.on('before-input-event', (event, input) => {
+    if (input.type === 'keyDown' && input.key === 'F11') {
+      event.preventDefault()
+      win?.webContents.send('view:toggle')
+    }
+  })
   if (!app.isPackaged) {
     win.webContents.on('before-input-event', (event, input) => {
       if (input.type !== 'keyDown') return

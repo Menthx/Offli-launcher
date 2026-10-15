@@ -59,6 +59,15 @@
   --menu-bg: #0d2e2c;
   --menu-hover: #18534f;
 
+  /* Big Picture : pied de page et pastilles des boutons de manette */
+  --bp-foot-bg: #0d2e2ce6;
+  --pad-a: #4a8419;
+  --pad-a-text: #fff;
+  --pad-b: #ff7a6e;
+  --pad-b-text: #0d2e2c;
+  --pad-x: #feeaa1;
+  --pad-x-text: #0d2e2c;
+
   /* badges de plateforme */
   --badge-fan: #d6955b;
   --badge-fan-border: #d6955b99;

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Game, GameStats, Settings } from "../../shared/types";
+import type { Game, GameStats, Settings, StartView } from "../../shared/types";
 import { forgetCover } from "./components/Cover";
 import { SettingsPanel } from "./components/SettingsPanel";
+import { BigPictureView } from "./views/BigPictureView";
 import { LibraryView } from "./views/LibraryView";
 
 export interface Toast {
@@ -26,6 +27,7 @@ export function App(): React.JSX.Element {
   const [scanning, setScanning] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [toast, setToast] = useState<Toast | null>(null);
+  const [view, setView] = useState<StartView>("library");
   const toastTimer = useRef<number>(undefined);
 
   const notify = useCallback((t: Toast) => {
@@ -56,6 +58,7 @@ export function App(): React.JSX.Element {
         window.offli.getStats(),
       ]);
       setSettings(s);
+      setView(s.startView);
       setGames(cached);
       setStats(st);
       // L'index en cache s'affiche tout de suite, le scan le rafraîchit ensuite
@@ -63,6 +66,20 @@ export function App(): React.JSX.Element {
     })();
     return window.offli.onStatsChanged((s) => setStats({ ...s }));
   }, [rescan]);
+
+  // Big Picture passe la fenêtre en plein écran, la bibliothèque en sort
+  useEffect(() => {
+    void window.offli.setFullScreen(view === "bigpicture");
+  }, [view]);
+
+  // F11 (intercepté par le process principal) bascule entre Bibliothèque et Big Picture
+  useEffect(
+    () =>
+      window.offli.onToggleView(() =>
+        setView((v) => (v === "bigpicture" ? "library" : "bigpicture")),
+      ),
+    [],
+  );
 
   const save = async (patch: Partial<Settings>): Promise<void> => {
     const next = await window.offli.saveSettings(patch);
@@ -131,11 +148,14 @@ export function App(): React.JSX.Element {
             Choisir le dossier
           </button>
         </div>
+      ) : view === "bigpicture" ? (
+        <BigPictureView {...props} onExit={() => setView("library")} />
       ) : (
         <LibraryView
           {...props}
           scanning={scanning}
           onOpenSettings={() => setShowSettings(true)}
+          onBigPicture={() => setView("bigpicture")}
           customCovers={settings.coverOverrides}
           onCoverChanged={(id) => void coverChanged(id)}
           onRename={rename}

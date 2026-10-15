@@ -77,6 +77,7 @@ function matches(f: Filter, g: Game, s: GameStats | undefined): boolean {
 interface Props extends ViewProps {
   scanning: boolean;
   onOpenSettings(): void;
+  onBigPicture(): void;
   /** Images choisies par l'utilisateur, par id de jeu */
   customCovers: Record<string, string>;
   onCoverChanged(id: string): void;
@@ -327,6 +328,28 @@ export function LibraryView(p: Props): React.JSX.Element {
           ))}
         </nav>
         <div className="side-foot">
+          <button
+            className="icon-square"
+            onClick={p.onBigPicture}
+            aria-label="Big Picture (F11)"
+            title="Big Picture (F11)"
+          >
+            {/* Écran et manette */}
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="2" y="3" width="20" height="13" rx="2" />
+              <path d="M8 21h8M12 16v5" />
+            </svg>
+          </button>
           <button
             className="settings-btn"
             onClick={p.onOpenSettings}
