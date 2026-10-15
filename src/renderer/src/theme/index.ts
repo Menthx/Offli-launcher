@@ -1,8 +1,12 @@
-import './offli.css'
+import type { Theme } from '../../../shared/types'
+import './console.css'
+import './emeraude.css'
 
-/** Thèmes disponibles : chacun est un fichier CSS de ce dossier */
-export const THEMES = ['offli'] as const
-export type Theme = (typeof THEMES)[number]
+/** Thèmes disponibles (un fichier CSS chacun dans ce dossier), avec leur nom affiché */
+export const THEMES: { id: Theme; label: string }[] = [
+  { id: 'console', label: 'Console' },
+  { id: 'emeraude', label: 'Émeraude' }
+]
 
 /** Applique un thème à toute l'interface */
 export function applyTheme(theme: Theme): void {

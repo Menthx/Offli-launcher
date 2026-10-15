@@ -1,14 +1,9 @@
 /*
- * Thème Offli : toutes les couleurs de l'interface.
- * Un nouveau thème = un nouveau fichier qui redéfinit ces variables sous
- * :root[data-theme="<nom>"], importé dans theme/index.ts.
- *
+ * Thème Émeraude (Paramètres > Affichage > Thème).
  * Palette : #18534F (sarcelle profond), #226D68 (sarcelle), #ECF8F6 (blanc menthe),
- * #FEEAA1 (jaune pâle), #D6955B (orange). Contrastes WCAG AA vérifiés : texte ≥ 4,5:1,
- * composants d'interface ≥ 3:1 (détail dans le README).
+ * #FEEAA1 (jaune pâle), #D6955B (orange). Contrastes WCAG AA vérifiés dans le README.
  */
-:root,
-:root[data-theme='offli'] {
+:root[data-theme='emeraude'] {
   color-scheme: dark;
 
   /* fonds */

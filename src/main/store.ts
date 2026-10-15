@@ -6,6 +6,7 @@ import type { Game, GameStats, Settings } from '../shared/types'
 export const DEFAULT_SETTINGS: Settings = {
   libraryPaths: [],
   startView: 'library',
+  theme: 'console',
   emulators: {
     gb: { path: '' },
     gbc: { path: '' },
@@ -84,6 +85,7 @@ export function mergeSettings(fallback: Settings, loaded: unknown): Settings {
         : viewMode === 'bigpicture'
           ? 'bigpicture'
           : fallback.startView,
+    theme: l.theme === 'console' || l.theme === 'emeraude' ? l.theme : fallback.theme,
     emulators: mergeEmulators(fallback.emulators, l.emulators),
     coverOverrides: { ...(l.coverOverrides ?? {}) },
     nameOverrides: { ...(l.nameOverrides ?? {}) }

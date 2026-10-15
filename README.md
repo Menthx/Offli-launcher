@@ -43,7 +43,33 @@ Sans image, la carte reste vide avec le nom du jeu.
 
 Toutes les couleurs sont dans `src/renderer/src/theme/` : un fichier par thème, qui définit des variables sémantiques (`--bg`, `--surface`, `--text`, `--accent`, `--play`, `--focus`…). Pour ajouter un thème, il suffit d'ajouter un fichier sous `:root[data-theme="<nom>"]` et de l'importer dans `theme/index.ts`.
 
-Le thème Offli utilise la palette #18534F, #226D68, #ECF8F6, #FEEAA1 et #D6955B. Contrastes vérifiés (WCAG AA : 4,5:1 pour le texte, 3:1 pour les composants et le texte large) :
+Deux thèmes, au choix dans Paramètres > Affichage > Thème : **Console** (par défaut, `theme/console.css`) et **Émeraude** (`theme/emeraude.css`). Le bouton JOUER reste vert dans les deux. Contrastes vérifiés (WCAG AA : 4,5:1 pour le texte, 3:1 pour les composants et le texte large).
+
+### Console
+
+Palette #16122B, #241D47, #342A66, #F2EFFF, #C3BBEA, #FFCB05 et #9FB4FF.
+
+| Premier plan | Fond | Usage | Ratio |
+| --- | --- | --- | --- |
+| #F2EFFF texte | #16122B fond / #241D47 panneau / #342A66 surface | texte | 16,07 / 13,84 / 11,12 |
+| #F2EFFF texte | filtre actif (#FFCB05 à 20 % sur #241D47) | barre latérale | 8,79 |
+| #C3BBEA texte secondaire | #16122B / #241D47 / #342A66 | compteurs, métadonnées | 10,05 / 8,66 / 6,96 |
+| #C3BBEA texte secondaire | filtre actif | compteur du filtre actif | 5,50 |
+| #FFCB05 accent | #16122B / #241D47 / #342A66 | titres de section, badges fangame, étoile favori | 11,94 / 10,28 / 8,27 |
+| #9FB4FF liens, focus | #16122B / #241D47 / #342A66 | liens, anneau de focus, badges ROM | 9,04 / 7,79 / 6,26 |
+| #7D71C2 bordures | #241D47 / #16122B | contour des champs et menus | 3,74 / 4,34 |
+| #FFCB05 barre du filtre actif | #241D47 | indicateur | 10,28 |
+| #FFFFFF texte du bouton Jouer | dégradé #4A8419 → #3D6E13 | JOUER | 4,56 → 6,11 |
+| #16122B texte et icône | #FFCB05 (survol #FFD63D) | « Choisir le dossier », bouton Paramètres | 11,94 / 12,93 |
+| #FF7A6E bouton « Fermer la fiche » | #241D47 | contour du bouton | 6,16 |
+| #16122B croix | #FF7A6E | icône du bouton | 7,15 |
+| #FF9C8F erreur | #342A66 | bordure du message d'erreur | 6,23 |
+
+La maquette proposait #6E62B0 pour les bordures : 3,01:1 sur le panneau, trop juste, d'où #7D71C2.
+
+### Émeraude
+
+Palette #18534F, #226D68, #ECF8F6, #FEEAA1 et #D6955B.
 
 | Premier plan | Fond | Usage | Ratio |
 | --- | --- | --- | --- |

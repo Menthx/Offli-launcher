@@ -35,6 +35,9 @@ export interface GameStats {
   favorite: boolean
 }
 
+/** Thème de couleurs (un fichier dans src/renderer/src/theme) */
+export type Theme = 'console' | 'emeraude'
+
 /** Affichage à l'ouverture de l'appli */
 export type StartView = 'library' | 'bigpicture'
 
@@ -49,6 +52,7 @@ export interface Settings {
   /** Dossiers de jeux, scannés dans l'ordre */
   libraryPaths: string[]
   startView: StartView
+  theme: Theme
   emulators: Record<EmulatorPlatform, EmulatorConfig>
   /** Commande utilisée pour lancer Game.exe hors Windows */
   winePath: string

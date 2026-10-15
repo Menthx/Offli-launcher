@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { EmulatorPlatform, Settings } from "../../../shared/types";
+import { THEMES } from "../theme";
 
 const EMULATORS: { id: EmulatorPlatform; label: string; hint: string }[] = [
   { id: "gba", label: "Game Boy Advance", hint: "mGBA conseillé" },
@@ -110,6 +111,22 @@ export function SettingsPanel({
 
         <section>
           <h4>Affichage</h4>
+          <div className="field field-inline">
+            <label htmlFor="set-theme">Thème</label>
+            <select
+              id="set-theme"
+              value={settings.theme}
+              onChange={(e) =>
+                onSave({ theme: e.target.value as Settings["theme"] })
+              }
+            >
+              {THEMES.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="field field-inline">
             <label htmlFor="set-start">Ouvrir au démarrage</label>
             <select

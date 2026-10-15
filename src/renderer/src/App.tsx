@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Game, GameStats, Settings, StartView } from "../../shared/types";
 import { forgetCover } from "./components/Cover";
 import { SettingsPanel } from "./components/SettingsPanel";
+import { applyTheme } from "./theme";
 import { BigPictureView } from "./views/BigPictureView";
 import { LibraryView } from "./views/LibraryView";
 
@@ -66,6 +67,11 @@ export function App(): React.JSX.Element {
     })();
     return window.offli.onStatsChanged((s) => setStats({ ...s }));
   }, [rescan]);
+
+  // Thème choisi dans les paramètres (Console par défaut)
+  useEffect(() => {
+    if (settings) applyTheme(settings.theme);
+  }, [settings?.theme]);
 
   // Big Picture passe la fenêtre en plein écran, la bibliothèque en sort
   useEffect(() => {

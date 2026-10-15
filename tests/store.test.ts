@@ -34,6 +34,12 @@ describe('mergeSettings', () => {
     expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { viewMode: 'library' }).startView).toBe('library')
   })
 
+  it('prend le thème Console par défaut et garde un thème connu', () => {
+    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), {}).theme).toBe('console')
+    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { theme: 'emeraude' }).theme).toBe('emeraude')
+    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { theme: 'offli' }).theme).toBe('console')
+  })
+
   it('garde startView et ignore une valeur inconnue', () => {
     expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { startView: 'bigpicture' }).startView).toBe('bigpicture')
     expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { startView: 'grille' }).startView).toBe('library')

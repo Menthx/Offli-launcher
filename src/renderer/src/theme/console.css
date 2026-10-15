@@ -1,0 +1,87 @@
+/*
+ * Thème Console (thème par défaut) : toutes les couleurs de l'interface.
+ * Un nouveau thème = un nouveau fichier qui redéfinit ces variables sous
+ * :root[data-theme="<nom>"], importé dans theme/index.ts.
+ *
+ * Palette indigo : fond #16122B, panneau #241D47, surface #342A66, texte #F2EFFF,
+ * texte secondaire #C3BBEA, accent jaune #FFCB05, focus et liens #9FB4FF.
+ * Contrastes WCAG AA vérifiés : texte ≥ 4,5:1, composants ≥ 3:1 (détail dans le README).
+ */
+:root,
+:root[data-theme='console'] {
+  color-scheme: dark;
+
+  /* fonds */
+  --bg: #16122b;
+  --surface: #241d47;
+  --surface-2: #342a66;
+  /* #6E62B0 de la maquette ne donne que 3,01:1 sur le panneau : un cran plus clair */
+  --border: #7d71c2;
+  --scrim: #0b0916cc;
+
+  /* texte */
+  --text: #f2efff;
+  --text-muted: #c3bbea;
+  --link: #9fb4ff;
+
+  /* accents */
+  --accent: #ffcb05;
+  --accent-2: #ffcb05;
+  --focus: #9fb4ff;
+  --danger: #ff9c8f;
+  --selected-bg: #ffcb0533;
+  --selected-bar: #ffcb05;
+  --selected-ring: #ffcb05;
+
+  /* bouton Jouer : reste vert dans tous les thèmes (texte blanc à 4,56:1 au minimum) */
+  --play: linear-gradient(#4a8419, #3d6e13);
+  --play-hover: linear-gradient(#4a8419, #467d16);
+  --play-text: #fff;
+  --play-shadow: #2b4c0e;
+
+  /* bouton d'action principal (hors lancement) */
+  --cta: #ffcb05;
+  --cta-hover: #ffd63d;
+  --cta-text: #16122b;
+  --cta-shadow: #a88400;
+
+  /* bouton Paramètres : icône #16122B sur jaune */
+  --settings-bg: #ffcb05;
+  --settings-bg-hover: #ffd63d;
+  --settings-icon: #16122b;
+
+  /* bouton rouge « Fermer la fiche » : 6,16:1 sur le panneau, croix à 7,15:1 */
+  --close-bg: #ff7a6e;
+  --close-bg-hover: #ff8f85;
+  --close-icon: #16122b;
+
+  /* favori et menu « Plus d'actions » de la fiche */
+  --fav-on: #ffcb05;
+  --menu-bg: #16122b;
+  --menu-hover: #342a66;
+
+  /* Big Picture : pied de page et pastilles des boutons de manette */
+  --bp-foot-bg: #16122be6;
+  --pad-a: #4a8419;
+  --pad-a-text: #fff;
+  --pad-b: #ff7a6e;
+  --pad-b-text: #16122b;
+  --pad-x: #ffcb05;
+  --pad-x-text: #16122b;
+
+  /* badges de plateforme */
+  --badge-fan: #ffcb05;
+  --badge-fan-border: #ffcb0599;
+  --badge-rom: #9fb4ff;
+  --badge-rom-border: #9fb4ff99;
+  --badge-overlay: #16122be6;
+
+  /* logo (Poké Ball) */
+  --logo-top: #ff7a6e;
+  --logo-band: #f2efff;
+  --logo-bottom: #fff;
+
+  /* ombres */
+  --shadow: #000;
+  --shadow-soft: #000a;
+}
