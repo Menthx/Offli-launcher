@@ -366,6 +366,7 @@ export function LibraryView(p: Props): React.JSX.Element {
         </span>
         <label
           className="searchbar"
+          data-tour="sidebar"
           title="Ctrl+K pour chercher, Entrée lance le premier jeu, Échap vide la recherche"
         >
           <svg
@@ -391,7 +392,7 @@ export function LibraryView(p: Props): React.JSX.Element {
             onKeyDown={onSearchKey}
           />
         </label>
-        <nav className="side-filters" aria-label="Filtres">
+        <nav className="side-filters" aria-label="Filtres" data-tour="sidebar">
           {FILTERS.map((f) => (
             <div key={f.id} className="side-item">
               {f.group && <h4>{f.group}</h4>}
@@ -436,6 +437,7 @@ export function LibraryView(p: Props): React.JSX.Element {
           </button>
           <button
             className="settings-btn"
+            data-tour="settings"
             onClick={p.onOpenSettings}
             aria-label="Paramètres"
             title="Paramètres"
@@ -540,7 +542,7 @@ export function LibraryView(p: Props): React.JSX.Element {
             </button>
             <Cover game={sel} wide />
             <NameEditor game={sel} onRename={p.onRename} />
-            <div className="play-row">
+            <div className="play-row" data-tour="detail-actions">
               <button className="play" onClick={() => p.onLaunch(target!)}>
                 <svg
                   width="16"
@@ -589,7 +591,7 @@ export function LibraryView(p: Props): React.JSX.Element {
                 ]}
               />
             </div>
-            <dl className="facts">
+            <dl className="facts" data-tour="detail-actions">
               {sel.versions && (
                 <>
                   <dt>

@@ -98,6 +98,20 @@
   }
 }
 
+/* Apparition des fenêtres et bulles du tutoriel */
+@keyframes tour-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes tour-in-centered {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 8px));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   /* Pas de rotation : l'anneau reste fixe, le texte « Scan… » suffit */
   .spinner {

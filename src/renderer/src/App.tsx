@@ -2,7 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Game, GameStats, Settings, StartView } from "../../shared/types";
 import { forgetCover } from "./components/Cover";
 import { SettingsPanel } from "./components/SettingsPanel";
+import { Tour } from "./components/Tour";
 import { applyTheme } from "./theme";
+import { shouldAutoStartTour } from "./tour";
 import { animateSelection } from "./viewTransition";
 import { BigPictureView } from "./views/BigPictureView";
 import { LibraryView } from "./views/LibraryView";
@@ -28,6 +30,9 @@ export function App(): React.JSX.Element {
   const [selectedId, setSelectedId] = useState<string>();
   const [scanning, setScanning] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  // Tutoriel : ouvert seul au premier lancement (une fois par session au plus), ou depuis les paramètres
+  const [tourOpen, setTourOpen] = useState(false);
+  const tourAutoChecked = useRef(false);
   const [toast, setToast] = useState<Toast | null>(null);
   const [view, setView] = useState<StartView>("library");
   const toastTimer = useRef<number>(undefined);
@@ -125,6 +130,12 @@ export function App(): React.JSX.Element {
     setStats((prev) => ({ ...prev, [game.id]: s }));
   };
 
+  useEffect(() => {
+    if (!settings || tourAutoChecked.current || !shouldAutoStartTour(settings)) return;
+    tourAutoChecked.current = true;
+    setTourOpen(true);
+  }, [settings]);
+
   if (!settings) return <div className="boot" />;
 
   // Aucun jeu sélectionné par défaut : la fiche n'apparaît qu'après un clic
@@ -179,7 +190,27 @@ export function App(): React.JSX.Element {
           onSave={save}
           scanning={scanning}
           onScan={rescan}
+          onReplayTour={() => {
+            setShowSettings(false);
+            setView("library");
+            setTourOpen(true);
+          }}
           onClose={() => setShowSettings(false)}
+        />
+      )}
+      {tourOpen && settings.libraryPaths.length > 0 && view === "library" && (
+        <Tour
+          settings={settings}
+          games={games}
+          scanning={scanning}
+          selectedId={selected?.id}
+          onSelect={props.onSelect}
+          onSave={save}
+          onClose={() => {
+            setTourOpen(false);
+            // Terminé ou passé : le tutoriel ne s'ouvrira plus tout seul
+            if (!settings.tutorialDone) void save({ tutorialDone: true });
+          }}
         />
       )}
       <div

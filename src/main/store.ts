@@ -7,6 +7,7 @@ export const DEFAULT_SETTINGS: Settings = {
   libraryPaths: [],
   startView: 'library',
   bigPictureFullscreen: false,
+  tutorialDone: false,
   theme: 'console',
   emulators: {
     gb: { path: '' },
@@ -87,6 +88,7 @@ export function mergeSettings(fallback: Settings, loaded: unknown): Settings {
           ? 'bigpicture'
           : fallback.startView,
     bigPictureFullscreen: typeof l.bigPictureFullscreen === 'boolean' ? l.bigPictureFullscreen : fallback.bigPictureFullscreen,
+    tutorialDone: typeof l.tutorialDone === 'boolean' ? l.tutorialDone : fallback.tutorialDone,
     theme: (['console', 'electrique', 'pokeball', 'emeraude'] as const).includes(l.theme as Settings['theme'])
       ? (l.theme as Settings['theme'])
       : fallback.theme,

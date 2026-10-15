@@ -30,6 +30,8 @@ interface Props {
   onSave(patch: Partial<Settings>): Promise<void>;
   scanning: boolean;
   onScan(): unknown;
+  /** Ferme les paramètres et relance le tutoriel */
+  onReplayTour(): void;
   onClose(): void;
 }
 
@@ -75,6 +77,7 @@ export function SettingsPanel({
   onSave,
   scanning,
   onScan,
+  onReplayTour,
   onClose,
 }: Props): React.JSX.Element {
   const [tab, setTabState] = useState<Tab>(lastTab);
@@ -273,6 +276,11 @@ export function SettingsPanel({
               >
                 Plein écran en Big Picture
               </Switch>
+
+              <h4>Tutoriel</h4>
+              <button className="ghost" style={{ width: "fit-content" }} onClick={onReplayTour}>
+                Revoir le tutoriel
+              </button>
             </section>
           )}
 

@@ -54,6 +54,8 @@ export interface Settings {
   startView: StartView
   /** Passer la fenêtre en plein écran en entrant en Big Picture */
   bigPictureFullscreen: boolean
+  /** Tutoriel du premier lancement terminé ou passé */
+  tutorialDone: boolean
   theme: Theme
   emulators: Record<EmulatorPlatform, EmulatorConfig>
   /** Commande utilisée pour lancer Game.exe hors Windows */
