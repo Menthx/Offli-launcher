@@ -953,6 +953,204 @@ kbd {
   background: var(--pad-x);
 }
 
+/* ===== Paramètres en onglets ===== */
+/* Taille fixe : changer d'onglet ne redimensionne pas la fenêtre, le contenu défile */
+.modal.settings {
+  height: min(620px, 88vh);
+  overflow: hidden;
+  gap: 0;
+  padding: 0;
+}
+.modal.settings .modal-head {
+  padding: 18px 22px 10px;
+}
+.round-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.round-close:hover {
+  border-color: var(--text-muted);
+}
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 22px;
+  border-bottom: 1px solid var(--border);
+}
+.tab {
+  font: 700 14px var(--f-body);
+  color: var(--text-muted);
+  background: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  padding: 10px 12px 9px;
+  cursor: pointer;
+}
+.tab:hover {
+  color: var(--text);
+}
+.tab.on {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.tab-panel {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px 22px 22px;
+}
+.tab-panel section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.theme-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.theme-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  font: 700 14px var(--f-body);
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.theme-card.on {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.swatches {
+  display: flex;
+  gap: 6px;
+}
+.swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+}
+.segmented {
+  display: inline-flex;
+  width: fit-content;
+  padding: 3px;
+  gap: 3px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+.segmented button {
+  font: 700 14px var(--f-body);
+  color: var(--text);
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.segmented button.on {
+  color: var(--cta-text);
+  background: var(--accent);
+}
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.switch-label {
+  font-size: 14px;
+}
+.switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex: none;
+  padding: 0;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.switch-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: transform 0.15s;
+}
+.switch.on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.switch.on .switch-knob {
+  background: var(--bg);
+  transform: translateX(20px);
+}
+.emu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.emu-row {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) 30px 30px;
+  align-items: center;
+  gap: 8px;
+}
+.emu-row:last-child input {
+  grid-column: 2 / -1;
+}
+.emu-name {
+  display: flex;
+  flex-direction: column;
+  font: 700 14px var(--f-body);
+}
+.emu-name .muted {
+  font-weight: 400;
+  font-size: 12.5px;
+}
+.emu-row input {
+  min-width: 0;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font: 13px var(--f-mono);
+  padding: 7px 10px;
+}
+/* Texte indicatif lisible (couleur du texte secondaire, AA dans tous les thèmes) */
+input::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+.icon-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 @media (max-width: 1100px) {
   .lib {
     grid-template-columns: 190px minmax(0, 1fr) 260px;
