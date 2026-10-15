@@ -4,6 +4,7 @@ import type { ViewProps } from "../App";
 import { Cover } from "../components/Cover";
 import { GameActions } from "../components/GameActions";
 import { SgdbPicker } from "../components/SgdbPicker";
+import { UpdateButton } from "../components/UpdateButton";
 import { steamGridDbAction } from "../menuActions";
 import { animate } from "../viewTransition";
 
@@ -439,6 +440,7 @@ export function LibraryView(p: Props): React.JSX.Element {
               <path d="M8 21h8M12 16v5" />
             </svg>
           </button>
+          <UpdateButton />
           <button
             className="settings-btn"
             data-tour="settings"

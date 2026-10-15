@@ -160,3 +160,8 @@ Les paquets dépréciés tirés indirectement par `electron-builder` sont rempla
 - `@electron/asar` 4 (au lieu de 3, qui tirait `glob` 7 et `inflight`) ;
 - `@electron/get` 5 (au lieu de 3, qui tirait `global-agent` et `boolean`) ;
 - `rimraf` 2 (utilisé par `temp`) est remplacé par `tools/shims/rimraf`, une petite implémentation basée sur `fs.rm` natif.
+- `lodash.isequal` (utilisé par `electron-updater`) est remplacé par `tools/shims/lodash.isequal`, basé sur `util.isDeepStrictEqual` natif.
+
+## Mises à jour
+
+`electron-updater` lit les releases GitHub **publiées** (pas les brouillons ni les préversions) grâce aux fichiers `latest*.yml` produits par `release.yml`. L'appli vérifie une fois au démarrage (version empaquetée seulement) ; télécharger et installer demandent un clic. Installation automatique : installeur Windows et AppImage. Windows portable, `.deb` et macOS (non signé) : la nouvelle version est signalée et le bouton ouvre la page de la release. Une version qui n'embarque pas encore l'updater (0.2.0 et avant) ne peut pas se mettre à jour seule.

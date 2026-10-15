@@ -12,5 +12,5 @@
     "skipLibCheck": true,
     "resolveJsonModule": true
   },
-  "include": ["electron.vite.config.ts", "vitest.config.mts", "src/main/**/*", "src/preload/**/*", "src/shared/**/*", "src/renderer/src/menuActions.ts", "src/renderer/src/minDuration.ts", "src/renderer/src/tour.ts", "src/renderer/src/hiddenGames.ts", "src/renderer/src/folders.ts", "tests/**/*"]
+  "include": ["electron.vite.config.ts", "vitest.config.mts", "src/main/**/*", "src/preload/**/*", "src/shared/**/*", "src/renderer/src/menuActions.ts", "src/renderer/src/minDuration.ts", "src/renderer/src/tour.ts", "src/renderer/src/hiddenGames.ts", "src/renderer/src/folders.ts", "src/renderer/src/updateUi.ts", "tests/**/*"]
 }

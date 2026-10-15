@@ -24,6 +24,16 @@ const api: OffliApi = {
     ipcRenderer.on("view:toggle", listener);
     return () => ipcRenderer.removeListener("view:toggle", listener);
   },
+  updateState: () => ipcRenderer.invoke("update:state"),
+  updateCheck: () => ipcRenderer.invoke("update:check"),
+  updateDownload: () => ipcRenderer.invoke("update:download"),
+  updateInstall: () => ipcRenderer.invoke("update:install"),
+  updateOpenPage: () => ipcRenderer.invoke("update:open-page"),
+  onUpdateStatus: (cb) => {
+    const listener = (_e: unknown, status: Parameters<typeof cb>[0]): void => cb(status);
+    ipcRenderer.on("update:status", listener);
+    return () => ipcRenderer.removeListener("update:status", listener);
+  },
   onStatsChanged: (cb) => {
     const listener = (_e: unknown, stats: Record<string, GameStats>): void =>
       cb(stats);

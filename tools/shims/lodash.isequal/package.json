@@ -1,0 +1,8 @@
+{
+  "name": "lodash.isequal",
+  "version": "4.5.1-offli.0",
+  "description": "Remplaçant de lodash.isequal (déprécié) basé sur util.isDeepStrictEqual natif (utilisé par electron-updater)",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true
+}

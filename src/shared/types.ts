@@ -85,6 +85,21 @@ export interface SgdbImage {
   height: number
 }
 
+/**
+ * État des mises à jour, envoyé par le process principal.
+ * « unsupported » : installation automatique impossible ici (dev, Windows portable, .deb, macOS
+ * non signé) ; avec une version, une mise à jour existe et s'installe depuis la page GitHub.
+ */
+export type UpdateStatus =
+  | { state: 'idle' }
+  | { state: 'checking' }
+  | { state: 'available'; version: string }
+  | { state: 'not-available' }
+  | { state: 'downloading'; percent: number }
+  | { state: 'downloaded'; version: string }
+  | { state: 'error'; message: string }
+  | { state: 'unsupported'; reason: 'dev' | 'portable' | 'deb' | 'mac'; version?: string }
+
 export interface LaunchResult {
   ok: boolean
   error?: string
@@ -111,6 +126,15 @@ export interface OffliApi {
   setFullScreen(on: boolean): Promise<void>
   /** Raccourci F11 : bascule Bibliothèque / Big Picture */
   onToggleView(cb: () => void): () => void
+  /** Mises à jour : état courant et version installée */
+  updateState(): Promise<{ status: UpdateStatus; version: string }>
+  updateCheck(): Promise<void>
+  updateDownload(): Promise<void>
+  /** Redémarre et installe la mise à jour téléchargée (seulement après un clic) */
+  updateInstall(): Promise<void>
+  /** Ouvre la page GitHub de la dernière version */
+  updateOpenPage(): Promise<void>
+  onUpdateStatus(cb: (status: UpdateStatus) => void): () => void
   sgdbSearch(term: string): Promise<SgdbResult<{ id: number; name: string; year?: number }[]>>
   sgdbGrids(gameId: number, page: number): Promise<SgdbResult<{ images: SgdbImage[]; hasMore: boolean }>>
   /** Télécharge l'image choisie et l'enregistre comme image du jeu */

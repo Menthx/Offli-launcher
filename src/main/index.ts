@@ -7,6 +7,7 @@ import { CoverResolver } from './covers'
 import type { HashCache } from './baseRoms'
 import { buildCommand, resolveAssociation, runCommand } from './launcher'
 import { scanLibrary } from './scanner'
+import { setupUpdater } from './updater'
 import { SgdbError, type SgdbGrid, SteamGridDb } from './steamgriddb'
 import { DEFAULT_SETTINGS, JsonFile, applyNames, emptyStats, mergeSettings } from './store'
 
@@ -228,6 +229,8 @@ app.whenReady().then(() => {
   })
 
   createWindow()
+  // Mises à jour : vérification au démarrage (appli empaquetée), le reste au clic du joueur
+  setupUpdater((status) => win?.webContents.send('update:status', status))
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })

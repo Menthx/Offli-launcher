@@ -1491,6 +1491,79 @@ input::placeholder {
   color: var(--text-muted);
 }
 
+/* Bouton de mise à jour (barre latérale) */
+.update-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.update-btn {
+  position: relative;
+}
+.update-btn:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.update-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+}
+.update-badge.accent {
+  background: var(--accent);
+}
+.update-badge.play {
+  background: var(--pad-a);
+}
+.update-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  stroke: var(--accent);
+}
+.update-message {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.update-confirm {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  z-index: 20;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 16px 32px -8px var(--shadow);
+}
+.update-confirm p {
+  margin: 0;
+  font-weight: 700;
+  font-size: 14px;
+}
+.update-confirm .row-actions {
+  justify-content: flex-end;
+}
+.update-confirm .cta {
+  padding: 7px 14px;
+  font-size: 14px;
+  box-shadow: 0 3px 0 -1px var(--cta-shadow);
+}
+
 @media (max-width: 1100px) {
   .lib {
     grid-template-columns: 190px minmax(0, 1fr) 260px;

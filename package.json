@@ -43,6 +43,8 @@
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",
     "@fontsource/atkinson-hyperlegible": "^5.3.0",
     "@fontsource/jetbrains-mono": "^5.3.0",
+    "electron-updater": "^6.8.9",
+    "lodash.isequal": "file:./tools/shims/lodash.isequal",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
@@ -51,6 +53,7 @@
     "@electron/get": "^5.1.0",
     "temp": {
       "rimraf": "$rimraf"
-    }
+    },
+    "lodash.isequal": "$lodash.isequal"
   }
 }
