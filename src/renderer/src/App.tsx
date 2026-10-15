@@ -88,6 +88,12 @@ export function App(): React.JSX.Element {
     if (settings?.useSteamGridDb) forgetCover(game.id);
   };
 
+  // Image changée ou réinitialisée : on relit les réglages (coverOverrides) et on oublie l'ancienne jaquette
+  const coverChanged = async (id: string): Promise<void> => {
+    forgetCover(id);
+    setSettings(await window.offli.getSettings());
+  };
+
   const favorite = async (game: Game): Promise<void> => {
     const s = await window.offli.toggleFavorite(game.id);
     setStats((prev) => ({ ...prev, [game.id]: s }));
@@ -129,7 +135,8 @@ export function App(): React.JSX.Element {
           {...props}
           scanning={scanning}
           onOpenSettings={() => setShowSettings(true)}
-          onCoverChanged={(id) => forgetCover(id)}
+          customCovers={settings.coverOverrides}
+          onCoverChanged={(id) => void coverChanged(id)}
           onRename={rename}
         />
       )}

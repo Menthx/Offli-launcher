@@ -63,6 +63,8 @@ function matches(f: Filter, g: Game, s: GameStats | undefined): boolean {
 interface Props extends ViewProps {
   scanning: boolean;
   onOpenSettings(): void;
+  /** Images choisies par l'utilisateur, par id de jeu */
+  customCovers: Record<string, string>;
   onCoverChanged(id: string): void;
   onRename(game: Game, name: string | null): void;
 }
@@ -464,15 +466,17 @@ export function LibraryView(p: Props): React.JSX.Element {
               >
                 Changer l'image
               </button>
-              <button
-                className="ghost"
-                onClick={async () => {
-                  await window.offli.setCover(sel.id, null);
-                  p.onCoverChanged(sel.id);
-                }}
-              >
-                Image automatique
-              </button>
+              {p.customCovers[sel.id] && (
+                <button
+                  className="ghost"
+                  onClick={async () => {
+                    await window.offli.setCover(sel.id, null);
+                    p.onCoverChanged(sel.id);
+                  }}
+                >
+                  Réinitialiser l'image
+                </button>
+              )}
             </div>
           </>
         )}
