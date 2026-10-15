@@ -73,10 +73,12 @@ export function App(): React.JSX.Element {
     if (settings) applyTheme(settings.theme);
   }, [settings?.theme]);
 
-  // Big Picture passe la fenêtre en plein écran, la bibliothèque en sort
+  // Big Picture reste dans la fenêtre, sauf si « Plein écran en Big Picture » est coché.
+  // Revenir à la bibliothèque sort toujours du plein écran.
+  const fullscreen = view === "bigpicture" && !!settings?.bigPictureFullscreen;
   useEffect(() => {
-    void window.offli.setFullScreen(view === "bigpicture");
-  }, [view]);
+    void window.offli.setFullScreen(fullscreen);
+  }, [fullscreen]);
 
   // F11 (intercepté par le process principal) bascule entre Bibliothèque et Big Picture
   useEffect(

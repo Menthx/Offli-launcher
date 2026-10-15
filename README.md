@@ -16,7 +16,7 @@ npm run dist:win   # installeur Windows (aussi dist:linux, dist:mac)
 
 ## Fonctionnement
 
-- **Big Picture** : affichage plein écran pour le clavier ou la manette (bouton écran en bas de la barre latérale, ou F11). Flèches ou croix directionnelle pour choisir, Entrée ou A pour jouer, F ou X pour les favoris, Échap ou B pour revenir à la bibliothèque. « Ouvrir au démarrage » dans les paramètres choisit l'affichage de départ.
+- **Big Picture** : affichage pour le clavier ou la manette, dans la fenêtre (plein écran si « Plein écran en Big Picture » est coché dans les paramètres) (bouton écran en bas de la barre latérale, ou F11). Flèches ou croix directionnelle pour choisir, Entrée ou A pour jouer, F ou X pour les favoris, Échap ou B pour revenir à la bibliothèque. « Ouvrir au démarrage » dans les paramètres choisit l'affichage de départ.
 - **Bibliothèque** : grille, filtres par plateforme, recherche (Ctrl+K) et fiche détaillée du jeu sélectionné. « Tous les jeux » est rangé en sections (Favoris, puis Fangames, Romhacks GBA, NDS, GB / GBC, 3DS) ; un clic sur le titre d'une section applique le filtre correspondant.
 - **Scan** : l'index du dernier scan s'affiche tout de suite au démarrage, puis le dossier est rescanné en arrière-plan.
 - **Jeu de base des romhacks** : lu dans l'en-tête de la ROM (code `BPRE` = Rouge Feu, `BPEE` = Émeraude, titre `PM_CRYSTAL` = Cristal, `IREO` = Noir 2…).

@@ -52,6 +52,8 @@ export interface Settings {
   /** Dossiers de jeux, scannés dans l'ordre */
   libraryPaths: string[]
   startView: StartView
+  /** Passer la fenêtre en plein écran en entrant en Big Picture */
+  bigPictureFullscreen: boolean
   theme: Theme
   emulators: Record<EmulatorPlatform, EmulatorConfig>
   /** Commande utilisée pour lancer Game.exe hors Windows */

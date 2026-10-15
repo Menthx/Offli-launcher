@@ -140,6 +140,15 @@ export function SettingsPanel({
               <option value="bigpicture">Big Picture</option>
             </select>
           </div>
+          <label className="check">
+            <input
+              id="set-bp-fullscreen"
+              type="checkbox"
+              checked={settings.bigPictureFullscreen}
+              onChange={(e) => onSave({ bigPictureFullscreen: e.target.checked })}
+            />
+            Plein écran en Big Picture
+          </label>
         </section>
 
         <section>

@@ -34,6 +34,13 @@ describe('mergeSettings', () => {
     expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { viewMode: 'library' }).startView).toBe('library')
   })
 
+  it('laisse Big Picture en fenêtre par défaut', () => {
+    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), {}).bigPictureFullscreen).toBe(false)
+    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { viewMode: 'bigpicture' }).bigPictureFullscreen).toBe(false)
+    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { bigPictureFullscreen: true }).bigPictureFullscreen).toBe(true)
+    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { bigPictureFullscreen: 'oui' }).bigPictureFullscreen).toBe(false)
+  })
+
   it('prend le thème Console par défaut et garde un thème connu', () => {
     expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), {}).theme).toBe('console')
     expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { theme: 'emeraude' }).theme).toBe('emeraude')
