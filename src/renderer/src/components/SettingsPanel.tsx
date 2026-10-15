@@ -1,6 +1,10 @@
 import { useRef, useState } from "react";
 import type { EmulatorPlatform, Settings } from "../../../shared/types";
+import { withMinDuration } from "../minDuration";
 import { THEMES } from "../theme";
+
+/** Durée minimale de l'état « Scan… », pour qu'un scan rapide reste visible */
+const SCAN_FEEDBACK_MS = 2000;
 
 const EMULATORS: { id: EmulatorPlatform; label: string; hint: string }[] = [
   { id: "gba", label: "Game Boy Advance", hint: "mGBA conseillé" },
@@ -25,7 +29,7 @@ interface Props {
   settings: Settings;
   onSave(patch: Partial<Settings>): Promise<void>;
   scanning: boolean;
-  onScan(): void;
+  onScan(): unknown;
   onClose(): void;
 }
 
@@ -76,6 +80,14 @@ export function SettingsPanel({
   const [tab, setTabState] = useState<Tab>(lastTab);
   const [key, setKey] = useState("");
   const [wine, setWine] = useState(settings.winePath);
+  // État de chargement du bouton Scanner : au moins 2 s, ou la durée réelle du scan si elle est plus longue
+  const [scanBusy, setScanBusy] = useState(false);
+  const busy = scanBusy || scanning;
+  const startScan = async (): Promise<void> => {
+    setScanBusy(true);
+    await withMinDuration(onScan, SCAN_FEEDBACK_MS);
+    setScanBusy(false);
+  };
   const tabRefs = useRef<Record<Tab, HTMLButtonElement | null>>({
     library: null,
     display: null,
@@ -187,12 +199,14 @@ export function SettingsPanel({
                   + Ajouter un dossier
                 </button>
                 <button
-                  className="ghost"
-                  onClick={onScan}
-                  disabled={scanning || !settings.libraryPaths.length}
+                  className="ghost scan-btn"
+                  onClick={() => void startScan()}
+                  disabled={busy || !settings.libraryPaths.length}
+                  aria-busy={busy}
                   title={settings.libraryPaths.join("\n")}
                 >
-                  {scanning ? "Scan…" : "Scanner"}
+                  {busy && <span className="spinner" aria-hidden="true" />}
+                  {busy ? "Scan…" : "Scanner"}
                 </button>
               </div>
             </section>

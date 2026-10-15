@@ -1160,6 +1160,14 @@ input::placeholder {
   color: var(--text-muted);
   opacity: 1;
 }
+/* Largeur fixe : « Scanner » et « Scan… » avec l'indicateur ne font pas bouger la ligne */
+.scan-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 112px;
+}
 .icon-btn:disabled {
   opacity: 0.4;
   cursor: default;
