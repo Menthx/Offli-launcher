@@ -466,6 +466,9 @@ kbd {
   border-left: 1px solid var(--border);
   background: var(--surface);
   padding: 16px;
+  /* Largeur fixée par la grille : jamais de défilement horizontal */
+  min-width: 0;
+  overflow-x: hidden;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -595,13 +598,16 @@ kbd {
   width: 100%;
 }
 /* Chemin du fichier masqué (balise spoiler) */
+/* Occupe toute la colonne valeur, à hauteur fixe : afficher/masquer ne décale rien */
 .spoiler {
   position: relative;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  max-width: 100%;
-  padding: 2px 8px;
+  width: 100%;
+  min-width: 0;
+  height: 22px;
+  padding: 0 8px;
   font: inherit;
   color: var(--text-muted);
   background: var(--surface-2);
@@ -616,6 +622,8 @@ kbd {
   opacity: 0.5;
   filter: blur(5px);
   white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
 }
 /* Pastille sur fond --surface-2 : texte à 11,12:1 (Console) et 5,59:1 (Émeraude) */
 .spoiler-hint {
@@ -630,6 +638,9 @@ kbd {
   background: var(--surface-2);
 }
 .spoiler-shown {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
   user-select: text;
 }
 .link {
@@ -643,13 +654,15 @@ kbd {
 }
 .facts {
   display: grid;
-  grid-template-columns: auto 1fr;
+  /* Colonnes fixes : la largeur des libellés ne dépend pas de la valeur affichée */
+  grid-template-columns: 118px minmax(0, 1fr);
   gap: 5px 14px;
   font-size: 13.5px;
   margin: 0;
 }
 .facts dt {
   color: var(--text-muted);
+  white-space: nowrap;
 }
 .version-select {
   width: 100%;
@@ -661,6 +674,7 @@ kbd {
   padding: 4px 6px;
 }
 .facts dd {
+  min-width: 0;
   margin: 0;
   font: 12.5px var(--f-mono);
   overflow-wrap: anywhere;

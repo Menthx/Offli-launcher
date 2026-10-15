@@ -582,14 +582,15 @@ export function LibraryView(p: Props): React.JSX.Element {
                   </dd>
                 </>
               )}
-              <dt>Fichier</dt>
-              <dd>
-                <PathSpoiler key={target!.id} path={target!.path} />
-              </dd>
               <dt>Dernière session</dt>
               <dd>{lastPlayed(selStats?.lastPlayed)}</dd>
               <dt>Temps de jeu</dt>
               <dd>{playtime(selStats?.playtimeSec ?? 0)}</dd>
+              {/* En dernier : le chemin révélé peut prendre plusieurs lignes sans rien décaler en dessous */}
+              <dt>Fichier</dt>
+              <dd>
+                <PathSpoiler key={target!.id} path={target!.path} />
+              </dd>
             </dl>
           </>
         </aside>
