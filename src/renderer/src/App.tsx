@@ -165,6 +165,7 @@ export function App(): React.JSX.Element {
           onOpenSettings={() => setShowSettings(true)}
           onBigPicture={() => setView("bigpicture")}
           customCovers={settings.coverOverrides}
+          hasSgdbKey={!!settings.hasSteamGridDbKey}
           onCoverChanged={(id) => void coverChanged(id)}
           onRename={rename}
         />

@@ -16,6 +16,9 @@ const api: OffliApi = {
   launch: (id) => ipcRenderer.invoke("game:launch", id),
   openFolder: (id) => ipcRenderer.invoke("game:folder", id),
   setFullScreen: (on) => ipcRenderer.invoke("window:fullscreen", on),
+  sgdbSearch: (term) => ipcRenderer.invoke("sgdb:search", term),
+  sgdbGrids: (gameId, page) => ipcRenderer.invoke("sgdb:grids", gameId, page),
+  sgdbPick: (id, imageId) => ipcRenderer.invoke("sgdb:pick", id, imageId),
   onToggleView: (cb) => {
     const listener = (): void => cb();
     ipcRenderer.on("view:toggle", listener);

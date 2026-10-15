@@ -74,7 +74,7 @@ export function SettingsPanel({
   onClose,
 }: Props): React.JSX.Element {
   const [tab, setTabState] = useState<Tab>(lastTab);
-  const [key, setKey] = useState(settings.steamGridDbKey);
+  const [key, setKey] = useState("");
   const [wine, setWine] = useState(settings.winePath);
   const tabRefs = useRef<Record<Tab, HTMLButtonElement | null>>({
     library: null,
@@ -337,14 +337,31 @@ export function SettingsPanel({
               {settings.useSteamGridDb && (
                 <div className="field">
                   <label htmlFor="set-sgdb-key">Clé API SteamGridDB</label>
-                  <input
-                    id="set-sgdb-key"
-                    type="password"
-                    value={key}
-                    onChange={(e) => setKey(e.target.value)}
-                    onBlur={() => onSave({ steamGridDbKey: key.trim() })}
-                    placeholder="Profil SteamGridDB > Préférences > API"
-                  />
+                  {/* La clé enregistrée n'est jamais renvoyée au rendu : le champ sert seulement à la remplacer */}
+                  <div className="field-row">
+                    <input
+                      id="set-sgdb-key"
+                      type="password"
+                      value={key}
+                      onChange={(e) => setKey(e.target.value)}
+                      onBlur={() => {
+                        if (key.trim()) {
+                          void onSave({ steamGridDbKey: key.trim() });
+                          setKey("");
+                        }
+                      }}
+                      placeholder={
+                        settings.hasSteamGridDbKey
+                          ? "Clé enregistrée (saisir pour la remplacer)"
+                          : "Profil SteamGridDB > Préférences > API"
+                      }
+                    />
+                    {settings.hasSteamGridDbKey && (
+                      <button className="ghost" onClick={() => onSave({ steamGridDbKey: "" })}>
+                        Supprimer la clé
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
             </section>

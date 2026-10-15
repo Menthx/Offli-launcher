@@ -3,6 +3,7 @@ import type { Game, GameStats } from "../../../shared/types";
 import type { ViewProps } from "../App";
 import { Cover } from "../components/Cover";
 import { GameActions } from "../components/GameActions";
+import { SgdbPicker } from "../components/SgdbPicker";
 import { PLATFORM_LABEL, kindLabel, lastPlayed, playtime } from "../format";
 
 /**
@@ -54,6 +55,7 @@ const icon = (d: string): React.JSX.Element => (
 const ICONS = {
   folder: icon("M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"),
   image: icon("M4 5h16v14H4zM4 15l4.5-4.5 4 4L15 12l5 5M15.5 9.5h.01"),
+  grid: icon("M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"),
   reset: icon("M4 12a8 8 0 1 0 2.5-5.8M4 4v4h4"),
 };
 
@@ -119,6 +121,8 @@ interface Props extends ViewProps {
   onBigPicture(): void;
   /** Images choisies par l'utilisateur, par id de jeu */
   customCovers: Record<string, string>;
+  /** Une clé SteamGridDB est enregistrée : le menu propose de choisir une jaquette */
+  hasSgdbKey: boolean;
   onCoverChanged(id: string): void;
   onRename(game: Game, name: string | null): void;
 }
@@ -288,7 +292,8 @@ export function LibraryView(p: Props): React.JSX.Element {
 
   const sel = p.selected;
   // Version choisie dans la fiche pour un fangame qui en a plusieurs (la plus récente par défaut)
-  const [picked, setPicked] = useState<Record<string, string>>({});
+  const [picked, setPicked] = useState<Record<string, string>>({})
+  const [sgdbFor, setSgdbFor] = useState<Game>();
   const target =
     (sel && sel.versions?.find((v) => v.id === picked[sel.id])) ?? sel;
   const selStats = sel ? p.stats[sel.id] : undefined;
@@ -528,6 +533,15 @@ export function LibraryView(p: Props): React.JSX.Element {
                       }
                     },
                   },
+                  ...(p.hasSgdbKey
+                    ? [
+                        {
+                          label: "Choisir sur SteamGridDB…",
+                          icon: ICONS.grid,
+                          run: () => setSgdbFor(sel),
+                        },
+                      ]
+                    : []),
                   ...(p.customCovers[sel.id]
                     ? [
                         {
@@ -594,6 +608,13 @@ export function LibraryView(p: Props): React.JSX.Element {
             </dl>
           </>
         </aside>
+      )}
+      {sgdbFor && (
+        <SgdbPicker
+          game={sgdbFor}
+          onClose={() => setSgdbFor(undefined)}
+          onPicked={() => p.onCoverChanged(sgdbFor.id)}
+        />
       )}
     </div>
   );

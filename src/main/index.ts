@@ -1,11 +1,13 @@
 import { BrowserWindow, app, dialog, ipcMain, net, protocol, shell } from 'electron'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import type { Game, GameStats, LaunchResult, Settings } from '../shared/types'
+import type { Game, GameStats, LaunchResult, SgdbResult, Settings } from '../shared/types'
 import { CoverResolver } from './covers'
 import type { HashCache } from './baseRoms'
 import { buildCommand, resolveAssociation, runCommand } from './launcher'
 import { scanLibrary } from './scanner'
+import { SgdbError, type SgdbGrid, SteamGridDb } from './steamgriddb'
 import { DEFAULT_SETTINGS, JsonFile, applyNames, emptyStats, mergeSettings } from './store'
 
 const COVER_SCHEME = 'offli-img'
@@ -30,6 +32,23 @@ app.whenReady().then(() => {
   // Chemins d'images servis au rendu : seul ce qui a été résolu ici est accessible
   const coverPaths = new Map<string, string>()
   let coverVersion = 0
+  // Choix d'image SteamGridDB : miniatures téléchargées ici et images proposées (le rendu ne passe que des ids)
+  const sgdbThumbs = new Map<string, string>()
+  const sgdbGrids = new Map<number, SgdbGrid>()
+  const sgdbDir = join(data, 'covers', 'sgdb')
+  const sgdb = (): SteamGridDb | null => (settings.data.steamGridDbKey ? new SteamGridDb(settings.data.steamGridDbKey) : null)
+  const sgdbFail = (err: unknown): SgdbResult<never> => ({
+    ok: false,
+    error: err instanceof SgdbError ? err.kind : 'network'
+  })
+  const ext = (data: Buffer): string => (data[0] === 0xff && data[1] === 0xd8 ? '.jpg' : data.subarray(8, 12).toString('ascii') === 'WEBP' ? '.webp' : '.png')
+
+  // La clé SteamGridDB reste dans le process principal : le rendu sait seulement qu'elle existe
+  const publicSettings = (): Settings => ({
+    ...settings.data,
+    steamGridDbKey: '',
+    hasSteamGridDbKey: !!settings.data.steamGridDbKey
+  })
 
   const games = (): Game[] => applyNames(library.data, settings.data.nameOverrides)
   // Une version plus ancienne d'un fangame se lance et se résout comme un jeu à part entière
@@ -38,14 +57,17 @@ app.whenReady().then(() => {
   const pushStats = (): void => win?.webContents.send('stats:changed', stats.data)
 
   protocol.handle(COVER_SCHEME, (req) => {
-    const id = new URL(req.url).pathname.replace(/^\//, '')
-    const path = coverPaths.get(id)
+    const url = new URL(req.url)
+    const id = url.pathname.replace(/^\//, '')
+    // offli-img://sgdb/<id> : miniature SteamGridDB ; offli-img://cover/<id> : jaquette d'un jeu
+    const path = url.host === 'sgdb' ? sgdbThumbs.get(id) : coverPaths.get(id)
     if (!path) return new Response(null, { status: 404 })
     return net.fetch(pathToFileURL(path).toString())
   })
 
-  ipcMain.handle('settings:get', () => settings.data)
-  ipcMain.handle('settings:save', async (_e, patch: Partial<Settings>) => {
+  ipcMain.handle('settings:get', () => publicSettings())
+  ipcMain.handle('settings:save', async (_e, input: Partial<Settings>) => {
+    const { hasSteamGridDbKey: _ignored, ...patch } = input
     const coversChanged =
       'useSteamGridDb' in patch || 'steamGridDbKey' in patch || 'useBaseRomCovers' in patch
     settings.data = mergeSettings(settings.data, { ...settings.data, ...patch })
@@ -55,7 +77,7 @@ app.whenReady().then(() => {
       coverVersion++
     }
     await settings.save()
-    return settings.data
+    return publicSettings()
   })
 
   ipcMain.handle('dialog:folder', async () => {
@@ -112,6 +134,59 @@ app.whenReady().then(() => {
     if (!resolved) return null
     coverPaths.set(id, resolved)
     return `${COVER_SCHEME}://cover/${id}?v=${coverVersion}`
+  })
+
+  // Choix d'une jaquette sur SteamGridDB : rien n'est demandé tant que la fenêtre n'est pas ouverte
+  ipcMain.handle('sgdb:search', async (_e, term: string): Promise<SgdbResult<{ id: number; name: string; year?: number }[]>> => {
+    const client = sgdb()
+    if (!client) return { ok: false, error: 'unauthorized' }
+    try {
+      return { ok: true, value: await client.search(String(term)) }
+    } catch (err) {
+      return sgdbFail(err)
+    }
+  })
+  ipcMain.handle('sgdb:grids', async (_e, gameId: number, page: number) => {
+    const client = sgdb()
+    if (!client) return { ok: false, error: 'unauthorized' }
+    try {
+      const { grids, hasMore } = await client.grids(Number(gameId), Math.max(0, Number(page) || 0))
+      await mkdir(join(sgdbDir, 'thumbs'), { recursive: true })
+      const images = await Promise.all(
+        grids.map(async (g) => {
+          sgdbGrids.set(g.id, g)
+          if (!sgdbThumbs.has(String(g.id))) {
+            const bytes = await client.download(g.thumb)
+            const path = join(sgdbDir, 'thumbs', String(g.id) + ext(bytes))
+            await writeFile(path, bytes)
+            sgdbThumbs.set(String(g.id), path)
+          }
+          return { id: g.id, thumb: `${COVER_SCHEME}://sgdb/${g.id}`, width: g.width, height: g.height }
+        })
+      )
+      return { ok: true, value: { images, hasMore } }
+    } catch (err) {
+      return sgdbFail(err)
+    }
+  })
+  ipcMain.handle('sgdb:pick', async (_e, id: string, imageId: number) => {
+    const client = sgdb()
+    const grid = sgdbGrids.get(Number(imageId))
+    if (!client || !grid || !findGame(id)) return { ok: false, error: 'network' }
+    try {
+      const bytes = await client.download(grid.url)
+      await mkdir(sgdbDir, { recursive: true })
+      const path = join(sgdbDir, `${id}-${grid.id}${ext(bytes)}`)
+      await writeFile(path, bytes)
+      settings.data.coverOverrides[id] = path
+      await settings.save()
+      covers.invalidate(id)
+      coverPaths.delete(id)
+      coverVersion++
+      return { ok: true, value: null }
+    } catch (err) {
+      return sgdbFail(err)
+    }
   })
 
   ipcMain.handle('game:rename', async (_e, id: string, name: string | null) => {

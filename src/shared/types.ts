@@ -60,12 +60,25 @@ export interface Settings {
   winePath: string
   useSteamGridDb: boolean
   steamGridDbKey: string
+  /** Côté rendu uniquement : une clé SteamGridDB est enregistrée (la clé elle-même n'y est jamais envoyée) */
+  hasSteamGridDbKey?: boolean
   /** Utiliser la jaquette du jeu de base (libretro-thumbnails) pour les romhacks */
   useBaseRomCovers: boolean
   /** Image choisie par l'utilisateur, par id de jeu */
   coverOverrides: Record<string, string>
   /** Nom choisi par l'utilisateur, par id de jeu */
   nameOverrides: Record<string, string>
+}
+
+/** Réponse d'un appel SteamGridDB passé par le process principal */
+export type SgdbResult<T> = { ok: true; value: T } | { ok: false; error: 'unauthorized' | 'network' }
+
+export interface SgdbImage {
+  id: number
+  /** URL offli-img:// de la miniature, téléchargée par le process principal */
+  thumb: string
+  width: number
+  height: number
 }
 
 export interface LaunchResult {
@@ -94,5 +107,9 @@ export interface OffliApi {
   setFullScreen(on: boolean): Promise<void>
   /** Raccourci F11 : bascule Bibliothèque / Big Picture */
   onToggleView(cb: () => void): () => void
+  sgdbSearch(term: string): Promise<SgdbResult<{ id: number; name: string; year?: number }[]>>
+  sgdbGrids(gameId: number, page: number): Promise<SgdbResult<{ images: SgdbImage[]; hasMore: boolean }>>
+  /** Télécharge l'image choisie et l'enregistre comme image du jeu */
+  sgdbPick(id: string, imageId: number): Promise<SgdbResult<null>>
   onStatsChanged(cb: (stats: Record<string, GameStats>) => void): () => void
 }
