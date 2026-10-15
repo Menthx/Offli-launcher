@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { Game, Settings } from "../../../shared/types";
 import { THEMES } from "../theme";
-import { TOUR_STEPS, libraryStatus, tourReduce } from "../tour";
+import { TOUR_STEPS, tourReduce } from "../tour";
+import { FolderList } from "./FolderList";
 
 interface Props {
   settings: Settings;
@@ -156,42 +157,12 @@ export function Tour({ settings, games, scanning, selectedId, onSelect, onSave, 
       case "folders":
         return (
           <>
-            <ul className="tour-folders" aria-label="Dossiers de jeux">
-              {settings.libraryPaths.map((dir) => (
-                <li key={dir}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
-                    <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                  </svg>
-                  <span className="folder-path" title={dir}>
-                    {dir}
-                  </span>
-                  <button
-                    className="icon-btn"
-                    aria-label={`Retirer ${dir}`}
-                    title="Retirer"
-                    onClick={() => onSave({ libraryPaths: settings.libraryPaths.filter((d) => d !== dir) })}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-                      <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <button
-              className="tour-add"
-              onClick={async () => {
-                const dir = await window.offli.pickFolder();
-                if (dir && !settings.libraryPaths.includes(dir))
-                  await onSave({ libraryPaths: [...settings.libraryPaths, dir] });
-              }}
-            >
-              + Ajouter un autre dossier
-            </button>
-            <p className="tour-status" role="status">
-              {/* Les ROMs de base ne sont pas des jeux de la bibliothèque */}
-              {scanning ? "Scan en cours…" : libraryStatus(games.filter((g) => g.kind !== "baserom"))}
-            </p>
+            <FolderList
+              paths={settings.libraryPaths}
+              onChange={(libraryPaths) => onSave({ libraryPaths })}
+              games={games}
+              scanning={scanning}
+            />
           </>
         );
       case "sidebar":

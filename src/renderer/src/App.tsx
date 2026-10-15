@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Game, GameStats, Settings, StartView } from "../../shared/types";
 import { forgetCover } from "./components/Cover";
+import { FolderList } from "./components/FolderList";
 import { SettingsPanel } from "./components/SettingsPanel";
 import { Tour } from "./components/Tour";
 import { hideGame, withoutHidden } from "./hiddenGames";
@@ -161,15 +162,15 @@ export function App(): React.JSX.Element {
           <h1>Offli-Launcher</h1>
           <p>Choisis le dossier où sont rangés tes fangames et tes romhacks.</p>
           <p>Offli-Launcher le parcourt et les range pour toi.</p>
-          <button
-            className="cta"
-            onClick={async () => {
-              const dir = await window.offli.pickFolder();
-              if (dir) await save({ libraryPaths: [dir] });
-            }}
-          >
-            Choisir le dossier
-          </button>
+          {/* Même liste de dossiers que le tutoriel et les paramètres */}
+          <div className="onboarding-folders">
+            <FolderList
+              paths={settings.libraryPaths}
+              onChange={(libraryPaths) => save({ libraryPaths })}
+              games={shownGames}
+              scanning={scanning}
+            />
+          </div>
         </div>
       ) : view === "bigpicture" ? (
         <BigPictureView {...props} onExit={() => setView("library")} />

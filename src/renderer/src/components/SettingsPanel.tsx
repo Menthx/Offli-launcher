@@ -1,8 +1,9 @@
 import { useRef, useState } from "react";
 import type { EmulatorPlatform, Game, Settings } from "../../../shared/types";
 import { PLATFORM_LABEL, kindLabel } from "../format";
-import { hiddenGamesOf, showGame } from "../hiddenGames";
+import { hiddenGamesOf, showGame, withoutHidden } from "../hiddenGames";
 import { Cover } from "./Cover";
+import { FolderList } from "./FolderList";
 import { withMinDuration } from "../minDuration";
 import { THEMES } from "../theme";
 
@@ -180,36 +181,13 @@ export function SettingsPanel({
         <div className="tab-panel" role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`} tabIndex={0}>
           {tab === "library" && (
             <section>
-              <ul className="folders" aria-label="Dossiers des jeux">
-                {settings.libraryPaths.map((dir) => (
-                  <li key={dir}>
-                    <span className="folder-path" title={dir}>
-                      {dir}
-                    </span>
-                    <button
-                      className="icon-btn"
-                      aria-label={`Retirer ${dir}`}
-                      title="Retirer"
-                      onClick={() =>
-                        onSave({ libraryPaths: settings.libraryPaths.filter((d) => d !== dir) })
-                      }
-                    >
-                      <Cross />
-                    </button>
-                  </li>
-                ))}
-              </ul>
+              <FolderList
+                paths={settings.libraryPaths}
+                onChange={(libraryPaths) => onSave({ libraryPaths })}
+                games={withoutHidden(games, settings.hiddenGames)}
+                scanning={busy}
+              />
               <div className="row-actions">
-                <button
-                  className="ghost"
-                  onClick={async () => {
-                    const dir = await window.offli.pickFolder();
-                    if (dir && !settings.libraryPaths.includes(dir))
-                      await onSave({ libraryPaths: [...settings.libraryPaths, dir] });
-                  }}
-                >
-                  + Ajouter un dossier
-                </button>
                 <button
                   className="ghost scan-btn"
                   onClick={() => void startScan()}

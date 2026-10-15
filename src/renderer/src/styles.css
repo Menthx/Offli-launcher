@@ -763,23 +763,6 @@ kbd {
   font: 13px var(--f-mono);
   padding: 8px 10px;
 }
-.folders {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.folders li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 6px 6px 10px;
-}
 .folder-path {
   flex: 1;
   min-width: 0;
@@ -1419,7 +1402,24 @@ input::placeholder {
   text-align: center;
   font-size: 12.5px !important;
 }
-.tour-folders {
+/* Liste des dossiers de jeux (composant FolderList : tutoriel, paramètres, premier lancement) */
+.folder-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.folder-picker .folder-path {
+  font-family: var(--f-mono);
+}
+.folder-status {
+  margin: 0;
+  color: var(--text-muted);
+}
+.onboarding-folders {
+  width: min(520px, 100%);
+}
+.folder-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -1427,7 +1427,7 @@ input::placeholder {
   flex-direction: column;
   gap: 6px;
 }
-.tour-folders li {
+.folder-list li {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1436,7 +1436,7 @@ input::placeholder {
   border: 1px solid var(--border);
   border-radius: 8px;
 }
-.tour-add {
+.folder-add {
   padding: 9px 12px;
   font: 600 14px var(--f-body);
   color: var(--text);
@@ -1445,10 +1445,10 @@ input::placeholder {
   border-radius: 8px;
   cursor: pointer;
 }
-.tour-add:hover {
+.folder-add:hover {
   border-color: var(--accent);
 }
-.tour-status {
+.folder-status {
   font-size: 13px !important;
 }
 .tour-themes {
