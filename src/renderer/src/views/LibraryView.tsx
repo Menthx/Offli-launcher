@@ -5,6 +5,10 @@ import { Cover } from "../components/Cover";
 import { GameActions } from "../components/GameActions";
 import { SgdbPicker } from "../components/SgdbPicker";
 import { steamGridDbAction } from "../menuActions";
+import { animate } from "../viewTransition";
+
+/** Attente avant d'animer la recherche : les frappes rapprochées donnent une seule animation */
+const SEARCH_SETTLE_MS = 120;
 import { PLATFORM_LABEL, kindLabel, lastPlayed, playtime } from "../format";
 
 /**
@@ -267,6 +271,15 @@ function NameEditor({
 export function LibraryView(p: Props): React.JSX.Element {
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
+  // Recherche appliquée à la grille, mise à jour une fois la frappe posée (animation groupée)
+  const [appliedQuery, setAppliedQuery] = useState("");
+  const changeFilter = (f: Filter): void => animate(() => setFilter(f));
+
+  useEffect(() => {
+    if (query === appliedQuery) return;
+    const t = window.setTimeout(() => animate(() => setAppliedQuery(query)), SEARCH_SETTLE_MS);
+    return () => window.clearTimeout(t);
+  }, [query, appliedQuery]);
   const search = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -282,7 +295,7 @@ export function LibraryView(p: Props): React.JSX.Element {
   }, []);
 
   const visible = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = appliedQuery.trim().toLowerCase();
     return p.games.filter(
       (g) =>
         matches(filter, g, p.stats[g.id]) &&
@@ -290,7 +303,7 @@ export function LibraryView(p: Props): React.JSX.Element {
           g.name.toLowerCase().includes(q) ||
           !!g.originalName?.toLowerCase().includes(q)),
     );
-  }, [p.games, p.stats, filter, query]);
+  }, [p.games, p.stats, filter, appliedQuery]);
 
   const recent = useMemo(
     () =>
@@ -328,6 +341,18 @@ export function LibraryView(p: Props): React.JSX.Element {
             visible.filter((g) => matches(sec.filter, g, p.stats[g.id])),
           )[0]
         : visible[0];
+    // Entrée juste après une frappe : on lance le premier jeu de la recherche tapée, sans attendre
+    if (e.key === "Enter" && query !== appliedQuery) {
+      const q = query.trim().toLowerCase();
+      const hit = p.games.find(
+        (g) =>
+          matches(filter, g, p.stats[g.id]) &&
+          (!q || g.name.toLowerCase().includes(q) || !!g.originalName?.toLowerCase().includes(q)),
+      );
+      setAppliedQuery(query);
+      if (hit) p.onLaunch(hit);
+      return;
+    }
     if (e.key === "Enter" && first) p.onLaunch(first);
     if (e.key === "Escape") setQuery("");
   };
@@ -335,7 +360,7 @@ export function LibraryView(p: Props): React.JSX.Element {
   return (
     <div className={`lib ${sel ? "" : "no-detail"}`}>
       <aside className="lib-side">
-        <span className="brand" onClick={() => setFilter("all")}>
+        <span className="brand" onClick={() => changeFilter("all")}>
           <span className="dot" aria-hidden="true" />
           Offli-Launcher
         </span>
@@ -372,7 +397,7 @@ export function LibraryView(p: Props): React.JSX.Element {
               {f.group && <h4>{f.group}</h4>}
               <button
                 className={filter === f.id ? "on" : ""}
-                onClick={() => setFilter(f.id)}
+                onClick={() => changeFilter(f.id)}
                 aria-pressed={filter === f.id}
               >
                 <span>{f.label}</span>
@@ -474,7 +499,7 @@ export function LibraryView(p: Props): React.JSX.Element {
                 <h5>
                   <button
                     className="section-link"
-                    onClick={() => setFilter(sec.filter)}
+                    onClick={() => changeFilter(sec.filter)}
                     title={`Afficher seulement : ${sec.label}`}
                   >
                     {sec.label}

@@ -57,6 +57,30 @@
   }
 }
 
+/* Cartes : elles glissent vers leur nouvelle place (groupe), apparaissent et disparaissent en fondu */
+.card {
+  view-transition-class: card;
+}
+::view-transition-new(*.card):only-child {
+  animation: vt-card-in var(--motion-duration) var(--motion-ease) both;
+}
+::view-transition-old(*.card):only-child {
+  animation: vt-card-out calc(var(--motion-duration) * 0.7) var(--motion-ease) both;
+}
+
+@keyframes vt-card-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+@keyframes vt-card-out {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
   ::view-transition-old(*),
