@@ -62,6 +62,8 @@ const ICONS = {
   image: icon("M4 5h16v14H4zM4 15l4.5-4.5 4 4L15 12l5 5M15.5 9.5h.01"),
   grid: icon("M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"),
   reset: icon("M4 12a8 8 0 1 0 2.5-5.8M4 4v4h4"),
+  // Œil barré
+  hide: icon("M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c5 0 9 4.5 10 6a17 17 0 0 1-3.3 3.8M6.6 6.6A17 17 0 0 0 2 12c1 1.5 5 6 10 6a9.6 9.6 0 0 0 4.4-1.1M9.9 9.9a3 3 0 0 0 4.2 4.2"),
 };
 
 type Filter =
@@ -130,6 +132,8 @@ interface Props extends ViewProps {
   hasSgdbKey: boolean;
   onCoverChanged(id: string): void;
   onRename(game: Game, name: string | null): void;
+  /** Masque le jeu partout (ferme la fiche s'il était sélectionné) */
+  onHide(game: Game): void;
 }
 
 /** Au-delà, les cartes ne sont pas animées une à une (fluidité des grandes bibliothèques) */
@@ -588,6 +592,7 @@ export function LibraryView(p: Props): React.JSX.Element {
                         },
                       ]
                     : []),
+                  { label: "Masquer ce jeu", icon: ICONS.hide, run: () => p.onHide(sel) },
                 ]}
               />
             </div>

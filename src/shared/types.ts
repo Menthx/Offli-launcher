@@ -56,6 +56,8 @@ export interface Settings {
   bigPictureFullscreen: boolean
   /** Tutoriel du premier lancement terminé ou passé */
   tutorialDone: boolean
+  /** Jeux masqués, par id stable (gardés d'un scan à l'autre) */
+  hiddenGames: string[]
   theme: Theme
   emulators: Record<EmulatorPlatform, EmulatorConfig>
   /** Commande utilisée pour lancer Game.exe hors Windows */

@@ -1,5 +1,8 @@
 import { useRef, useState } from "react";
-import type { EmulatorPlatform, Settings } from "../../../shared/types";
+import type { EmulatorPlatform, Game, Settings } from "../../../shared/types";
+import { PLATFORM_LABEL, kindLabel } from "../format";
+import { hiddenGamesOf, showGame } from "../hiddenGames";
+import { Cover } from "./Cover";
 import { withMinDuration } from "../minDuration";
 import { THEMES } from "../theme";
 
@@ -19,6 +22,7 @@ const TABS = [
   { id: "display", label: "Affichage" },
   { id: "emulators", label: "Émulateurs" },
   { id: "images", label: "Images" },
+  { id: "hidden", label: "Jeux masqués" },
 ] as const;
 type Tab = (typeof TABS)[number]["id"];
 
@@ -27,6 +31,8 @@ let lastTab: Tab = "library";
 
 interface Props {
   settings: Settings;
+  /** Toute la bibliothèque, jeux masqués compris (pour l'onglet « Jeux masqués ») */
+  games: Game[];
   onSave(patch: Partial<Settings>): Promise<void>;
   scanning: boolean;
   onScan(): unknown;
@@ -74,6 +80,7 @@ function Switch({
 
 export function SettingsPanel({
   settings,
+  games,
   onSave,
   scanning,
   onScan,
@@ -96,7 +103,9 @@ export function SettingsPanel({
     display: null,
     emulators: null,
     images: null,
+    hidden: null,
   });
+  const hidden = hiddenGamesOf(games, settings.hiddenGames);
 
   const setTab = (t: Tab, focus = false): void => {
     lastTab = t;
@@ -163,7 +172,7 @@ export function SettingsPanel({
               onClick={() => setTab(t.id)}
               autoFocus={tab === t.id}
             >
-              {t.label}
+              {t.id === "hidden" && hidden.length ? `${t.label} (${hidden.length})` : t.label}
             </button>
           ))}
         </div>
@@ -385,6 +394,37 @@ export function SettingsPanel({
                     )}
                   </div>
                 </div>
+              )}
+            </section>
+          )}
+
+          {tab === "hidden" && (
+            <section>
+              {hidden.length === 0 ? (
+                <p className="muted">Aucun jeu masqué.</p>
+              ) : (
+                <ul className="hidden-list" aria-label="Jeux masqués">
+                  {hidden.map((g) => (
+                    <li key={g.id}>
+                      <span className="hidden-thumb">
+                        <Cover game={g} />
+                      </span>
+                      <span className="hidden-info">
+                        <span className="hidden-name">{g.name}</span>
+                        <span className="muted">
+                          {kindLabel(g)} · {PLATFORM_LABEL[g.platform]}
+                        </span>
+                      </span>
+                      <button
+                        className="ghost"
+                        aria-label={`Afficher ${g.name}`}
+                        onClick={() => onSave({ hiddenGames: showGame(settings.hiddenGames, g.id) })}
+                      >
+                        Afficher
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               )}
             </section>
           )}

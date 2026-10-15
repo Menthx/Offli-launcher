@@ -3,6 +3,7 @@ import type { Game, GameStats, Settings, StartView } from "../../shared/types";
 import { forgetCover } from "./components/Cover";
 import { SettingsPanel } from "./components/SettingsPanel";
 import { Tour } from "./components/Tour";
+import { hideGame, withoutHidden } from "./hiddenGames";
 import { applyTheme } from "./theme";
 import { shouldAutoStartTour } from "./tour";
 import { animateSelection } from "./viewTransition";
@@ -139,9 +140,11 @@ export function App(): React.JSX.Element {
   if (!settings) return <div className="boot" />;
 
   // Aucun jeu sélectionné par défaut : la fiche n'apparaît qu'après un clic
-  const selected = games.find((g) => g.id === selectedId);
+  // Les jeux masqués disparaissent de toutes les vues (sections, favoris, récents, recherche, Big Picture)
+  const shownGames = withoutHidden(games, settings.hiddenGames);
+  const selected = shownGames.find((g) => g.id === selectedId);
   const props: ViewProps = {
-    games,
+    games: shownGames,
     stats,
     selected,
     // La jaquette de la carte vole vers la fiche (et revient à la fermeture)
@@ -182,11 +185,16 @@ export function App(): React.JSX.Element {
           hasSgdbKey={!!settings.hasSteamGridDbKey}
           onCoverChanged={(id) => void coverChanged(id)}
           onRename={rename}
+          onHide={(game) => {
+            if (selectedId === game.id) setSelectedId(undefined);
+            void save({ hiddenGames: hideGame(settings.hiddenGames, game.id) });
+          }}
         />
       )}
       {showSettings && (
         <SettingsPanel
           settings={settings}
+          games={games}
           onSave={save}
           scanning={scanning}
           onScan={rescan}
@@ -201,7 +209,7 @@ export function App(): React.JSX.Element {
       {tourOpen && settings.libraryPaths.length > 0 && view === "library" && (
         <Tour
           settings={settings}
-          games={games}
+          games={shownGames}
           scanning={scanning}
           selectedId={selected?.id}
           onSelect={props.onSelect}

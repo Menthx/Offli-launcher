@@ -1168,6 +1168,47 @@ input::placeholder {
   gap: 8px;
   min-width: 112px;
 }
+/* Onglet « Jeux masqués » */
+.hidden-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.hidden-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 8px 6px 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.hidden-thumb {
+  width: 40px;
+  flex: none;
+}
+.hidden-thumb .cover {
+  border-radius: 6px;
+}
+.hidden-thumb .badge,
+.hidden-thumb .cover-name {
+  display: none;
+}
+.hidden-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.hidden-name {
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .icon-btn:disabled {
   opacity: 0.4;
   cursor: default;

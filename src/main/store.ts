@@ -8,6 +8,7 @@ export const DEFAULT_SETTINGS: Settings = {
   startView: 'library',
   bigPictureFullscreen: false,
   tutorialDone: false,
+  hiddenGames: [],
   theme: 'console',
   emulators: {
     gb: { path: '' },
@@ -89,6 +90,7 @@ export function mergeSettings(fallback: Settings, loaded: unknown): Settings {
           : fallback.startView,
     bigPictureFullscreen: typeof l.bigPictureFullscreen === 'boolean' ? l.bigPictureFullscreen : fallback.bigPictureFullscreen,
     tutorialDone: typeof l.tutorialDone === 'boolean' ? l.tutorialDone : fallback.tutorialDone,
+    hiddenGames: Array.isArray(l.hiddenGames) ? l.hiddenGames.filter((id): id is string => typeof id === 'string') : [],
     theme: (['console', 'electrique', 'pokeball', 'emeraude'] as const).includes(l.theme as Settings['theme'])
       ? (l.theme as Settings['theme'])
       : fallback.theme,
