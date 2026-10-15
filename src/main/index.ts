@@ -173,6 +173,18 @@ function createWindow(): void {
     }
   })
   win.on('closed', () => (win = null))
+  // En développement : F12 (ou Ctrl+Maj+I, Cmd+Opt+I) ouvre et ferme les outils de développement
+  if (!app.isPackaged) {
+    win.webContents.on('before-input-event', (event, input) => {
+      if (input.type !== 'keyDown') return
+      const key = input.key.toLowerCase()
+      const inspect = key === 'i' && (input.control || input.meta) && (input.shift || input.alt)
+      if (key === 'f12' || inspect) {
+        event.preventDefault()
+        win?.webContents.toggleDevTools()
+      }
+    })
+  }
   if (process.env['ELECTRON_RENDERER_URL']) win.loadURL(process.env['ELECTRON_RENDERER_URL'])
   else win.loadFile(join(__dirname, '../renderer/index.html'))
 }
