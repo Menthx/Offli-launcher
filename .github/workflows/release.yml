@@ -1,0 +1,47 @@
+# Construit les installeurs Windows, Linux et macOS quand un tag vX.Y.Z est poussé,
+# et les dépose dans une release GitHub en brouillon (à publier à la main).
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+
+  build:
+    needs: verify
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      # postinstall (install-electron) télécharge le binaire Electron
+      - run: npm ci
+      - run: npm run build
+      - name: Installeurs et release en brouillon
+        run: npx electron-builder --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Pas de certificat : builds non signés (SmartScreen / Gatekeeper préviennent l'utilisateur)
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'

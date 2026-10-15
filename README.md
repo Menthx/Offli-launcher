@@ -124,6 +124,19 @@ Palette #18534F, #226D68, #ECF8F6, #FEEAA1 et #D6955B.
 | #0D2E2C croix | #FF7A6E | icône du bouton | 5,72 |
 | #FF9C8F erreur | #226D68 | bordure du message d'erreur | 3,01 |
 
+## Publier une version
+
+Les installeurs sont construits par GitHub Actions (`.github/workflows/release.yml`) pour Windows (installeur et portable `.exe`), Linux (AppImage, `.deb`) et macOS (`.dmg` x64 et arm64), puis déposés dans une release **en brouillon**.
+
+1. Changer `version` dans `package.json` (ex. `0.2.0`) et commiter.
+2. `git tag v0.2.0`
+3. `git push origin main --tags`
+4. Sur GitHub, onglet Releases : vérifier le brouillon créé par la CI, puis le publier.
+
+Les builds ne sont pas signés :
+- **Windows** : SmartScreen affiche « Windows a protégé votre ordinateur » ; cliquer sur « Informations complémentaires », puis « Exécuter quand même ».
+- **macOS** : Gatekeeper bloque l'ouverture ; faire un clic droit sur l'appli, choisir « Ouvrir », puis confirmer (ou Réglages Système > Confidentialité et sécurité > « Ouvrir quand même »).
+
 ## Structure
 
 ```

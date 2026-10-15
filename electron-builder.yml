@@ -5,11 +5,26 @@ directories:
 files:
   - out/**
   - package.json
+# Noms de fichiers sans espaces, distincts pour l'installeur et la version portable
+artifactName: ${productName}-${version}-${os}-${arch}.${ext}
 win:
   target: [nsis, portable]
+nsis:
+  artifactName: ${productName}-${version}-setup.${ext}
+portable:
+  artifactName: ${productName}-${version}-portable.${ext}
 linux:
   target: [AppImage, deb]
   category: Game
+  maintainer: Menthx <36339268+Menthx@users.noreply.github.com>
 mac:
-  target: [dmg]
+  target:
+    - target: dmg
+      arch: [x64, arm64]
   category: public.app-category.games
+# La CI dépose les fichiers dans une release GitHub en brouillon : Tonio la publie lui-même
+publish:
+  provider: github
+  owner: Menthx
+  repo: Offli-launcher
+  releaseType: draft

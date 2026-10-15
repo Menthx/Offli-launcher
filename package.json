@@ -4,6 +4,11 @@
   "description": "Launcher hors ligne pour fangames et romhacks Pokémon",
   "main": "./out/main/index.js",
   "author": "Menthx",
+  "homepage": "https://github.com/Menthx/Offli-launcher",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Menthx/Offli-launcher.git"
+  },
   "license": "MIT",
   "private": true,
   "engines": {
