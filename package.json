@@ -1,6 +1,6 @@
 {
   "name": "offli-launcher",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Launcher hors ligne pour fangames et romhacks Pokémon",
   "main": "./out/main/index.js",
   "author": "Menthx",
