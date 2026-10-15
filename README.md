@@ -8,11 +8,11 @@
 
 Va sur la page des [versions (Releases)](https://github.com/Menthx/Offli-launcher/releases/latest) et prends le fichier qui correspond à ton ordinateur :
 
-| Système | Fichier à prendre |
-| --- | --- |
+| Système | Fichier à prendre                                                                                                      |
+| ------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Windows | `…-setup.exe` pour l'installer, ou `…-portable.exe` pour le lancer sans installation (depuis une clé USB, par exemple) |
-| Linux | `….AppImage` (marche partout : rends-le exécutable puis double-clique), ou `….deb` pour Debian, Ubuntu et Mint |
-| Mac | `…-mac-arm64.dmg` pour un Mac Apple Silicon (M1, M2, M3…), `…-mac-x64.dmg` pour un Mac Intel |
+| Linux   | `….AppImage` (marche partout : rends-le exécutable puis double-clique), ou `….deb` pour Debian, Ubuntu et Mint         |
+| Mac     | `…-mac-arm64.dmg` pour un Mac Apple Silicon (M1, M2, M3…), `…-mac-x64.dmg` pour un Mac Intel                           |
 
 Les fichiers `.yml` et `.blockmap` servent aux mises à jour : inutile de les télécharger.
 
@@ -23,10 +23,12 @@ Au premier démarrage, Offli-Launcher te demande où sont rangés tes jeux : cho
 Offli-Launcher n'est pas signé numériquement (un certificat coûte cher pour un projet gratuit). Ton système va donc te prévenir la première fois. C'est normal :
 
 **Sous Windows**, si « Windows a protégé votre ordinateur » s'affiche :
+
 1. Clique sur **Informations complémentaires**.
 2. Clique sur **Exécuter quand même**.
 
 **Sous Mac**, si le Mac refuse d'ouvrir l'appli :
+
 1. Fais un clic droit (ou Ctrl + clic) sur Offli-Launcher et choisis **Ouvrir**.
 2. Confirme avec **Ouvrir**.
 
@@ -43,14 +45,16 @@ Si ça ne suffit pas : Réglages Système > Confidentialité et sécurité, puis
 - **Chemin des fichiers masqué** dans la fiche : il ne s'affiche que si tu cliques sur « Afficher » (pratique pour les captures d'écran).
 - **Renomme un jeu** en cliquant sur son nom dans la fiche.
 
+![La première ouverture d'Offli-Launcher](docs/accueil.png)
+
 ## Raccourcis
 
-| Touche | Effet |
-| --- | --- |
-| Ctrl + K | Aller à la recherche |
-| Entrée (dans la recherche) | Lancer le premier jeu trouvé |
-| Échap | Vider la recherche, fermer une fenêtre, quitter Big Picture |
-| F11 | Passer de la bibliothèque à Big Picture, et inversement |
+| Touche                     | Effet                                                       |
+| -------------------------- | ----------------------------------------------------------- |
+| Ctrl + K                   | Aller à la recherche                                        |
+| Entrée (dans la recherche) | Lancer le premier jeu trouvé                                |
+| Échap                      | Vider la recherche, fermer une fenêtre, quitter Big Picture |
+| F11                        | Passer de la bibliothèque à Big Picture, et inversement     |
 
 En Big Picture, à la manette : la croix ou le stick pour choisir, **A** pour jouer, **X** pour les favoris, **B** pour revenir à la bibliothèque. Au clavier : les flèches, **Entrée**, **F** et **Échap**.
 
@@ -67,6 +71,7 @@ Un site communautaire de jaquettes. Avec une clé gratuite, Offli-Launcher peut 
 
 **Où sont stockées mes données ?**
 Sur ton ordinateur uniquement (réglages, favoris, temps de jeu, images en cache) :
+
 - Windows : `%APPDATA%\offli-launcher`
 - Linux : `~/.config/offli-launcher`
 - Mac : `~/Library/Application Support/offli-launcher`

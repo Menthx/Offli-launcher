@@ -159,10 +159,8 @@ export function App(): React.JSX.Element {
       {!settings.libraryPaths.length ? (
         <div className="onboarding">
           <h1>Offli-Launcher</h1>
-          <p>
-            Choisis le dossier où sont rangés tes fangames et tes romhacks.
-            Offli-Launcher le parcourt et les range pour toi.
-          </p>
+          <p>Choisis le dossier où sont rangés tes fangames et tes romhacks.</p>
+          <p>Offli-Launcher le parcourt et les range pour toi.</p>
           <button
             className="cta"
             onClick={async () => {
