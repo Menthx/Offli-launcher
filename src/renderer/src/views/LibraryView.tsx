@@ -4,6 +4,7 @@ import type { ViewProps } from "../App";
 import { Cover } from "../components/Cover";
 import { GameActions } from "../components/GameActions";
 import { SgdbPicker } from "../components/SgdbPicker";
+import { steamGridDbAction } from "../menuActions";
 import { PLATFORM_LABEL, kindLabel, lastPlayed, playtime } from "../format";
 
 /**
@@ -533,15 +534,7 @@ export function LibraryView(p: Props): React.JSX.Element {
                       }
                     },
                   },
-                  ...(p.hasSgdbKey
-                    ? [
-                        {
-                          label: "Choisir sur SteamGridDB…",
-                          icon: ICONS.grid,
-                          run: () => setSgdbFor(sel),
-                        },
-                      ]
-                    : []),
+                  steamGridDbAction(p.hasSgdbKey, ICONS.grid, () => setSgdbFor(sel)),
                   ...(p.customCovers[sel.id]
                     ? [
                         {

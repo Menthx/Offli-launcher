@@ -535,6 +535,20 @@ kbd {
   border-radius: 7px;
   cursor: pointer;
 }
+.menu-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+/* Aide sous une action désactivée : texte secondaire, ≥ 4,69:1 sur le menu dans les 4 thèmes */
+.menu-hint {
+  font: 400 12px var(--f-body);
+  color: var(--text-muted);
+}
+.action-menu button.disabled {
+  color: var(--text-muted);
+  cursor: default;
+}
 .action-menu button:hover,
 .action-menu button:focus-visible {
   background: var(--menu-hover);

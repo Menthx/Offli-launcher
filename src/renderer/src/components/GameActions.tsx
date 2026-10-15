@@ -4,6 +4,10 @@ export interface MenuAction {
   label: string;
   icon: React.JSX.Element;
   run(): void | Promise<void>;
+  /** Visible et atteignable aux flèches (annoncée par les lecteurs d'écran), mais sans effet */
+  disabled?: boolean;
+  /** Aide affichée sous le libellé, reliée par aria-describedby */
+  hint?: string;
 }
 
 interface Props {
@@ -103,13 +107,24 @@ export function GameActions({ gameId, favorite, onFavorite, actions }: Props): R
               }}
               role="menuitem"
               tabIndex={-1}
+              aria-disabled={a.disabled || undefined}
+              aria-describedby={a.hint ? `menu-hint-${i}` : undefined}
+              className={a.disabled ? "disabled" : undefined}
               onClick={() => {
+                if (a.disabled) return;
                 close(true);
                 void a.run();
               }}
             >
               {a.icon}
-              {a.label}
+              <span className="menu-text">
+                {a.label}
+                {a.hint && (
+                  <span id={`menu-hint-${i}`} className="menu-hint">
+                    {a.hint}
+                  </span>
+                )}
+              </span>
             </button>
           ))}
         </div>
