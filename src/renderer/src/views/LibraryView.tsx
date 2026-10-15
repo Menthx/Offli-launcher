@@ -61,9 +61,7 @@ function matches(f: Filter, g: Game, s: GameStats | undefined): boolean {
 }
 
 interface Props extends ViewProps {
-  libraryPaths: string[];
   scanning: boolean;
-  onRescan(): void;
   onOpenSettings(): void;
   onCoverChanged(id: string): void;
   onRename(game: Game, name: string | null): void;
@@ -295,14 +293,6 @@ export function LibraryView(p: Props): React.JSX.Element {
           ))}
         </nav>
         <div className="side-foot">
-          <button
-            className="ghost"
-            onClick={p.onRescan}
-            disabled={p.scanning}
-            title={p.libraryPaths.join("\n")}
-          >
-            {p.scanning ? "Scan…" : "Rescanner"}
-          </button>
           <button
             className="settings-btn"
             onClick={p.onOpenSettings}

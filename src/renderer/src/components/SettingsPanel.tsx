@@ -12,12 +12,16 @@ const EMULATORS: { id: EmulatorPlatform; label: string; hint: string }[] = [
 interface Props {
   settings: Settings;
   onSave(patch: Partial<Settings>): Promise<void>;
+  scanning: boolean;
+  onScan(): void;
   onClose(): void;
 }
 
 export function SettingsPanel({
   settings,
   onSave,
+  scanning,
+  onScan,
   onClose,
 }: Props): React.JSX.Element {
   const [key, setKey] = useState(settings.steamGridDbKey);
@@ -82,16 +86,26 @@ export function SettingsPanel({
               </li>
             ))}
           </ul>
-          <button
-            className="ghost add-folder"
-            onClick={async () => {
-              const dir = await window.offli.pickFolder();
-              if (dir && !settings.libraryPaths.includes(dir))
-                await onSave({ libraryPaths: [...settings.libraryPaths, dir] });
-            }}
-          >
-            + Ajouter un dossier
-          </button>
+          <div className="row-actions">
+            <button
+              className="ghost"
+              onClick={async () => {
+                const dir = await window.offli.pickFolder();
+                if (dir && !settings.libraryPaths.includes(dir))
+                  await onSave({ libraryPaths: [...settings.libraryPaths, dir] });
+              }}
+            >
+              + Ajouter un dossier
+            </button>
+            <button
+              className="ghost"
+              onClick={onScan}
+              disabled={scanning || !settings.libraryPaths.length}
+              title={settings.libraryPaths.join("\n")}
+            >
+              {scanning ? "Scan…" : "Scanner"}
+            </button>
+          </div>
         </section>
 
         <section>

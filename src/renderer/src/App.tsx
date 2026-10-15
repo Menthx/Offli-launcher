@@ -127,9 +127,7 @@ export function App(): React.JSX.Element {
       ) : (
         <LibraryView
           {...props}
-          libraryPaths={settings.libraryPaths}
           scanning={scanning}
-          onRescan={rescan}
           onOpenSettings={() => setShowSettings(true)}
           onCoverChanged={(id) => forgetCover(id)}
           onRename={rename}
@@ -139,6 +137,8 @@ export function App(): React.JSX.Element {
         <SettingsPanel
           settings={settings}
           onSave={save}
+          scanning={scanning}
+          onScan={rescan}
           onClose={() => setShowSettings(false)}
         />
       )}

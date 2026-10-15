@@ -337,9 +337,7 @@ kbd {
   align-items: center;
   padding-top: 10px;
   border-top: 1px solid var(--border);
-}
-.side-foot .ghost {
-  flex: 1;
+  justify-content: flex-end;
 }
 .side-item h4 {
   font: 600 11px var(--f-mono);
@@ -649,9 +647,6 @@ kbd {
 .icon-btn:hover {
   color: var(--text);
   border-color: var(--border);
-}
-.add-folder {
-  width: fit-content;
 }
 .check {
   display: flex;
