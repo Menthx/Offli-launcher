@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { t } from '../../../../shared/i18n'
 import type { Game, GameStats } from '../../../../shared/types'
 import { Cover } from '../../components/Cover'
@@ -33,6 +34,9 @@ export function GameDetail(p: Props): React.JSX.Element {
   const sel = p.game
   const target = sel.versions?.find((v) => v.id === p.picked[sel.id]) ?? sel
   const since = p.runningSince[target.id]
+  const sheet = useRef<HTMLElement>(null)
+  // A sheet opening below the visible area scrolls into view
+  useEffect(() => sheet.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), [sel.id])
   const now = useNow(since !== undefined)
 
   const setCover = async (img: string | null): Promise<void> => {
@@ -72,7 +76,7 @@ export function GameDetail(p: Props): React.JSX.Element {
   ]
 
   return (
-    <aside className="lib-detail" aria-label={t('detail.sheetOf', { name: sel.name })}>
+    <aside ref={sheet} className="lib-detail" aria-label={t('detail.sheetOf', { name: sel.name })}>
       <button
         className="close-detail"
         onClick={p.onClose}

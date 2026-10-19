@@ -100,7 +100,7 @@
 .section-link:hover { color: var(--color-accent-hover); }
 
 /* Fixed card width: opening the sheet changes the column count, not the card size */
-.grid { display: grid; grid-template-columns: repeat(auto-fill, var(--card-width)); justify-content: start; gap: var(--space-5) var(--space-4); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, var(--card-width)); grid-auto-flow: row dense; justify-content: start; gap: var(--space-5) var(--space-4); }
 .recent { display: flex; gap: var(--space-3); overflow-x: auto; padding: 4px 2px 8px; }
 .recent .card { width: 96px; flex: none; }
 

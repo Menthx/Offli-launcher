@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import type { Game, GameStats } from '../../../../shared/types'
 import { Cover } from '../../components/Cover'
 import { t } from '../../../../shared/i18n'
@@ -8,7 +9,8 @@ export const MAX_ANIMATED_CARDS = 120
 
 export interface CardHandlers {
   selectedId: string | undefined
-  onSelect(id: string | undefined): void
+  /** section: where the card was clicked, so the sheet opens there */
+  onSelect(id: string | undefined, section?: string): void
   onLaunch(game: Game): void
 }
 
@@ -18,6 +20,8 @@ export interface GridProps extends CardHandlers {
   section: string
   animated: boolean
   stats: Record<string, GameStats>
+  /** Game sheet, shown as a full-width row under the selected card */
+  detail?: React.ReactNode
 }
 
 /** Click toggles selection; double-click launches and keeps it selected */
@@ -36,10 +40,12 @@ export function cardActions(
   }
 }
 
+/** Dense flow: cards after the sheet fill the rest of the selected card's row, the sheet takes the next one */
 export function GameGrid(p: GridProps): React.JSX.Element {
+  const handlers = { ...p, onSelect: (id: string | undefined) => p.onSelect(id, p.section) }
   return (
     <div className="grid">
-      {p.games.map((g) => (
+      {p.games.flatMap((g) => [
         <button
           key={g.id}
           className={`card ${g.id === p.selectedId ? 'sel' : ''}`}
@@ -51,7 +57,7 @@ export function GameGrid(p: GridProps): React.JSX.Element {
                 } as React.CSSProperties)
               : undefined
           }
-          {...cardActions(g, p)}
+          {...cardActions(g, handlers)}
         >
           <Cover game={g} />
           <span className="card-title">{g.name}</span>
@@ -59,8 +65,9 @@ export function GameGrid(p: GridProps): React.JSX.Element {
             <span>{kindLabel(g)}</span>
             <span>{playtime(p.stats[g.id]?.playtimeSec ?? 0)}</span>
           </span>
-        </button>
-      ))}
+        </button>,
+        ...(g.id === p.selectedId && p.detail ? [<Fragment key="detail">{p.detail}</Fragment>] : [])
+      ])}
     </div>
   )
 }

@@ -1,10 +1,8 @@
 /* Game sheet, action menu, rename, hidden path */
-/* Band at the top of the grid: upright cover, then name, fact pills and the Play row */
+/* Full-width row under the selected card: upright cover, then name, fact pills and the Play row */
 .lib-detail {
-  position: sticky;
-  top: 0;
-  z-index: 4;
-  flex: none;
+  position: relative;
+  grid-column: 1 / -1;
   display: grid;
   grid-template-columns: 160px minmax(0, 1fr);
   grid-template-rows: auto auto 1fr;
@@ -15,8 +13,7 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  /* Solid page-colored shadow above: cards scrolling under never show through the top padding */
-  box-shadow: 0 calc(var(--space-5) * -1) 0 var(--space-1) var(--color-bg), var(--shadow-lg);
+  box-shadow: var(--shadow-md);
 }
 .lib-detail > .cover { grid-area: cover; align-self: start; box-shadow: var(--shadow-md); }
 .lib-detail > .name-editor { grid-area: name; padding-right: calc(var(--icon-btn-md) + var(--space-3)); }
