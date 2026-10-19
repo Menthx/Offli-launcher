@@ -1,14 +1,14 @@
 /* Game sheet, action menu, rename, hidden path */
-/* Band at the top of the grid: image on the left, name, Play and facts on the right */
+/* Band at the top of the grid: upright cover, then name, fact pills and the Play row */
 .lib-detail {
   position: sticky;
   top: 0;
   z-index: 4;
   flex: none;
   display: grid;
-  grid-template-columns: minmax(200px, 300px) minmax(0, 1fr);
+  grid-template-columns: 160px minmax(0, 1fr);
   grid-template-rows: auto auto 1fr;
-  grid-template-areas: 'cover name' 'cover rail' 'cover facts';
+  grid-template-areas: 'cover name' 'cover pills' 'cover actions';
   column-gap: var(--space-5);
   row-gap: var(--space-3);
   padding: var(--space-4);
@@ -20,11 +20,35 @@
 }
 .lib-detail > .cover { grid-area: cover; align-self: start; box-shadow: var(--shadow-md); }
 .lib-detail > .name-editor { grid-area: name; padding-right: calc(var(--icon-btn-md) + var(--space-3)); }
-.lib-detail > .play-rail { grid-area: rail; max-width: 440px; }
-.lib-detail > .facts { grid-area: facts; align-self: start; }
+.lib-detail > .pills { grid-area: pills; }
+.lib-detail > .detail-actions { grid-area: actions; align-self: end; }
 @media (max-width: 900px) {
-  .lib-detail { grid-template-columns: 160px minmax(0, 1fr); }
+  .lib-detail { grid-template-columns: 120px minmax(0, 1fr); }
 }
+
+/* Facts: one pill each, muted label then value */
+.pills { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0; }
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: var(--radius-full);
+  background: var(--color-elevated);
+  font-size: var(--font-size-sm);
+}
+.pill dt { color: var(--color-text-muted); }
+.pill dd { margin: 0; font-variant-numeric: tabular-nums; user-select: text; }
+.pill--select { padding-right: 4px; }
+.pill--select .select { min-width: 160px; }
+
+/* Play rail on the left, hidden file path on the right */
+.detail-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-4); }
+.detail-actions .play-rail { flex: 0 1 440px; min-width: 280px; }
+.detail-file { display: flex; align-items: center; gap: var(--space-2); margin-left: auto; min-width: 0; font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.detail-file .spoiler { width: 180px; }
+.detail-file .spoiler-shown { max-width: 360px; }
 .close-detail {
   position: absolute;
   top: var(--space-4);
@@ -134,27 +158,12 @@
 .menu-hint { font-size: var(--font-size-xs); color: var(--color-text-muted); }
 
 /* Click-to-rename title */
-.lib-detail h3 { margin: 0; font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold); line-height: var(--line-height-tight); letter-spacing: -0.01em; }
+.lib-detail h3 { margin: 0; font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold, 700); line-height: var(--line-height-tight); letter-spacing: -0.01em; }
 .name-editor { display: flex; flex-direction: column; gap: 4px; }
 .name-btn { display: inline-flex; align-items: baseline; gap: var(--space-2); padding: 0; border: none; background: none; font: inherit; text-align: left; cursor: text; border-radius: var(--radius-xs); }
 .name-btn svg { flex: none; opacity: 0; color: var(--color-text-subtle); transition: opacity var(--t-fast); }
 .name-btn:hover svg, .name-btn:focus-visible svg { opacity: 1; }
 .name-input { height: 34px; font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
-
-/* Two label / value pairs per row, fixed label columns so values never shift them */
-.facts {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr);
-  margin: 0;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  font-size: var(--font-size-sm);
-}
-.facts dt, .facts dd { margin: 0; padding: 9px 12px; border-top: 1px solid var(--color-border); }
-.facts dt:nth-of-type(-n + 2), .facts dt:nth-of-type(-n + 2) + dd { border-top: none; }
-.facts dt { color: var(--color-text-muted); white-space: nowrap; }
-.facts dd { min-width: 0; padding-left: 0; overflow-wrap: anywhere; user-select: text; font-variant-numeric: tabular-nums; }
 
 /* Fixed height: show / hide never moves anything */
 .spoiler {

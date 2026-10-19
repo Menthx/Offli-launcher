@@ -81,36 +81,32 @@ export function GameDetail(p: Props): React.JSX.Element {
       >
         <Icon name="close" size={14} />
       </button>
-      <Cover game={sel} wide />
+      <Cover game={sel} />
       <NameEditor game={sel} onRename={p.onRename} />
-      {/* Inset rail: raised Play, flat favorite and menu (DA minimal variant) */}
-      <div className="play-rail" data-tour="detail-actions">
-        {since !== undefined ? (
-          <button className="play-main is-running" disabled aria-live="polite">
-            <span className="run-dot" aria-hidden="true" />
-            <span className="play-main__label">
-              {t('common.running', {
-                time: playtime(Math.max(0, Math.round((now - since) / 1000)))
-              })}
-            </span>
-          </button>
-        ) : (
-          <button className="play-main" onClick={() => p.onLaunch(target)}>
-            <Icon name="play" size={16} />
-            <span className="play-main__label">{t('common.play')}</span>
-            <kbd aria-hidden="true">{t('common.keyEnter')}</kbd>
-          </button>
+      {/* Facts as pills: label muted, value bright */}
+      <dl className="pills">
+        <div className="pill">
+          <dt className="visually-hidden">{t('detail.type')}</dt>
+          <dd>
+            {kindLabel(sel)} · {PLATFORM_LABEL[sel.platform]}
+          </dd>
+        </div>
+        {sel.kind !== 'fangame' && (
+          <div className="pill">
+            <dt>{t('detail.base')}</dt>
+            <dd>{sel.baseRom ? `${baseGameName(sel.baseRom)} (${sel.baseRom.code})` : t('detail.unknownBase')}</dd>
+          </div>
         )}
-        <GameActions
-          gameId={sel.id}
-          favorite={!!p.stats?.favorite}
-          onFavorite={() => p.onFavorite(sel)}
-          actions={actions}
-        />
-      </div>
-      <dl className="facts" data-tour="detail-actions">
+        <div className="pill">
+          <dt>{t('detail.lastSession')}</dt>
+          <dd>{lastPlayed(p.stats?.lastPlayed)}</dd>
+        </div>
+        <div className="pill">
+          <dt>{t('detail.playtime')}</dt>
+          <dd>{playtime(p.stats?.playtimeSec ?? 0)}</dd>
+        </div>
         {sel.versions && (
-          <>
+          <div className="pill pill--select">
             <dt>
               <label htmlFor="version-select">{t('detail.version')}</label>
             </dt>
@@ -126,28 +122,40 @@ export function GameDetail(p: Props): React.JSX.Element {
                 }))}
               />
             </dd>
-          </>
+          </div>
         )}
-        <dt>{t('detail.type')}</dt>
-        <dd>
-          {kindLabel(sel)} · {PLATFORM_LABEL[sel.platform]}
-        </dd>
-        {sel.kind !== 'fangame' && (
-          <>
-            <dt>{t('detail.base')}</dt>
-            <dd>{sel.baseRom ? `${baseGameName(sel.baseRom)} (${sel.baseRom.code})` : t('detail.unknownBase')}</dd>
-          </>
-        )}
-        <dt>{t('detail.lastSession')}</dt>
-        <dd>{lastPlayed(p.stats?.lastPlayed)}</dd>
-        <dt>{t('detail.playtime')}</dt>
-        <dd>{playtime(p.stats?.playtimeSec ?? 0)}</dd>
-        {/* Last: the revealed path may wrap without moving anything below */}
-        <dt>{t('detail.file')}</dt>
-        <dd>
-          <PathSpoiler key={target.id} path={target.path} />
-        </dd>
       </dl>
+      <div className="detail-actions">
+        {/* Inset rail: raised Play, flat favorite and menu (DA minimal variant) */}
+        <div className="play-rail" data-tour="detail-actions">
+          {since !== undefined ? (
+            <button className="play-main is-running" disabled aria-live="polite">
+              <span className="run-dot" aria-hidden="true" />
+              <span className="play-main__label">
+                {t('common.running', {
+                  time: playtime(Math.max(0, Math.round((now - since) / 1000)))
+                })}
+              </span>
+            </button>
+          ) : (
+            <button className="play-main" onClick={() => p.onLaunch(target)}>
+              <Icon name="play" size={16} />
+              <span className="play-main__label">{t('common.play')}</span>
+              <kbd aria-hidden="true">{t('common.keyEnter')}</kbd>
+            </button>
+          )}
+          <GameActions
+            gameId={sel.id}
+            favorite={!!p.stats?.favorite}
+            onFavorite={() => p.onFavorite(sel)}
+            actions={actions}
+          />
+        </div>
+        <div className="detail-file">
+          <span>{t('detail.file')}</span>
+          <PathSpoiler key={target.id} path={target.path} />
+        </div>
+      </div>
     </aside>
   )
 }

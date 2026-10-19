@@ -24,7 +24,7 @@ Ce document résume tout ce qui a été ajouté ou modifié par rapport à la ve
   - infobulles `tooltip.ts` sur tout élément `data-tooltip="Texte|Raccourci"` et sur les boutons-icônes ;
   - paramètres en deux colonnes (navigation à gauche, groupes en cartes à droite) ;
   - rail Jouer de la fiche : Jouer surélevé avec le raccourci Entrée, favori et menu ☰ à plat.
-  - fiche du jeu en bande en haut de la grille (plus de panneau à droite) : image à gauche, nom, Jouer et infos à droite ; elle reste visible quand on fait défiler.
+  - fiche du jeu en bande en haut de la grille (plus de panneau à droite) : jaquette debout à gauche, nom, infos en pastilles, Jouer et chemin du fichier à droite ; elle reste visible quand on fait défiler.
 
 ## Bibliothèque
 
