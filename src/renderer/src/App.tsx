@@ -125,6 +125,14 @@ export function App(): React.JSX.Element {
             setView('library')
             setTourOpen(true)
           }}
+          onReset={() => {
+            // Defaults include an unfinished tutorial, so it opens again
+            setShowSettings(false)
+            setView('library')
+            setSelectedId(undefined)
+            void data.load()
+            setTourOpen(true)
+          }}
           onClose={() => setShowSettings(false)}
         />
       )}

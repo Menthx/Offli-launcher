@@ -7,6 +7,7 @@ import { withMinDuration } from '../../minDuration'
 import { Cover } from '../Cover'
 import { FolderList } from '../FolderList'
 import { BackupGroup } from './BackupGroup'
+import { ResetGroup } from './ResetGroup'
 import { Group, Row } from './controls'
 
 /** Minimum 'Scanning…' time so a fast scan stays visible */
@@ -24,11 +25,13 @@ export function LibraryTab({
   onSave,
   scanning,
   onScan,
-  onImported
+  onImported,
+  onReset
 }: Props & {
   scanning: boolean
   onScan(): unknown
   onImported(): void
+  onReset(): void
 }): React.JSX.Element {
   const [scanBusy, setScanBusy] = useState(false)
   const busy = scanBusy || scanning
@@ -64,6 +67,7 @@ export function LibraryTab({
         </Row>
       </Group>
       <BackupGroup onImported={onImported} />
+      {import.meta.env.DEV && <ResetGroup onReset={onReset} />}
     </>
   )
 }

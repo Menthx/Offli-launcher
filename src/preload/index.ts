@@ -22,6 +22,7 @@ const api: OffliApi = {
   },
   exportData: () => ipcRenderer.invoke('data:export'),
   importData: () => ipcRenderer.invoke('data:import'),
+  resetSettings: () => ipcRenderer.invoke('data:reset'),
   openFolder: (id) => ipcRenderer.invoke('game:folder', id),
   setFullScreen: (on) => ipcRenderer.invoke('window:fullscreen', on),
   sgdbSearch: (term) => ipcRenderer.invoke('sgdb:search', term),

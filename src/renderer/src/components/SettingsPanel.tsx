@@ -39,6 +39,7 @@ interface Props {
   onScan(): unknown
   /** Backup imported: reload everything from the main process */
   onImported(): void
+  onReset(): void
   /** Closes Settings and restarts the tutorial */
   onReplayTour(): void
   onClose(): void
@@ -122,7 +123,14 @@ export function SettingsPanel(p: Props): React.JSX.Element {
         >
           <h3 className="settings__panel-title">{t(current.label)}</h3>
           {tab === 'library' && (
-            <LibraryTab {...common} games={p.games} scanning={p.scanning} onScan={p.onScan} onImported={p.onImported} />
+            <LibraryTab
+              {...common}
+              games={p.games}
+              scanning={p.scanning}
+              onScan={p.onScan}
+              onImported={p.onImported}
+              onReset={p.onReset}
+            />
           )}
           {tab === 'display' && <DisplayTab {...common} onReplayTour={p.onReplayTour} />}
           {tab === 'emulators' && <EmulatorsTab {...common} />}

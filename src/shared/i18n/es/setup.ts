@@ -1,5 +1,13 @@
 export const setup = {
   settings: {
+    reset: 'Restablecer',
+    resetRow: 'Restablecer todos los ajustes',
+    resetDesc:
+      'Carpetas de juegos, tema, idioma, emuladores, nombres, imágenes elegidas, juegos ocultos y clave de SteamGridDB. Tus favoritos y tu tiempo de juego se conservan.',
+    resetButton: 'Restablecer…',
+    resetConfirm: '¿Restablecerlo todo? Esta acción no se puede deshacer.',
+    resetConfirmButton: 'Restablecer todo',
+    resetFailed: 'No se pudieron restablecer los ajustes.',
     backup: 'Copia de seguridad',
     backupRow: 'Favoritos, tiempo de juego, nombres, imágenes y ajustes',
     backupDesc: 'La clave API de SteamGridDB nunca se exporta.',

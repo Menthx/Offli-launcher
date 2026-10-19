@@ -130,6 +130,8 @@ export interface OffliApi {
   /** Backup: write / read a JSON file picked by the user */
   exportData(): Promise<DataResult | null>
   importData(): Promise<DataResult | null>
+  /** Puts every setting back to its default (stats are kept) */
+  resetSettings(): Promise<boolean>
   openFolder(id: string): Promise<void>
   setFullScreen(on: boolean): Promise<void>
   /** F11: toggles Library / Big Picture */

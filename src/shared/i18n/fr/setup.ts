@@ -1,5 +1,13 @@
 export const setup = {
   settings: {
+    reset: 'Réinitialisation',
+    resetRow: 'Remettre tous les réglages à zéro',
+    resetDesc:
+      'Dossiers de jeux, thème, langue, émulateurs, noms, images choisies, jeux masqués et clé SteamGridDB. Tes favoris et ton temps de jeu sont gardés.',
+    resetButton: 'Réinitialiser…',
+    resetConfirm: 'Tout remettre à zéro ? Cette action ne peut pas être annulée.',
+    resetConfirmButton: 'Tout réinitialiser',
+    resetFailed: 'Les réglages n’ont pas pu être réinitialisés.',
     backup: 'Sauvegarde',
     backupRow: 'Favoris, temps de jeu, noms, images et réglages',
     backupDesc: 'La clé API SteamGridDB n’est jamais exportée.',

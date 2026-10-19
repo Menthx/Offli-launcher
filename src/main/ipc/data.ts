@@ -1,10 +1,11 @@
-import { dialog, ipcMain } from 'electron'
+import { app, dialog, ipcMain } from 'electron'
 import { readFile, writeFile } from 'node:fs/promises'
 import type { DataResult } from '../../shared/types'
 import { makeBackup, readBackup } from '../backup'
 import type { MainContext } from '../context'
+import { DEFAULT_SETTINGS } from '../store'
 
-/** Backup export / import through a user-picked JSON file */
+/** Backup export / import through a user-picked JSON file, and settings reset */
 export function registerDataIpc(ctx: MainContext): void {
   const filters = [{ name: 'JSON', extensions: ['json'] }]
 
@@ -44,5 +45,21 @@ export function registerDataIpc(ctx: MainContext): void {
     ctx.applyLanguage()
     ctx.pushStats()
     return { ok: true }
+  })
+
+  // Favorites and play time are player data, not settings: they stay
+  // Development only: the button is hidden in packaged builds
+  ipcMain.handle('data:reset', async (): Promise<boolean> => {
+    if (app.isPackaged) return false
+    ctx.settings.data = structuredClone(DEFAULT_SETTINGS)
+    ctx.library.data = []
+    try {
+      await Promise.all([ctx.settings.save(), ctx.library.save()])
+    } catch {
+      return false
+    }
+    ctx.dropCovers()
+    ctx.applyLanguage()
+    return true
   })
 }

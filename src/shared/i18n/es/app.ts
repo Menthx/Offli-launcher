@@ -4,6 +4,7 @@ export const app = {
     appName: 'Offli-Launcher',
     play: 'Jugar',
     close: 'Cerrar',
+    cancel: 'Cancelar',
     show: 'Mostrar',
     keyEnter: 'Intro',
     keyEsc: 'Esc',
