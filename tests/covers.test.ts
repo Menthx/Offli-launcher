@@ -127,6 +127,13 @@ describe('images des fangames', () => {
   })
 })
 
+describe('logos', () => {
+  it('signale une image avec de la transparence, pour ne pas la rogner', async () => {
+    expect(await covers.transparent(join(root, 'Revival/Graphics/Titles/logo1.png'))).toBe(true)
+    expect(await covers.transparent(join(root, 'Fallen/Graphics/Titles/title.png'))).toBe(false)
+  })
+})
+
 describe('icône du .exe des fangames', () => {
   it('passe après le logo ou l’écran titre', async () => {
     expect(await pick(fangame('Titled'))).toBe('title.png')

@@ -24,6 +24,10 @@ export function registerCoverIpc(ctx: MainContext): void {
   const sgdb = (): SteamGridDb | null =>
     settings.data.steamGridDbKey ? new SteamGridDb(settings.data.steamGridDbKey) : null
 
+  // fit=1 tells the renderer to show a logo whole instead of cropping it
+  const withFit = async (url: string, path: string): Promise<string> =>
+    (await covers.transparent(path)) ? `${url}&fit=1` : url
+
   protocol.handle(COVER_SCHEME, (req) => {
     const url = new URL(req.url)
     const id = url.pathname.replace(/^\//, '')
@@ -43,9 +47,9 @@ export function registerCoverIpc(ctx: MainContext): void {
     const path = game && (await covers.resolve(game))
     if (!path) return null
     coverPaths.set(id, path)
-    if (size !== 'thumb') return ctx.coverUrl(id)
+    if (size !== 'thumb') return withFit(ctx.coverUrl(id), path)
     thumbPaths.set(id, await thumbnailFor(path, thumbDir))
-    return ctx.coverUrl(id, 'thumb')
+    return withFit(ctx.coverUrl(id, 'thumb'), path)
   })
   ipcMain.handle('cover:set', async (_e, id: string, path: string | null) => {
     if (path) settings.data.coverOverrides[id] = path
@@ -56,7 +60,7 @@ export function registerCoverIpc(ctx: MainContext): void {
     const resolved = game && (await covers.resolve(game))
     if (!resolved) return null
     coverPaths.set(id, resolved)
-    return ctx.coverUrl(id)
+    return withFit(ctx.coverUrl(id), resolved)
   })
 
   // Nothing is requested until the picker opens

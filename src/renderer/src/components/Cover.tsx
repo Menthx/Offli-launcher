@@ -35,6 +35,9 @@ export function useCover(id: string, size: CoverSize = 'full'): string | null {
   return url
 }
 
+/** The main process marks logos and other see-through images: shown whole, never cropped */
+export const isFitUrl = (url: string): boolean => new URL(url).searchParams.has('fit')
+
 /** Loaded image shape: cover art, square icon (Icon.png, .exe) or tiny pixel-art icon */
 type Shape = 'cover' | 'icon' | 'pixel'
 
@@ -52,7 +55,7 @@ export function Cover({ game, wide = false }: { game: Game; wide?: boolean }): R
   const shape = measured && measured.url === url ? measured.shape : 'cover'
   // Icons are centered on a blurred copy of themselves; romhack covers are shown whole
   const icon = shape !== 'cover'
-  const fit = icon || game.kind !== 'fangame'
+  const fit = icon || game.kind !== 'fangame' || (!!url && isFitUrl(url))
   const cls = ['cover', wide && 'wide', !url && 'empty', url && fit && 'fit', url && icon && 'icon']
     .filter(Boolean)
     .join(' ')

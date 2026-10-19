@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { isFitUrl } from '../../components/Cover'
 
 interface Layer {
   id: string
@@ -24,7 +25,8 @@ export function Backdrop({ id, url }: { id: string; url: string | null }): React
       const layer = {
         id,
         url,
-        wide: img.naturalWidth > img.naturalHeight * 1.2,
+        // A logo is never stretched to full bleed
+        wide: img.naturalWidth > img.naturalHeight * 1.2 && !isFitUrl(url),
         pixel: img.naturalWidth <= 128
       }
       setLayers((ls) => [...ls.filter((l) => l.id !== id).slice(-1), layer])

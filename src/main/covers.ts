@@ -12,6 +12,8 @@ import { type StatsReader, fangameTitle, gameIcon } from './cover/titles'
 
 /** Below this, a fangame's .exe icon is too blurry to use while another image exists */
 const MIN_EXE_ICON = 48
+/** Share of opaque pixels above which an image counts as a full picture */
+const OPAQUE = 0.98
 /** Engine default .exe icons (Essentials Poké Ball, Pokémon Studio gear), as extracted PNGs */
 const GENERIC_EXE_ICONS = new Set([
   '726054f7dbc4ede4e630ae0a475e0113dd11431f',
@@ -27,6 +29,7 @@ async function exeIconWidth(path: string): Promise<number> {
 /** Cover lookup order: user pick, cover.png / folder.png, fangame logo or title screen, own .exe icon, Icon.png, SteamGridDB, base game cover, system or NDS icon; downloads are cached */
 export class CoverResolver {
   private memo = new Map<string, Promise<string | null>>()
+  private alpha = new Map<string, Promise<boolean>>()
 
   constructor(
     private cacheDir: string,
@@ -36,6 +39,19 @@ export class CoverResolver {
     /** Image measurements for picking a title screen (Electron nativeImage) */
     private stats: StatsReader = async () => null
   ) {}
+
+  /** True when the image has see-through areas (a logo): it is shown whole, never cropped */
+  async transparent(path: string): Promise<boolean> {
+    let p = this.alpha.get(path)
+    if (!p) {
+      p = this.stats(path).then(
+        (s) => !!s && s.coverage < OPAQUE,
+        () => false
+      )
+      this.alpha.set(path, p)
+    }
+    return p
+  }
 
   invalidate(id?: string): void {
     if (id) this.memo.delete(id)
