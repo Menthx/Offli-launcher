@@ -89,7 +89,7 @@ export function LibraryView(p: Props): React.JSX.Element {
     p.games.length > 0 ? t('library.emptyNoMatch') : p.scanning ? t('library.emptyScanning') : t('library.emptyNone')
 
   return (
-    <div className={`lib ${sel ? '' : 'no-detail'}`}>
+    <div className="lib">
       <Sidebar
         ref={search}
         games={p.games}
@@ -104,6 +104,25 @@ export function LibraryView(p: Props): React.JSX.Element {
       />
 
       <main className="lib-main">
+        {/* Opens at the top of the page and stays there while scrolling */}
+        {sel && (
+          <GameDetail
+            game={sel}
+            stats={p.stats[sel.id]}
+            hasCustomCover={!!p.customCovers[sel.id]}
+            hasSgdbKey={p.hasSgdbKey}
+            picked={picked}
+            runningSince={p.running}
+            onPick={(gameId, versionId) => setPicked({ ...picked, [gameId]: versionId })}
+            onClose={() => p.onSelect(undefined)}
+            onLaunch={p.onLaunch}
+            onFavorite={p.onFavorite}
+            onRename={p.onRename}
+            onCoverChanged={p.onCoverChanged}
+            onPickSgdb={setSgdbFor}
+            onHide={p.onHide}
+          />
+        )}
         <div className="lib-toolbar">
           <label htmlFor="lib-sort" className="lib-toolbar__label">
             <Icon name="sort" size={14} />
@@ -153,24 +172,6 @@ export function LibraryView(p: Props): React.JSX.Element {
         )}
       </main>
 
-      {sel && (
-        <GameDetail
-          game={sel}
-          stats={p.stats[sel.id]}
-          hasCustomCover={!!p.customCovers[sel.id]}
-          hasSgdbKey={p.hasSgdbKey}
-          picked={picked}
-          runningSince={p.running}
-          onPick={(gameId, versionId) => setPicked({ ...picked, [gameId]: versionId })}
-          onClose={() => p.onSelect(undefined)}
-          onLaunch={p.onLaunch}
-          onFavorite={p.onFavorite}
-          onRename={p.onRename}
-          onCoverChanged={p.onCoverChanged}
-          onPickSgdb={setSgdbFor}
-          onHide={p.onHide}
-        />
-      )}
       {sgdbFor && (
         <SgdbPicker
           game={sgdbFor}

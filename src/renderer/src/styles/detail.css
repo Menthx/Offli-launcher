@@ -1,20 +1,34 @@
 /* Game sheet, action menu, rename, hidden path */
+/* Band at the top of the grid: image on the left, name, Play and facts on the right */
 .lib-detail {
-  position: relative;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  flex: none;
+  display: grid;
+  grid-template-columns: minmax(200px, 300px) minmax(0, 1fr);
+  grid-template-rows: auto auto 1fr;
+  grid-template-areas: 'cover name' 'cover rail' 'cover facts';
+  column-gap: var(--space-5);
+  row-gap: var(--space-3);
   padding: var(--space-4);
-  overflow: hidden auto;
   background: var(--color-surface);
-  border-left: 1px solid var(--color-border);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  /* Solid page-colored shadow above: cards scrolling under never show through the top padding */
+  box-shadow: 0 calc(var(--space-5) * -1) 0 var(--space-1) var(--color-bg), var(--shadow-lg);
 }
-.lib-detail .cover { box-shadow: var(--shadow-md); }
+.lib-detail > .cover { grid-area: cover; align-self: start; box-shadow: var(--shadow-md); }
+.lib-detail > .name-editor { grid-area: name; padding-right: calc(var(--icon-btn-md) + var(--space-3)); }
+.lib-detail > .play-rail { grid-area: rail; max-width: 440px; }
+.lib-detail > .facts { grid-area: facts; align-self: start; }
+@media (max-width: 900px) {
+  .lib-detail { grid-template-columns: 160px minmax(0, 1fr); }
+}
 .close-detail {
   position: absolute;
-  top: var(--space-6);
-  right: var(--space-6);
+  top: var(--space-4);
+  right: var(--space-4);
   z-index: 2;
   width: var(--icon-btn-md);
   height: var(--icon-btn-md);
@@ -127,10 +141,10 @@
 .name-btn:hover svg, .name-btn:focus-visible svg { opacity: 1; }
 .name-input { height: 34px; font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
 
-/* Fixed label column so values never shift it */
+/* Two label / value pairs per row, fixed label columns so values never shift them */
 .facts {
   display: grid;
-  grid-template-columns: 136px minmax(0, 1fr);
+  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr);
   margin: 0;
   background: var(--color-bg);
   border: 1px solid var(--color-border);
@@ -138,7 +152,7 @@
   font-size: var(--font-size-sm);
 }
 .facts dt, .facts dd { margin: 0; padding: 9px 12px; border-top: 1px solid var(--color-border); }
-.facts dt:first-of-type, .facts dt:first-of-type + dd { border-top: none; }
+.facts dt:nth-of-type(-n + 2), .facts dt:nth-of-type(-n + 2) + dd { border-top: none; }
 .facts dt { color: var(--color-text-muted); white-space: nowrap; }
 .facts dd { min-width: 0; padding-left: 0; overflow-wrap: anywhere; user-select: text; font-variant-numeric: tabular-nums; }
 

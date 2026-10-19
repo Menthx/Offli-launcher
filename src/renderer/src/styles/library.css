@@ -2,11 +2,9 @@
 .lib {
   height: 100%;
   display: grid;
-  grid-template-columns: var(--lib-side-width) minmax(0, 1fr) var(--lib-detail-width);
+  grid-template-columns: var(--lib-side-width) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
 }
-/* No selection: the sheet goes away and the grid takes its space */
-.lib.no-detail { grid-template-columns: var(--lib-side-width) minmax(0, 1fr); }
 
 /* Sidebar */
 .lib-side {
@@ -130,7 +128,7 @@
 .cover .badge { position: absolute; top: 8px; left: 8px; z-index: 1; backdrop-filter: blur(8px); background: color-mix(in srgb, var(--color-bg) 78%, transparent); }
 
 @media (max-width: 1100px) {
-  :root { --lib-side-width: 196px; --lib-detail-width: 280px; }
+  :root { --lib-side-width: 196px; }
 }
 
 /* Grid toolbar: sort on the right */
