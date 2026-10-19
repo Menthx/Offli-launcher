@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import type { Game, GameStats, Settings } from '../shared/types'
 import type { HashCache } from './baseRoms'
 import { CoverResolver } from './covers'
+import { imageStats } from './cover/imageStats'
 import { resolveLanguage, setLanguage } from '../shared/i18n'
 import { DEFAULT_SETTINGS, JsonFile, applyNames, emptyStats, mergeSettings } from './store'
 
@@ -22,7 +23,8 @@ export function createContext(data: string, getWin: () => BrowserWindow | null) 
       const icon = await app.getFileIcon(path, { size: 'large' }).catch(() => null)
       // System icon too small (32 px on Windows): the name card looks better than a blurry image
       return icon && !icon.isEmpty() && icon.getSize().width >= 48 ? icon.toPNG() : null
-    }
+    },
+    imageStats
   )
   // Only paths resolved here can be served to the renderer
   const coverPaths = new Map<string, string>()

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { mkdir, open, readFile, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -6,15 +7,24 @@ import { NDS_BANNER_ICON_SIZE, ndsBannerOffset, ndsIconToPng } from './ndsIcon'
 import { baseGameFor, libretroThumbnailUrls } from './romHeader'
 import { readRomHeader } from './scanner'
 import { exeIconPng, pngWidth } from './cover/exeIcon'
-import { IMAGE_EXT, download, fangameTitle, localImage, sniffExt } from './cover/files'
+import { IMAGE_EXT, download, localImage, sniffExt } from './cover/files'
+import { type StatsReader, fangameTitle, gameIcon } from './cover/titles'
 
-/** Below this, a fangame's .exe icon is too blurry to replace its title screen */
+/** Below this, a fangame's .exe icon is too blurry to use while another image exists */
 const MIN_EXE_ICON = 48
+/** Engine default .exe icons (Essentials Poké Ball, Pokémon Studio gear), as extracted PNGs */
+const GENERIC_EXE_ICONS = new Set([
+  '726054f7dbc4ede4e630ae0a475e0113dd11431f',
+  '446898dad2e2a07c95f45a358e4f8de4f552614e'
+])
 
-const pngFileWidth = async (path: string): Promise<number> =>
-  pngWidth(await readFile(path).catch(() => Buffer.alloc(0)))
+/** Width of an extracted .exe icon, 0 for an engine default */
+async function exeIconWidth(path: string): Promise<number> {
+  const png = await readFile(path).catch(() => Buffer.alloc(0))
+  return GENERIC_EXE_ICONS.has(createHash('sha1').update(png).digest('hex')) ? 0 : pngWidth(png)
+}
 
-/** Cover lookup order: user pick, cover.png / folder.png, fangame .exe icon, title screen or Icon.png, SteamGridDB, base game cover, system or NDS icon; downloads are cached */
+/** Cover lookup order: user pick, cover.png / folder.png, fangame logo or title screen, own .exe icon, Icon.png, SteamGridDB, base game cover, system or NDS icon; downloads are cached */
 export class CoverResolver {
   private memo = new Map<string, Promise<string | null>>()
 
@@ -22,7 +32,9 @@ export class CoverResolver {
     private cacheDir: string,
     private settings: () => Settings,
     /** System icon (Electron app.getFileIcon) when the .exe can't be read */
-    private fileIcon?: (path: string) => Promise<Buffer | null>
+    private fileIcon?: (path: string) => Promise<Buffer | null>,
+    /** Image measurements for picking a title screen (Electron nativeImage) */
+    private stats: StatsReader = async () => null
   ) {}
 
   invalidate(id?: string): void {
@@ -53,12 +65,12 @@ export class CoverResolver {
     const local = await localImage(game)
     if (local) return local
 
-    // The .exe icon is the game's own artwork; Graphics/Titles guesses are sometimes wrong
+    // Fangames: the logo or title screen names the game, then its own .exe icon, then Icon.png
     const exe = game.kind === 'fangame' ? await this.exeIcon(game) : null
-    if (exe && (await pngFileWidth(exe)) >= MIN_EXE_ICON) return exe
+    const exeWidth = exe ? await exeIconWidth(exe) : 0
     if (game.kind === 'fangame') {
-      const title = await fangameTitle(game)
-      if (title) return title
+      const found = (await fangameTitle(game, this.stats)) ?? (exeWidth >= MIN_EXE_ICON ? exe : await gameIcon(game))
+      if (found) return found
     }
 
     if (s.useSteamGridDb && s.steamGridDbKey) {
@@ -71,7 +83,8 @@ export class CoverResolver {
       if (base) return base
     }
 
-    if (game.kind === 'fangame') return exe ?? this.systemIcon(game)
+    // An engine default icon says nothing: the name card is clearer
+    if (game.kind === 'fangame') return exe ? (exeWidth ? exe : null) : this.systemIcon(game)
     if (game.platform === 'nds') return this.ndsIcon(game)
     return null
   }

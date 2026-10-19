@@ -33,11 +33,11 @@ Pour chaque jeu, la première source trouvée est utilisée, puis mise en cache 
 
 1. l'image choisie dans Offli-Launcher (« Changer l'image ») ;
 2. une image posée à côté du jeu : `cover.png` dans le dossier d'un fangame ; `cover.png` pour une ROM (les captures d'émulateur comme `<rom>-0.png` ne sont jamais utilisées) ;
-3. pour un fangame, l'icône de son `.exe` si elle fait au moins 48 px ;
-4. pour un fangame, l'écran titre dans `Graphics/Titles` (`title.png`, sinon la plus grande image hors crédits, splash, intro, fonds et calques d’effet), sinon `Icon.png` ou `project_icon.png` ;
+3. pour un fangame, le logo ou l'écran titre dans `Graphics/Titles` : seules les images dont le nom contient « logo » ou « title » (ou « titulo », « titre », « titel ») sont candidates, hors crédits, splash, intro, invites et calques. Chacune est notée sur une copie de 48 px (part de pixels opaques × nombre de couleurs) : les contours, masques et silhouettes sont écartés, un logo passe devant un écran complet, une image en portrait a un petit bonus. Les écrans titre d'exemple de Pokémon Essentials sont ignorés (`main/cover/titles.ts`) ;
+4. pour un fangame, l'icône de son `.exe` si elle fait au moins 48 px et n'est pas l'icône par défaut du moteur (Poké Ball d'Essentials, engrenage de Pokémon Studio), sinon `Icon.png`, `project_icon.png` ou `graphics/icons/game.png` (Pokémon Studio) ;
 5. SteamGridDB, si activé avec une clé API ; avec une clé, « ⋯ > Choisir sur SteamGridDB… » permet aussi de choisir la jaquette soi-même (la clé reste dans le process principal) ;
 6. pour un romhack, la jaquette du jeu de base, téléchargée depuis [libretro-thumbnails](https://github.com/libretro-thumbnails) ;
-7. pour un fangame, son icône `.exe` même petite, sinon l'icône système si elle fait au moins 48 px ; pour une ROM NDS, l'icône embarquée dans le fichier.
+7. pour un fangame, son icône `.exe` même petite (une icône par défaut du moteur laisse la carte avec le nom), sinon l'icône système si elle fait au moins 48 px ; pour une ROM NDS, l'icône embarquée dans le fichier.
 
 Sans image, la carte reste vide avec le nom du jeu.
 

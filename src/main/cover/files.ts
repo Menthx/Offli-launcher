@@ -1,12 +1,8 @@
-import { readdir, stat } from 'node:fs/promises'
+import { readdir } from 'node:fs/promises'
 import { basename, extname, join } from 'node:path'
 import type { Game } from '../../shared/types'
 
 export const IMAGE_EXT = ['.png', '.jpg', '.jpeg', '.webp']
-
-/** Graphics/Titles images that aren't the title screen: credits, splash, intro, backgrounds, effect layers */
-export const NOT_A_TITLE =
-  /^(credits|splash|intro)|(^|[_\s-])(bg\d*|background|overlay|effect|eff|shine|shade)([_\s-]|$)/i
 
 export async function listDir(dir: string): Promise<string[]> {
   try {
@@ -54,25 +50,4 @@ export async function localImage(game: Game): Promise<string | null> {
     if (hit) return join(game.dir, hit)
   }
   return null
-}
-
-/** title.png in Graphics/Titles, else the largest non-credit/splash/background image, else Icon.png / project_icon.png */
-export async function fangameTitle(game: Game): Promise<string | null> {
-  const graphics = await findDirCi(game.dir, 'Graphics')
-  const titles = graphics && (await findDirCi(graphics, 'Titles'))
-  if (titles) {
-    const images = (await listDir(titles)).filter(isImage)
-    const title = images.find((f) => basename(f, extname(f)).toLowerCase() === 'title')
-    if (title) return join(titles, title)
-    const candidates = images.filter((f) => !NOT_A_TITLE.test(basename(f, extname(f))))
-    let best: { file: string; size: number } | undefined
-    for (const f of candidates) {
-      const size = (await stat(join(titles, f)).catch(() => undefined))?.size ?? 0
-      if (!best || size > best.size) best = { file: f, size }
-    }
-    if (best) return join(titles, best.file)
-  }
-  const root = await listDir(game.dir)
-  const icon = ['icon.png', 'project_icon.png'].map((n) => root.find((f) => f.toLowerCase() === n)).find(Boolean)
-  return icon ? join(game.dir, icon) : null
 }
