@@ -1,170 +1,182 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { ViewProps } from "../App";
-import { Cover, useCover } from "../components/Cover";
-import { PLATFORM_LABEL, kindLabel, lastPlayed, playtime } from "../format";
-
-/** Boutons au format « standard gamepad » (Xbox : A=0, B=1, X=2, Y=3) */
-const BTN = { A: 0, B: 1, X: 2, LEFT: 14, RIGHT: 15 };
+import { useMemo, useRef, useState } from 'react'
+import { t } from '../../../shared/i18n'
+import type { ViewProps } from '../App'
+import { Cover, useCover } from '../components/Cover'
+import { Icon } from '../components/icons'
+import { useNow } from '../hooks/useNow'
+import { PLATFORM_LABEL, baseGameName, kindLabel, lastPlayed, playtime } from '../format'
+import { Backdrop } from './bigpicture/Backdrop'
+import { type BpSection, BpTabs } from './bigpicture/BpTabs'
+import { SECTIONS, SORTS, type Filter, matches, sortGames } from './library/filters'
+import { useBigPictureInput } from './bigpicture/useBigPictureInput'
 
 interface Props extends ViewProps {
-  /** Retour à la bibliothèque (Échap, bouton B) */
-  onExit(): void;
+  /** Esc or B */
+  onExit(): void
 }
 
-/** Affichage plein écran pour jouer au clavier ou à la manette */
+/** Keyboard / gamepad view: the current game stays in place, the rail slides under it */
 export function BigPictureView(p: Props): React.JSX.Element {
-  // Favoris d'abord, puis les jeux joués récemment, puis l'ordre alphabétique.
-  // Les ROMs de base ne sont pas des jeux de la bibliothèque.
+  // Non-empty sections; base ROMs are not library games
+  const [section, setSection] = useState<Filter>('all')
+  const stats = useRef(p.stats)
+  stats.current = p.stats
+  const sections: BpSection[] = useMemo(
+    () =>
+      [
+        { filter: 'all' as Filter, label: t('library.all') },
+        ...SECTIONS.map((s) => ({ filter: s.filter, label: s.label() }))
+      ]
+        .map((s) => ({
+          ...s,
+          count: p.games.filter((g) => matches(s.filter, g, p.stats[g.id])).length
+        }))
+        .filter((s) => s.count > 0),
+    [p.games, p.stats]
+  )
+  // Order is frozen while browsing (launching changes stats); recomputed on list, section or sort change
   const order = useMemo(
     () =>
-      p.games
-        .filter((g) => g.kind !== "baserom")
-        .sort(
-          (a, b) =>
-            Number(!!p.stats[b.id]?.favorite) - Number(!!p.stats[a.id]?.favorite) ||
-            (p.stats[b.id]?.lastPlayed ?? 0) - (p.stats[a.id]?.lastPlayed ?? 0) ||
-            a.name.localeCompare(b.name, "fr"),
-        ),
-    // l'ordre ne bouge pas pendant la navigation, seulement quand la liste change
-    [p.games],
-  );
-  const [idx, setIdx] = useState(0);
-  const rail = useRef<HTMLDivElement>(null);
-  const cur = order[Math.min(idx, order.length - 1)];
-  const bg = useCover(cur?.id ?? "");
+      sortGames(
+        p.games.filter((g) => matches(section, g, stats.current[g.id])),
+        stats.current,
+        p.sort
+      ),
+    [p.games, section, p.sort]
+  )
+  const [rawIdx, setIdx] = useState(0)
+  const idx = Math.min(rawIdx, Math.max(0, order.length - 1))
+  const cur = order[idx]
+  const url = useCover(cur?.id ?? '')
+  const now = useNow(!!cur && p.running[cur.id] !== undefined)
 
-  const latest = useRef({ order, idx, p });
-  latest.current = { order, idx, p };
-
-  const move = (delta: number): void =>
-    setIdx((i) => Math.max(0, Math.min(latest.current.order.length - 1, i + delta)));
-
-  useEffect(() => {
-    const el = rail.current?.querySelector<HTMLElement>(".tile.cur");
-    el?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-  }, [idx]);
-
-  // Clavier
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent): void => {
-      const { order, idx, p } = latest.current;
-      // Un bouton qui a le focus garde Entrée pour lui (JOUER, retour)
-      const onButton = (e.target as HTMLElement | null)?.tagName === "BUTTON";
-      if (e.key === "ArrowRight") move(1);
-      else if (e.key === "ArrowLeft") move(-1);
-      else if (e.key === "Enter" && !onButton && order[idx]) p.onLaunch(order[idx]);
-      else if ((e.key === "f" || e.key === "F") && order[idx]) p.onFavorite(order[idx]);
-      else if (e.key === "Escape") p.onExit();
-      else return;
-      e.preventDefault();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  // Manette : on lit l'état à chaque frame et on réagit aux nouveaux appuis
-  useEffect(() => {
-    let frame = 0;
-    const prev = new Set<number>();
-    let lastAxisMove = 0;
-    const loop = (): void => {
-      const pad = navigator.getGamepads().find((g) => g);
-      if (pad) {
-        const { order, idx, p } = latest.current;
-        const pressed = new Set(pad.buttons.flatMap((b, i) => (b.pressed ? [i] : [])));
-        const hit = (b: number): boolean => pressed.has(b) && !prev.has(b);
-        if (hit(BTN.RIGHT)) move(1);
-        if (hit(BTN.LEFT)) move(-1);
-        const x = pad.axes[0] ?? 0;
-        if (Math.abs(x) > 0.6 && performance.now() - lastAxisMove > 220) {
-          move(x > 0 ? 1 : -1);
-          lastAxisMove = performance.now();
-        }
-        if (hit(BTN.A) && order[idx]) p.onLaunch(order[idx]);
-        if (hit(BTN.X) && order[idx]) p.onFavorite(order[idx]);
-        if (hit(BTN.B)) p.onExit();
-        prev.clear();
-        pressed.forEach((b) => prev.add(b));
-      }
-      frame = requestAnimationFrame(loop);
-    };
-    frame = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(frame);
-  }, []);
+  const pickSection = (f: Filter): void => {
+    setSection(f)
+    setIdx(0)
+  }
+  useBigPictureInput({
+    move: (d) => setIdx((i) => Math.max(0, Math.min(order.length - 1, i + d))),
+    section: (d) => {
+      const i = sections.findIndex((s) => s.filter === section)
+      const next = sections[(i + d + sections.length) % sections.length]
+      if (next) pickSection(next.filter)
+    },
+    sort: () => p.onSort(SORTS[(SORTS.findIndex((s) => s.id === p.sort) + 1) % SORTS.length].id),
+    launch: () => cur && !p.running[cur.id] && p.onLaunch(cur),
+    favorite: () => cur && p.onFavorite(cur),
+    exit: p.onExit
+  })
 
   if (!cur) {
     return (
-      <div className="bp">
-        <div className="bp-hero">
-          <h2>Aucun jeu</h2>
-          <p className="muted">Ajoute un dossier de jeux dans les paramètres de la bibliothèque.</p>
+      <div className="bp bp--empty">
+        <div className="empty">
+          <h4>{t('bp.empty')}</h4>
+          <p>{t('bp.emptyHint')}</p>
           <button className="ghost" onClick={p.onExit} autoFocus>
-            Retour à la bibliothèque
+            {t('bp.backToLibrary')}
           </button>
         </div>
       </div>
-    );
+    )
   }
 
-  const st = p.stats[cur.id];
+  const st = p.stats[cur.id]
+  const since = p.running[cur.id]
+  const fav = !!st?.favorite
   return (
     <div className="bp">
-      <div className="bp-bg" style={bg ? { backgroundImage: `url("${bg}")` } : undefined} />
-      <button className="ghost bp-exit" onClick={p.onExit}>
-        ← Bibliothèque
-      </button>
-      <div className="bp-hero" aria-live="polite">
-        <div className="row-actions">
-          <span className={`badge ${cur.kind === "fangame" ? "fan" : "rom"}`}>
-            {PLATFORM_LABEL[cur.platform]}
-          </span>
-          <span className="badge">{kindLabel(cur)}</span>
-          {cur.baseRom && <span className="badge">Base {cur.baseRom.name}</span>}
-          {cur.versions && <span className="badge">{cur.versions.length} versions</span>}
-          <span className="badge">{playtime(st?.playtimeSec ?? 0)} joués</span>
-          {st?.favorite && <span className="badge fav">★ Favori</span>}
-        </div>
+      <Backdrop id={cur.id} url={url} />
+
+      <header className="bp-top">
+        <button className="ghost bp-glass" onClick={p.onExit}>
+          {t('bp.back')}
+        </button>
+        <BpTabs sections={sections} current={section} onPick={pickSection} />
+        <span className="bp-count" aria-hidden="true">
+          {t(SORTS.find((x) => x.id === p.sort)!.label)} · {idx + 1} / {order.length}
+        </span>
+      </header>
+
+      <section className="bp-hero" aria-live="polite" key={cur.id}>
+        <p className="bp-eyebrow">
+          <span className={`badge ${cur.kind === 'fangame' ? 'fan' : 'rom'}`}>{PLATFORM_LABEL[cur.platform]}</span>
+          <span>{kindLabel(cur)}</span>
+          {cur.baseRom && <span>{t('bp.baseOf', { name: baseGameName(cur.baseRom) })}</span>}
+          {cur.versions && <span>{t('bp.versions', { n: cur.versions.length })}</span>}
+        </p>
         <h2>{cur.name}</h2>
-        <div className="row-actions">
-          <button className="play" onClick={() => p.onLaunch(cur)}>
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-              <path d="M3 1.5v13l11-6.5z" fill="currentColor" />
-            </svg>
-            JOUER
+        <p className="bp-meta">
+          {t('bp.meta', {
+            time: playtime(st?.playtimeSec ?? 0),
+            last: lastPlayed(st?.lastPlayed)
+          })}
+        </p>
+        <div className="bp-actions">
+          <button className="play bp-play" onClick={() => p.onLaunch(cur)} disabled={since !== undefined}>
+            <span className="play-icon">
+              {since !== undefined ? <span className="run-dot" aria-hidden="true" /> : <Icon name="play" size={18} />}
+            </span>
+            <span className="play-label">
+              {since !== undefined
+                ? t('common.running', {
+                    time: playtime(Math.round((now - since) / 1000))
+                  })
+                : t('common.play')}
+            </span>
           </button>
-          <span className="bp-last">Dernière session : {lastPlayed(st?.lastPlayed)}</span>
+          <button
+            className={`bp-glass bp-fav ${fav ? 'on' : ''}`}
+            onClick={() => p.onFavorite(cur)}
+            aria-pressed={fav}
+            aria-label={fav ? t('common.favRemove') : t('common.favAdd')}
+          >
+            <Icon name="star" size={20} />
+          </button>
+        </div>
+      </section>
+
+      <div className="bp-rail" role="listbox" aria-label={t('bp.games')} aria-activedescendant={`bp-${cur.id}`}>
+        <div className="bp-track" style={{ '--bp-index': idx } as React.CSSProperties}>
+          {order.map((g, i) => (
+            <button
+              key={g.id}
+              id={`bp-${g.id}`}
+              role="option"
+              aria-selected={i === idx}
+              aria-label={g.name}
+              className={`tile ${i === idx ? 'cur' : ''} ${i < idx ? 'past' : ''}`}
+              tabIndex={-1}
+              onClick={() => (i === idx ? p.onLaunch(g) : setIdx(i))}
+            >
+              <Cover game={g} />
+            </button>
+          ))}
         </div>
       </div>
-      <div className="bp-rail" ref={rail} role="listbox" aria-label="Jeux" aria-activedescendant={`bp-${cur.id}`}>
-        {order.map((g, i) => (
-          <button
-            key={g.id}
-            id={`bp-${g.id}`}
-            role="option"
-            aria-selected={i === idx}
-            aria-label={g.name}
-            className={`tile ${i === idx ? "cur" : ""}`}
-            tabIndex={-1}
-            onClick={() => (i === idx ? p.onLaunch(g) : setIdx(i))}
-          >
-            <Cover game={g} />
-          </button>
-        ))}
-      </div>
+
       <footer className="bp-foot">
         <span>
-          <span className="pad a">A</span>Jouer
+          <span className="pad a">A</span>
+          {t('common.play')}
         </span>
         <span>
-          <span className="pad x">X</span>Favori
+          <span className="pad x">X</span>
+          {t('bp.favorite')}
         </span>
         <span>
-          <span className="pad b">B</span>Bibliothèque
+          <span className="pad y">Y</span>
+          {t('bp.sortHint')}
         </span>
         <span>
-          <kbd>←</kbd> <kbd>→</kbd> <kbd>Entrée</kbd> <kbd>F</kbd> <kbd>Échap</kbd> au clavier
+          <span className="pad b">B</span>
+          {t('common.library')}
+        </span>
+        <span className="bp-keys">
+          <kbd>←</kbd> <kbd>→</kbd> <kbd>Q</kbd> <kbd>E</kbd> <kbd>S</kbd> <kbd>{t('common.keyEnter')}</kbd>{' '}
+          <kbd>F</kbd> <kbd>{t('common.keyEsc')}</kbd>
         </span>
       </footer>
     </div>
-  );
+  )
 }

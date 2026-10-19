@@ -1,0 +1,134 @@
+/* Big Picture; overflow: clip everywhere so focus or selection can never scroll the page */
+.bp {
+  --bp-pad: 56px;
+  --bp-tile: 148px;
+  --bp-gap: var(--space-4);
+  position: relative;
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  overflow: clip;
+  background: var(--color-bg);
+  isolation: isolate;
+}
+.bp--empty { display: grid; place-items: center; padding: var(--space-6); }
+
+/* One layer per game, faded in; darkened left and bottom for the text */
+.bp-backdrop { position: absolute; inset: 0; z-index: -1; overflow: clip; }
+.bp-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--color-bg) 92%, transparent) 0%, color-mix(in srgb, var(--color-bg) 70%, transparent) 38%, transparent 72%),
+    linear-gradient(0deg, var(--color-bg) 0%, color-mix(in srgb, var(--color-bg) 80%, transparent) 30%, transparent 62%);
+}
+.bp-layer { position: absolute; inset: 0; animation: bp-fade 420ms ease both; }
+.bp-layer__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.bp-layer--wide .bp-layer__bg { animation: bp-drift 40s ease-in-out infinite alternate; }
+.bp-layer--art .bp-layer__bg { filter: blur(48px) saturate(1.3) brightness(0.55); transform: scale(1.3); }
+/* Cover or icon, whole, on the right */
+.bp-layer__art {
+  position: absolute;
+  top: 9%;
+  right: var(--bp-pad);
+  height: 50%;
+  max-width: 38%;
+  object-fit: contain;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+.bp-layer.is-pixel img { image-rendering: pixelated; }
+.bp-layer.is-pixel .bp-layer__art { height: min(34%, 200px); top: 18%; box-shadow: none; filter: drop-shadow(0 16px 32px rgba(0, 0, 0, 0.5)); }
+
+/* Top bar */
+.bp-top { display: flex; align-items: center; justify-content: space-between; padding: var(--space-5) var(--bp-pad) 0; }
+.bp-glass {
+  background: color-mix(in srgb, var(--color-bg) 62%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border-strong) 70%, transparent);
+  backdrop-filter: blur(14px);
+  color: var(--color-text);
+}
+.bp-glass:hover:not(:disabled) { background: color-mix(in srgb, var(--color-bg) 85%, transparent); }
+.bp-count { font-size: var(--font-size-sm); color: var(--color-text-muted); font-variant-numeric: tabular-nums; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8); }
+
+/* Title and actions, bottom left */
+.bp-hero { align-self: end; display: grid; justify-items: start; gap: var(--space-3); max-width: min(760px, 62%); padding: 0 var(--bp-pad) var(--space-2); animation: bp-rise 260ms var(--motion-ease) both; }
+.bp-eyebrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 0; font-size: var(--font-size-sm); color: var(--color-text-muted); text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8); }
+.bp-eyebrow .badge { backdrop-filter: blur(8px); text-shadow: none; }
+.bp-hero h2 { margin: 0; font-size: clamp(34px, 4.6vw, 60px); font-weight: var(--font-weight-bold); line-height: 1.05; letter-spacing: -0.02em; text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6); }
+.bp-meta { margin: 0; font-size: var(--font-size-md); color: var(--color-text-muted); font-variant-numeric: tabular-nums; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8); }
+.bp-actions { display: flex; gap: var(--space-2); margin-top: var(--space-2); }
+.bp-play { width: 240px; }
+.bp-fav { width: var(--play-btn-height); height: var(--play-btn-height); display: grid; place-items: center; padding: 0; border-radius: var(--radius-md); cursor: pointer; transition: background var(--t-fast), color var(--t-fast); }
+.bp-fav.on { color: var(--fav-on); }
+.bp-fav.on svg path { fill: currentColor; }
+
+/* The track slides under a fixed slot; past games fade out on the left */
+.bp-rail {
+  overflow: clip;
+  padding: var(--space-6) 0 var(--space-8);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 calc(var(--bp-pad) - 8px), #000 calc(100% - 120px), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 calc(var(--bp-pad) - 8px), #000 calc(100% - 120px), transparent 100%);
+}
+.bp-track {
+  display: flex;
+  gap: var(--bp-gap);
+  padding-left: var(--bp-pad);
+  transform: translateX(calc(var(--bp-index) * -1 * (var(--bp-tile) + var(--bp-gap))));
+  transition: transform 320ms var(--motion-ease);
+}
+.tile { flex: none; width: var(--bp-tile); padding: 0; border: none; background: none; opacity: 0.55; cursor: pointer; transform-origin: center bottom; transition: transform var(--t-normal), opacity var(--t-normal); }
+.tile:hover { opacity: 0.85; }
+.tile.past { opacity: 0.2; }
+.tile .cover { box-shadow: var(--shadow-md); }
+.tile .cover .badge { display: none; }
+.tile.cur { opacity: 1; transform: translateY(-6px) scale(1.06); }
+.tile.cur .cover { box-shadow: 0 0 0 2px var(--color-accent), 0 0 0 6px var(--color-focus-ring), var(--shadow-lg); }
+.tile:focus-visible { box-shadow: none; }
+
+/* Compact glass footer with gamepad hints */
+.bp-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2) var(--space-6);
+  min-height: 44px;
+  padding: 0 var(--bp-pad);
+  background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+.bp-keys { display: inline-flex; gap: 4px; }
+.pad { display: inline-grid; place-items: center; width: 20px; height: 20px; margin-right: 6px; border-radius: 50%; font-size: 11px; font-weight: var(--font-weight-bold); color: var(--color-accent-text); }
+.pad.a { background: var(--pad-a); }
+.pad.b { background: var(--pad-b); }
+.pad.x { background: var(--pad-x); }
+
+@keyframes bp-fade { from { opacity: 0; } }
+@keyframes bp-rise { from { opacity: 0; transform: translateY(6px); } }
+@keyframes bp-drift { from { transform: scale(1.04); } to { transform: scale(1.1) translate(-1.5%, -1%); } }
+
+/* Section tabs: glass rail, raised active tab, LB / RB at the edges */
+.bp-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 3px;
+  overflow: clip;
+  background: color-mix(in srgb, var(--color-inset) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border-strong) 70%, transparent);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(14px);
+}
+.bp-tab { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border: none; border-radius: var(--radius-sm); background: transparent; color: var(--color-text-muted); font-size: var(--font-size-sm); white-space: nowrap; cursor: pointer; }
+.bp-tab:hover { color: var(--color-text); }
+.bp-tab[aria-pressed='true'] { background: var(--color-elevated); color: var(--color-text); box-shadow: var(--shadow-sm); }
+.bp-bumper { padding: 2px 6px; border-radius: var(--radius-xs); background: var(--color-elevated); color: var(--color-text-muted); font-size: 10px; font-weight: var(--font-weight-bold); }
+.bp-top { gap: var(--space-4); }
+.pad.y { background: var(--color-accent); }

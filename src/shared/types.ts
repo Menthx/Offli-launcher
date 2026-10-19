@@ -1,31 +1,32 @@
+import type { LanguagePref } from './i18n'
+
 export type Platform = 'pc' | 'gb' | 'gbc' | 'gba' | 'nds' | '3ds'
 
-/** baserom : ROM officielle non modifiée, rangée à part des jeux */
+/** baserom: unmodified official ROM, listed apart from the games */
 export type GameKind = 'fangame' | 'romhack' | 'baserom'
 
 export interface BaseRom {
-  /** Code ou titre lu dans l'en-tête de la ROM (ex. BPRE, PM_CRYSTAL) */
+  /** Code or title read from the ROM header (e.g. BPRE, PM_CRYSTAL) */
   code: string
-  /** Nom lisible du jeu de base (ex. Rouge Feu) */
   name: string
 }
 
 export interface Game {
-  /** Identifiant stable, dérivé du chemin relatif dans la bibliothèque */
+  /** Stable id derived from the path relative to the library folder */
   id: string
   name: string
   kind: GameKind
   platform: Platform
-  /** Chemin absolu de Game.exe ou de la ROM */
+  /** Absolute path to Game.exe or the ROM */
   path: string
-  /** Dossier du jeu (pour un fangame) ou dossier contenant la ROM */
+  /** Game folder (fangame) or folder holding the ROM */
   dir: string
   baseRom?: BaseRom
-  /** Dossier de cette version, quand plusieurs versions du même fangame existent */
+  /** Folder name of this version when a fangame has several */
   variant?: string
-  /** Toutes les versions du jeu, la plus récente en premier (celle-ci comprise) */
+  /** All versions, newest first (this one included) */
   versions?: Game[]
-  /** Nom détecté au scan, présent seulement si l'utilisateur a renommé le jeu */
+  /** Detected name, only set when the user renamed the game */
   originalName?: string
 }
 
@@ -35,61 +36,57 @@ export interface GameStats {
   favorite: boolean
 }
 
-/** Thème de couleurs (un fichier dans src/renderer/src/theme) */
-export type Theme = 'console' | 'electrique' | 'pokeball' | 'emeraude'
+export type Theme = 'doux' | 'console' | 'electrique' | 'pokeball' | 'emeraude'
 
-/** Affichage à l'ouverture de l'appli */
 export type StartView = 'library' | 'bigpicture'
 
 export type EmulatorPlatform = Exclude<Platform, 'pc'>
 
 export interface EmulatorConfig {
-  /** Chemin de l'exécutable de l'émulateur */
   path: string
 }
 
+export type LibrarySort = 'name' | 'recent' | 'playtime'
+
 export interface Settings {
-  /** Dossiers de jeux, scannés dans l'ordre */
   libraryPaths: string[]
   startView: StartView
-  /** Passer la fenêtre en plein écran en entrant en Big Picture */
+  /** Switch the window to full screen when entering Big Picture */
   bigPictureFullscreen: boolean
-  /** Tutoriel du premier lancement terminé ou passé */
+  /** First-launch tutorial finished or skipped */
   tutorialDone: boolean
-  /** Jeux masqués, par id stable (gardés d'un scan à l'autre) */
+  /** Hidden games by stable id (kept across scans) */
   hiddenGames: string[]
   theme: Theme
+  librarySort: LibrarySort
+  /** Interface language, or 'auto' to follow the system */
+  language: LanguagePref
   emulators: Record<EmulatorPlatform, EmulatorConfig>
-  /** Commande utilisée pour lancer Game.exe hors Windows */
+  /** Command used to run Game.exe outside Windows */
   winePath: string
   useSteamGridDb: boolean
   steamGridDbKey: string
-  /** Côté rendu uniquement : une clé SteamGridDB est enregistrée (la clé elle-même n'y est jamais envoyée) */
+  /** Renderer only: a key is saved (the key itself never leaves the main process) */
   hasSteamGridDbKey?: boolean
-  /** Utiliser la jaquette du jeu de base (libretro-thumbnails) pour les romhacks */
+  /** Use the base game cover (libretro-thumbnails) for romhacks */
   useBaseRomCovers: boolean
-  /** Image choisie par l'utilisateur, par id de jeu */
+  /** Cover picked by the user, by game id */
   coverOverrides: Record<string, string>
-  /** Nom choisi par l'utilisateur, par id de jeu */
+  /** Name picked by the user, by game id */
   nameOverrides: Record<string, string>
 }
 
-/** Réponse d'un appel SteamGridDB passé par le process principal */
 export type SgdbResult<T> = { ok: true; value: T } | { ok: false; error: 'unauthorized' | 'network' }
 
 export interface SgdbImage {
   id: number
-  /** URL offli-img:// de la miniature, téléchargée par le process principal */
+  /** offli-img:// URL of the thumbnail downloaded by the main process */
   thumb: string
   width: number
   height: number
 }
 
-/**
- * État des mises à jour, envoyé par le process principal.
- * « unsupported » : installation automatique impossible ici (dev, Windows portable, .deb, macOS
- * non signé) ; avec une version, une mise à jour existe et s'installe depuis la page GitHub.
- */
+/** Update state sent by the main process; 'unsupported' + version means: install from the GitHub page */
 export type UpdateStatus =
   | { state: 'idle' }
   | { state: 'checking' }
@@ -97,8 +94,14 @@ export type UpdateStatus =
   | { state: 'not-available' }
   | { state: 'downloading'; percent: number }
   | { state: 'downloaded'; version: string }
-  | { state: 'error'; message: string }
+  /** Translated by the renderer */
+  | { state: 'error'; code: 'network' | 'no-release' | 'unknown' }
   | { state: 'unsupported'; reason: 'dev' | 'portable' | 'deb' | 'mac'; version?: string }
+
+export type CoverSize = 'thumb' | 'full'
+
+/** null when the user cancels the file dialog */
+export type DataResult = { ok: true } | { ok: false; error?: 'invalid' | 'io' }
 
 export interface LaunchResult {
   ok: boolean
@@ -110,34 +113,37 @@ export interface OffliApi {
   saveSettings(patch: Partial<Settings>): Promise<Settings>
   pickFolder(): Promise<string | null>
   pickFile(kind: 'image' | 'executable'): Promise<string | null>
-  /** Index du dernier scan, disponible immédiatement au démarrage */
+  /** Last scan index, available right away at startup */
   getLibrary(): Promise<Game[]>
-  /** Rescanne le dossier et met l'index à jour */
   scan(): Promise<Game[]>
   getStats(): Promise<Record<string, GameStats>>
   toggleFavorite(id: string): Promise<GameStats>
-  resolveCover(id: string): Promise<string | null>
+  /** 'thumb' for grid cards, 'full' for the game sheet and Big Picture */
+  resolveCover(id: string, size?: CoverSize): Promise<string | null>
   setCover(id: string, path: string | null): Promise<string | null>
-  /** Renomme un jeu (null rétablit le nom détecté) et renvoie la liste à jour */
+  /** null restores the detected name; returns the updated list */
   renameGame(id: string, name: string | null): Promise<Game[]>
   launch(id: string): Promise<LaunchResult>
+  /** Running games: id → launch time (ms) */
+  getRunning(): Promise<Record<string, number>>
+  onRunning(cb: (running: Record<string, number>) => void): () => void
+  /** Backup: write / read a JSON file picked by the user */
+  exportData(): Promise<DataResult | null>
+  importData(): Promise<DataResult | null>
   openFolder(id: string): Promise<void>
-  /** Plein écran de la fenêtre (mode Big Picture) */
   setFullScreen(on: boolean): Promise<void>
-  /** Raccourci F11 : bascule Bibliothèque / Big Picture */
+  /** F11: toggles Library / Big Picture */
   onToggleView(cb: () => void): () => void
-  /** Mises à jour : état courant et version installée */
   updateState(): Promise<{ status: UpdateStatus; version: string }>
   updateCheck(): Promise<void>
   updateDownload(): Promise<void>
-  /** Redémarre et installe la mise à jour téléchargée (seulement après un clic) */
+  /** Only ever called after a click */
   updateInstall(): Promise<void>
-  /** Ouvre la page GitHub de la dernière version */
   updateOpenPage(): Promise<void>
   onUpdateStatus(cb: (status: UpdateStatus) => void): () => void
   sgdbSearch(term: string): Promise<SgdbResult<{ id: number; name: string; year?: number }[]>>
   sgdbGrids(gameId: number, page: number): Promise<SgdbResult<{ images: SgdbImage[]; hasMore: boolean }>>
-  /** Télécharge l'image choisie et l'enregistre comme image du jeu */
+  /** Downloads the picked image and saves it as the game cover */
   sgdbPick(id: string, imageId: number): Promise<SgdbResult<null>>
   onStatsChanged(cb: (stats: Record<string, GameStats>) => void): () => void
 }

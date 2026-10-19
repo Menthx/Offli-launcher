@@ -1,0 +1,48 @@
+import { dialog, ipcMain } from 'electron'
+import { readFile, writeFile } from 'node:fs/promises'
+import type { DataResult } from '../../shared/types'
+import { makeBackup, readBackup } from '../backup'
+import type { MainContext } from '../context'
+
+/** Backup export / import through a user-picked JSON file */
+export function registerDataIpc(ctx: MainContext): void {
+  const filters = [{ name: 'JSON', extensions: ['json'] }]
+
+  ipcMain.handle('data:export', async (): Promise<DataResult | null> => {
+    const day = new Date().toISOString().slice(0, 10)
+    const r = await dialog.showSaveDialog(ctx.getWin()!, {
+      defaultPath: `offli-launcher-${day}.json`,
+      filters
+    })
+    if (r.canceled || !r.filePath) return null
+    try {
+      await writeFile(r.filePath, JSON.stringify(makeBackup(ctx.settings.data, ctx.stats.data), null, 2))
+      return { ok: true }
+    } catch {
+      return { ok: false, error: 'io' }
+    }
+  })
+
+  ipcMain.handle('data:import', async (): Promise<DataResult | null> => {
+    const r = await dialog.showOpenDialog(ctx.getWin()!, {
+      properties: ['openFile'],
+      filters
+    })
+    if (r.canceled || !r.filePaths[0]) return null
+    let text: string
+    try {
+      text = await readFile(r.filePaths[0], 'utf8')
+    } catch {
+      return { ok: false, error: 'io' }
+    }
+    const backup = readBackup(text, ctx.settings.data)
+    if (!backup) return { ok: false, error: 'invalid' }
+    ctx.settings.data = backup.settings
+    ctx.stats.data = backup.stats
+    await Promise.all([ctx.settings.save(), ctx.stats.save()])
+    ctx.dropCovers()
+    ctx.applyLanguage()
+    ctx.pushStats()
+    return { ok: true }
+  })
+}

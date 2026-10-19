@@ -1,6 +1,6 @@
 import { crc32, deflateSync } from 'node:zlib'
 
-/** Taille d'en-tête + bannière nécessaire, à partir de l'offset de bannière */
+/** Header + banner size needed, from the banner offset */
 export const NDS_BANNER_ICON_SIZE = 0x240
 
 export function ndsBannerOffset(header: Uint8Array): number {
@@ -8,10 +8,7 @@ export function ndsBannerOffset(header: Uint8Array): number {
   return new DataView(header.buffer, header.byteOffset, header.byteLength).getUint32(0x68, true)
 }
 
-/**
- * Décode l'icône 32×32 d'une bannière NDS (4 bpp, tuiles 8×8, palette BGR555)
- * et renvoie un PNG. `banner` commence à l'offset de bannière.
- */
+/** Decodes the 32×32 NDS banner icon (4 bpp, 8×8 tiles, BGR555 palette) to PNG */
 export function ndsIconToPng(banner: Uint8Array): Buffer | null {
   if (banner.length < NDS_BANNER_ICON_SIZE) return null
   const view = new DataView(banner.buffer, banner.byteOffset, banner.byteLength)
@@ -51,7 +48,7 @@ export function encodePng(width: number, height: number, rgba: Uint8Array): Buff
   const ihdr = Buffer.alloc(13)
   ihdr.writeUInt32BE(width, 0)
   ihdr.writeUInt32BE(height, 4)
-  ihdr[8] = 8 // profondeur
+  ihdr[8] = 8 // bit depth
   ihdr[9] = 6 // RGBA
   const raw = Buffer.alloc((width * 4 + 1) * height)
   for (let y = 0; y < height; y++) {

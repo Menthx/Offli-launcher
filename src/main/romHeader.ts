@@ -1,11 +1,11 @@
 import type { BaseRom, Platform } from '../shared/types'
 
-/** Jeu de base connu, avec les noms No-Intro utilisés par libretro-thumbnails (vérifiés sur le dépôt GitHub) */
+/** Known base game, with the No-Intro names used by libretro-thumbnails */
 export interface BaseGame {
   name: string
-  /** Dossier libretro-thumbnails (ex. "Nintendo - Game Boy Advance") */
+  /** libretro-thumbnails folder (e.g. 'Nintendo - Game Boy Advance') */
   system: string
-  /** Noms de fichiers candidats, essayés dans l'ordre */
+  /** Candidate file names, tried in order */
   thumbnails: string[]
 }
 
@@ -14,36 +14,45 @@ const GBC = 'Nintendo - Game Boy Color'
 const GBA = 'Nintendo - Game Boy Advance'
 const NDS = 'Nintendo - Nintendo DS'
 
-/** Clé : 3 premiers caractères du code (la 4e lettre est la région) */
+const base = (name: string, system: string, ...thumbnails: string[]): BaseGame => ({ name, system, thumbnails })
+const usa = (game: string, rev = ''): string => `Pokemon - ${game} (USA, Europe)${rev}`
+
+/** Key: first 3 chars of the code (the 4th is the region) */
 const GBA_GAMES: Record<string, BaseGame> = {
-  BPR: { name: 'Rouge Feu', system: GBA, thumbnails: ['Pokemon - FireRed Version (USA, Europe)', 'Pokemon - FireRed Version (USA, Europe) (Rev 1)'] },
-  BPG: { name: 'Vert Feuille', system: GBA, thumbnails: ['Pokemon - LeafGreen Version (USA, Europe)', 'Pokemon - LeafGreen Version (USA, Europe) (Rev 1)'] },
-  BPE: { name: 'Émeraude', system: GBA, thumbnails: ['Pokemon - Emerald Version (USA, Europe)'] },
-  AXV: { name: 'Rubis', system: GBA, thumbnails: ['Pokemon - Ruby Version (USA, Europe)', 'Pokemon - Ruby Version (USA, Europe) (Rev 2)'] },
-  AXP: { name: 'Saphir', system: GBA, thumbnails: ['Pokemon - Sapphire Version (USA, Europe)', 'Pokemon - Sapphire Version (USA, Europe) (Rev 2)'] }
+  BPR: base('Rouge Feu', GBA, usa('FireRed Version'), usa('FireRed Version', ' (Rev 1)')),
+  BPG: base('Vert Feuille', GBA, usa('LeafGreen Version'), usa('LeafGreen Version', ' (Rev 1)')),
+  BPE: base('Émeraude', GBA, usa('Emerald Version')),
+  AXV: base('Rubis', GBA, usa('Ruby Version'), usa('Ruby Version', ' (Rev 2)')),
+  AXP: base('Saphir', GBA, usa('Sapphire Version'), usa('Sapphire Version', ' (Rev 2)'))
 }
 
 const NDS_GAMES: Record<string, BaseGame> = {
-  ADA: { name: 'Diamant', system: NDS, thumbnails: ['Pokemon - Diamond Version (USA) (Rev 5)'] },
-  APA: { name: 'Perle', system: NDS, thumbnails: ['Pokemon - Pearl Version (USA) (Rev 5)'] },
-  CPU: { name: 'Platine', system: NDS, thumbnails: ['Pokemon - Platinum Version (USA)', 'Pokemon - Platinum Version (USA) (Rev 1)'] },
-  IPK: { name: 'Or HeartGold', system: NDS, thumbnails: ['Pokemon - HeartGold Version (USA)'] },
-  IPG: { name: 'Argent SoulSilver', system: NDS, thumbnails: ['Pokemon - SoulSilver Version (USA)'] },
-  IRB: { name: 'Noir', system: NDS, thumbnails: ['Pokemon - Black Version (USA, Europe) (NDSi Enhanced)'] },
-  IRA: { name: 'Blanc', system: NDS, thumbnails: ['Pokemon - White Version (USA, Europe) (NDSi Enhanced)'] },
-  IRE: { name: 'Noir 2', system: NDS, thumbnails: ['Pokemon - Black Version 2 (USA, Europe) (NDSi Enhanced)'] },
-  IRD: { name: 'Blanc 2', system: NDS, thumbnails: ['Pokemon - White Version 2 (USA, Europe) (NDSi Enhanced)'] }
+  ADA: base('Diamant', NDS, 'Pokemon - Diamond Version (USA) (Rev 5)'),
+  APA: base('Perle', NDS, 'Pokemon - Pearl Version (USA) (Rev 5)'),
+  CPU: base('Platine', NDS, 'Pokemon - Platinum Version (USA)', 'Pokemon - Platinum Version (USA) (Rev 1)'),
+  IPK: base('Or HeartGold', NDS, 'Pokemon - HeartGold Version (USA)'),
+  IPG: base('Argent SoulSilver', NDS, 'Pokemon - SoulSilver Version (USA)'),
+  IRB: base('Noir', NDS, usa('Black Version', ' (NDSi Enhanced)')),
+  IRA: base('Blanc', NDS, usa('White Version', ' (NDSi Enhanced)')),
+  IRE: base('Noir 2', NDS, usa('Black Version 2', ' (NDSi Enhanced)')),
+  IRD: base('Blanc 2', NDS, usa('White Version 2', ' (NDSi Enhanced)'))
 }
 
-/** Clé : titre interne GB/GBC (préfixe) */
+const SGB = ' (SGB Enhanced)'
+const GBC_COMPAT = ' (SGB Enhanced) (GB Compatible)'
+
+/** Key: GB/GBC internal title prefix */
 const GB_GAMES: [string, BaseGame][] = [
-  ['POKEMON RED', { name: 'Rouge', system: GB, thumbnails: ['Pokemon - Red Version (USA, Europe) (SGB Enhanced)'] }],
-  ['POKEMON BLUE', { name: 'Bleu', system: GB, thumbnails: ['Pokemon - Blue Version (USA, Europe) (SGB Enhanced)'] }],
-  ['POKEMON GREEN', { name: 'Vert', system: GB, thumbnails: ['Pocket Monsters - Midori (Japan) (Rev 1) (SGB Enhanced)', 'Pocket Monsters - Midori (Japan) (SGB Enhanced)'] }],
-  ['POKEMON YELLOW', { name: 'Jaune', system: GB, thumbnails: ['Pokemon - Yellow Version - Special Pikachu Edition (USA, Europe) (CGB+SGB Enhanced)'] }],
-  ['POKEMON_GLD', { name: 'Or', system: GBC, thumbnails: ['Pokemon - Gold Version (USA, Europe) (SGB Enhanced) (GB Compatible)'] }],
-  ['POKEMON_SLV', { name: 'Argent', system: GBC, thumbnails: ['Pokemon - Silver Version (USA, Europe) (SGB Enhanced) (GB Compatible)'] }],
-  ['PM_CRYSTAL', { name: 'Cristal', system: GBC, thumbnails: ['Pokemon - Crystal Version (USA, Europe) (Rev 1)', 'Pokemon - Crystal Version (USA, Europe)'] }]
+  ['POKEMON RED', base('Rouge', GB, usa('Red Version', SGB))],
+  ['POKEMON BLUE', base('Bleu', GB, usa('Blue Version', SGB))],
+  [
+    'POKEMON GREEN',
+    base('Vert', GB, 'Pocket Monsters - Midori (Japan) (Rev 1)' + SGB, 'Pocket Monsters - Midori (Japan)' + SGB)
+  ],
+  ['POKEMON YELLOW', base('Jaune', GB, usa('Yellow Version - Special Pikachu Edition', ' (CGB+SGB Enhanced)'))],
+  ['POKEMON_GLD', base('Or', GBC, usa('Gold Version', GBC_COMPAT))],
+  ['POKEMON_SLV', base('Argent', GBC, usa('Silver Version', GBC_COMPAT))],
+  ['PM_CRYSTAL', base('Cristal', GBC, usa('Crystal Version', ' (Rev 1)'), usa('Crystal Version'))]
 ]
 
 function ascii(buf: Uint8Array, start: number, len: number): string {
@@ -56,7 +65,7 @@ function ascii(buf: Uint8Array, start: number, len: number): string {
   return s.trim()
 }
 
-/** Octets d'en-tête à lire selon la plateforme (on ne lit jamais la ROM entière) */
+/** Header bytes to read per platform (never the whole ROM) */
 export function headerSize(platform: Platform): number {
   return platform === 'nds' ? 0x200 : platform === 'gba' ? 0xc0 : platform === 'gb' || platform === 'gbc' ? 0x150 : 0
 }
@@ -81,7 +90,7 @@ export function readHeader(platform: Platform, buf: Uint8Array): HeaderInfo | nu
   }
   if (platform === 'gb' || platform === 'gbc') {
     if (buf.length < 0x144) return null
-    // Titre sur 0x134–0x143 ; sur GBC les derniers octets peuvent être un code fabricant ou le drapeau CGB
+    // Title at 0x134–0x143; on GBC the last bytes may be a maker code or the CGB flag
     const title = ascii(buf, 0x134, 16)
     if (!title) return null
     const hit = GB_GAMES.find(([prefix]) => title.startsWith(prefix))
@@ -102,9 +111,9 @@ export function baseGameFor(platform: Platform, code: string): BaseGame | undefi
 }
 
 export function libretroThumbnailUrls(base: BaseGame): string[] {
-  // libretro remplace &*/:`<>?\| par _ dans les noms de fichiers
+  // libretro replaces &*/:`<>?\| with _ in file names
   const safe = (s: string): string => s.replace(/[&*/:`<>?\\|]/g, '_')
-  // Deux hôtes : le serveur libretro, puis le miroir GitHub du même dépôt
+  // libretro server first, then its GitHub mirror
   const repo = base.system.replace(/ /g, '_')
   return base.thumbnails.flatMap((t) => {
     const file = encodeURIComponent(safe(t))

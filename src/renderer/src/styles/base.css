@@ -1,0 +1,84 @@
+/* Reset, type, focus ring, scrollbar; colors live in theme/ */
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  user-select: none;
+}
+button { font: inherit; color: inherit; }
+h1, h2, h3, h4, h5 { text-wrap: balance; }
+
+/* Soft focus ring on every keyboard-focused control */
+:is(button, input, select, a, [tabindex]):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+code, kbd { font-family: var(--font-mono); font-size: 0.92em; }
+kbd {
+  padding: 1px 6px;
+  border-radius: var(--radius-xs);
+  background: var(--color-inset);
+  border: 1px solid var(--color-border);
+  font-size: 11px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+.muted { margin: 0; color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.boot { height: 100%; background: var(--color-bg); }
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+input::placeholder { color: var(--color-text-muted); opacity: 1; }
+
+/* Transparent border + background-clip make the thumb look thinner */
+::-webkit-scrollbar { width: var(--scrollbar-size); height: var(--scrollbar-size); }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  min-height: 32px;
+  background-color: var(--scrollbar-thumb);
+  background-clip: padding-box;
+  border: var(--scrollbar-inset) solid transparent;
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover { background-color: var(--scrollbar-thumb-hover); }
+::-webkit-scrollbar-thumb:active { background-color: var(--scrollbar-thumb-active); }
+::-webkit-scrollbar-corner, ::-webkit-scrollbar-button { display: none; }
+
+/* First launch */
+.onboarding {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: 0 12vw;
+}
+.onboarding-logo { width: 48px; height: 48px; margin-bottom: var(--space-2); image-rendering: pixelated; }
+.onboarding h1 { margin: 0; font-size: 44px; font-weight: var(--font-weight-semibold); letter-spacing: -0.02em; line-height: 1.1; }
+.onboarding p { margin: 0; max-width: 52ch; color: var(--color-text-muted); }
+.onboarding-folders { width: min(520px, 100%); margin-top: var(--space-4); }
+
+.surface-card {
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

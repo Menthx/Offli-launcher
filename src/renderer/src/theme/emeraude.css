@@ -1,81 +1,36 @@
-/*
- * Thème Émeraude (Paramètres > Affichage > Thème).
- * Palette : #18534F (sarcelle profond), #226D68 (sarcelle), #ECF8F6 (blanc menthe),
- * #FEEAA1 (jaune pâle), #D6955B (orange). Contrastes WCAG AA vérifiés dans le README.
- */
+/* Emerald theme: teal, mint and orange */
 :root[data-theme='emeraude'] {
-  color-scheme: dark;
+  --color-inset: color-mix(in srgb, #0d2e2c 80%, #000);
+  --color-bg: #0d2e2c;
+  --color-surface: #18534f;
+  --color-surface-hover: color-mix(in srgb, #18534f 55%, #226d68);
+  --color-elevated: #226d68;
+  --color-elevated-hover: color-mix(in srgb, #226d68 84%, #0d2e2c);
+  --color-scrim: #061716cc;
 
-  /* fonds */
-  --bg: #0d2e2c;
-  --surface: #18534f;
-  --surface-2: #226d68;
-  --border: #5fa8a2;
-  --scrim: #061716cc;
+  /* Borders and text (checked by tests/contrast.test.ts) */
+  --color-border: color-mix(in srgb, #5fa8a2 45%, #18534f);
+  --color-border-strong: #5fa8a2;
+  --color-text: #ecf8f6;
+  --color-text-muted: #cbe8e4;
+  --color-text-subtle: color-mix(in srgb, #cbe8e4 70%, #18534f);
 
-  /* texte */
-  --text: #ecf8f6;
-  --text-muted: #cbe8e4;
-  --link: #feeaa1;
+  --color-accent: #feeaa1;
+  --color-accent-hover: #e0a571;
+  --color-accent-soft: #d6955b1f;
+  --color-accent-text: #0d2e2c;
+  --color-focus-ring: color-mix(in srgb, #feeaa1 55%, transparent);
+  --color-danger: #ffd9d2;
+  --color-danger-soft: color-mix(in srgb, #ff9c8f 14%, transparent);
 
-  /* accents */
-  --accent: #feeaa1;
-  --accent-2: #d6955b;
-  --focus: #feeaa1;
-  --danger: #ff9c8f;
-  --selected-bg: #d6955b33;
-  --selected-bar: #d6955b;
-  --selected-ring: #feeaa1;
-
-  /* bouton Jouer : vert façon Steam, assez foncé pour un texte blanc à 4,5:1 */
-  --play: linear-gradient(#4a8419, #3d6e13);
-  --play-hover: linear-gradient(#4a8419, #467d16);
+  /* Green Play button, favorite, badges and gamepad colors */
+  --play-bg: #4a8419;
+  --play-bg-hover: color-mix(in srgb, #4a8419 88%, #fff);
   --play-text: #fff;
-  --play-shadow: #2b4c0e;
-
-  /* bouton d'action principal (hors lancement) */
-  --cta: #d6955b;
-  --cta-hover: #e0a571;
-  --cta-text: #0d2e2c;
-  --cta-shadow: #9a6235;
-
-  /* bouton Paramètres : icône sur fond orange */
-  --settings-bg: #d6955b;
-  --settings-bg-hover: #e0a571;
-  --settings-icon: #0d2e2c;
-
-  /* bouton rouge « Fermer la fiche » : 3,46:1 sur #18534F, icône à 5,72:1 */
-  --close-bg: #ff7a6e;
-  --close-bg-hover: #ff8f85;
-  --close-icon: #0d2e2c;
-
-  /* favori et menu « Plus d'actions » de la fiche */
   --fav-on: #feeaa1;
-  --menu-bg: #0d2e2c;
-  --menu-hover: #18534f;
-
-  /* Big Picture : pied de page et pastilles des boutons de manette */
-  --bp-foot-bg: #0d2e2ce6;
-  --pad-a: #4a8419;
-  --pad-a-text: #fff;
-  --pad-b: #ff7a6e;
-  --pad-b-text: #0d2e2c;
-  --pad-x: #feeaa1;
-  --pad-x-text: #0d2e2c;
-
-  /* badges de plateforme */
   --badge-fan: #d6955b;
-  --badge-fan-border: #d6955b99;
   --badge-rom: #feeaa1;
-  --badge-rom-border: #feeaa199;
-  --badge-overlay: #0d2e2ce6;
-
-  /* logo (Poké Ball) */
-  --logo-top: #d6955b;
-  --logo-band: #ecf8f6;
-  --logo-bottom: #fff;
-
-  /* ombres */
-  --shadow: #000;
-  --shadow-soft: #000a;
+  --pad-a: #4a8419;
+  --pad-b: #ff7a6e;
+  --pad-x: #feeaa1;
 }

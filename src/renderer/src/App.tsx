@@ -1,192 +1,114 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { Game, GameStats, Settings, StartView } from "../../shared/types";
-import { forgetCover } from "./components/Cover";
-import { FolderList } from "./components/FolderList";
-import { SettingsPanel } from "./components/SettingsPanel";
-import { Tour } from "./components/Tour";
-import { hideGame, withoutHidden } from "./hiddenGames";
-import { applyTheme } from "./theme";
-import { shouldAutoStartTour } from "./tour";
-import { animateSelection } from "./viewTransition";
-import { BigPictureView } from "./views/BigPictureView";
-import { LibraryView } from "./views/LibraryView";
-
-export interface Toast {
-  text: string;
-  error?: boolean;
-}
+import { useEffect, useRef, useState } from 'react'
+import type { Game, GameStats, LibrarySort, StartView } from '../../shared/types'
+import { t } from '../../shared/i18n'
+import { applyAppearance } from './appearance'
+import { Onboarding } from './components/Onboarding'
+import { SettingsPanel } from './components/SettingsPanel'
+import { Tour } from './components/Tour'
+import { hideGame, withoutHidden } from './hiddenGames'
+import { useLibraryData } from './hooks/useLibraryData'
+import { ToastView, useToast } from './hooks/useToast'
+import { shouldAutoStartTour } from './tour'
+import { animateSelection } from './viewTransition'
+import { BigPictureView } from './views/BigPictureView'
+import { LibraryView } from './views/LibraryView'
 
 export interface ViewProps {
-  games: Game[];
-  stats: Record<string, GameStats>;
-  selected: Game | undefined;
-  onSelect(id: string | undefined): void;
-  onLaunch(game: Game): void;
-  onFavorite(game: Game): void;
+  games: Game[]
+  stats: Record<string, GameStats>
+  selected: Game | undefined
+  onSelect(id: string | undefined): void
+  onLaunch(game: Game): void
+  onFavorite(game: Game): void
+  /** Running games: id → launch time */
+  running: Record<string, number>
+  sort: LibrarySort
+  onSort(sort: LibrarySort): void
 }
 
 export function App(): React.JSX.Element {
-  const [settings, setSettings] = useState<Settings | null>(null);
-  const [games, setGames] = useState<Game[]>([]);
-  const [stats, setStats] = useState<Record<string, GameStats>>({});
-  const [selectedId, setSelectedId] = useState<string>();
-  const [scanning, setScanning] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  // Tutoriel : ouvert seul au premier lancement (une fois par session au plus), ou depuis les paramètres
-  const [tourOpen, setTourOpen] = useState(false);
-  const tourAutoChecked = useRef(false);
-  const [toast, setToast] = useState<Toast | null>(null);
-  const [view, setView] = useState<StartView>("library");
-  const toastTimer = useRef<number>(undefined);
+  const data = useLibraryData()
+  const { settings, games, stats, scanning, save } = data
+  const [selectedId, setSelectedId] = useState<string>()
+  const [showSettings, setShowSettings] = useState(false)
+  // Opens by itself on first launch (once per session), or from Settings
+  const [tourOpen, setTourOpen] = useState(false)
+  const tourAutoChecked = useRef(false)
+  const [toast, notify] = useToast()
+  const [view, setView] = useState<StartView>('library')
 
-  const notify = useCallback((t: Toast) => {
-    setToast(t);
-    window.clearTimeout(toastTimer.current);
-    toastTimer.current = window.setTimeout(
-      () => setToast(null),
-      t.error ? 5000 : 2500,
-    );
-  }, []);
-
-  const rescan = useCallback(async () => {
-    setScanning(true);
-    try {
-      const list = await window.offli.scan();
-      forgetCover();
-      setGames(list);
-    } finally {
-      setScanning(false);
-    }
-  }, []);
-
+  // Show the cached index right away, then refresh it with a scan
   useEffect(() => {
-    void (async () => {
-      const [s, cached, st] = await Promise.all([
-        window.offli.getSettings(),
-        window.offli.getLibrary(),
-        window.offli.getStats(),
-      ]);
-      setSettings(s);
-      setView(s.startView);
-      setGames(cached);
-      setStats(st);
-      // L'index en cache s'affiche tout de suite, le scan le rafraîchit ensuite
-      if (s.libraryPaths.length) void rescan();
-    })();
-    return window.offli.onStatsChanged((s) => setStats({ ...s }));
-  }, [rescan]);
+    void data.load().then((s) => {
+      setView(s.startView)
+      if (s.libraryPaths.length) void data.rescan()
+    })
+  }, [])
 
-  // Thème choisi dans les paramètres (Console par défaut)
+  // Big Picture stays windowed unless the setting says otherwise; the library always leaves full screen
+  const fullscreen = view === 'bigpicture' && !!settings?.bigPictureFullscreen
   useEffect(() => {
-    if (settings) applyTheme(settings.theme);
-  }, [settings?.theme]);
+    void window.offli.setFullScreen(fullscreen)
+  }, [fullscreen])
 
-  // Big Picture reste dans la fenêtre, sauf si « Plein écran en Big Picture » est coché.
-  // Revenir à la bibliothèque sort toujours du plein écran.
-  const fullscreen = view === "bigpicture" && !!settings?.bigPictureFullscreen;
-  useEffect(() => {
-    void window.offli.setFullScreen(fullscreen);
-  }, [fullscreen]);
-
-  // F11 (intercepté par le process principal) bascule entre Bibliothèque et Big Picture
-  useEffect(
-    () =>
-      window.offli.onToggleView(() =>
-        setView((v) => (v === "bigpicture" ? "library" : "bigpicture")),
-      ),
-    [],
-  );
-
-  const save = async (patch: Partial<Settings>): Promise<void> => {
-    const next = await window.offli.saveSettings(patch);
-    setSettings(next);
-    if (
-      "useSteamGridDb" in patch ||
-      "steamGridDbKey" in patch ||
-      "useBaseRomCovers" in patch
-    )
-      forgetCover();
-    if ("libraryPaths" in patch) void rescan();
-  };
+  // F11 is caught by the main process
+  useEffect(() => window.offli.onToggleView(() => setView((v) => (v === 'bigpicture' ? 'library' : 'bigpicture'))), [])
 
   const launch = async (game: Game): Promise<void> => {
-    notify({ text: `Lancement de ${game.name}…` });
-    const r = await window.offli.launch(game.id);
-    if (!r.ok)
-      notify({ text: r.error ?? "Le lancement a échoué.", error: true });
-  };
-
-  const rename = async (game: Game, name: string | null): Promise<void> => {
-    setGames(await window.offli.renameGame(game.id, name));
-    if (settings?.useSteamGridDb) forgetCover(game.id);
-  };
-
-  // Image changée ou réinitialisée : on relit les réglages (coverOverrides) et on oublie l'ancienne jaquette
-  const coverChanged = async (id: string): Promise<void> => {
-    forgetCover(id);
-    setSettings(await window.offli.getSettings());
-  };
-
-  const favorite = async (game: Game): Promise<void> => {
-    const s = await window.offli.toggleFavorite(game.id);
-    setStats((prev) => ({ ...prev, [game.id]: s }));
-  };
+    notify({ text: t('library.launching', { name: game.name }) })
+    const r = await window.offli.launch(game.id)
+    if (!r.ok) notify({ text: r.error ?? t('library.launchFailed'), error: true })
+  }
 
   useEffect(() => {
-    if (!settings || tourAutoChecked.current || !shouldAutoStartTour(settings)) return;
-    tourAutoChecked.current = true;
-    setTourOpen(true);
-  }, [settings]);
+    if (!settings || tourAutoChecked.current || !shouldAutoStartTour(settings)) return
+    tourAutoChecked.current = true
+    setTourOpen(true)
+  }, [settings])
 
-  if (!settings) return <div className="boot" />;
+  if (!settings) return <div className="boot" />
+  applyAppearance(settings)
 
-  // Aucun jeu sélectionné par défaut : la fiche n'apparaît qu'après un clic
-  // Les jeux masqués disparaissent de toutes les vues (sections, favoris, récents, recherche, Big Picture)
-  const shownGames = withoutHidden(games, settings.hiddenGames);
-  const selected = shownGames.find((g) => g.id === selectedId);
+  // Hidden games disappear from every view; the game sheet only opens after a click
+  const shownGames = withoutHidden(games, settings.hiddenGames)
+  const selected = shownGames.find((g) => g.id === selectedId)
   const props: ViewProps = {
     games: shownGames,
     stats,
     selected,
-    // La jaquette de la carte vole vers la fiche (et revient à la fermeture)
-    onSelect: (id) =>
-      animateSelection(selected?.id, id, () => setSelectedId(id)),
+    // The card cover flies to the game sheet (and back on close)
+    onSelect: (id) => animateSelection(selected?.id, id, () => setSelectedId(id)),
+    running: data.running,
+    sort: settings.librarySort,
+    onSort: (librarySort) => void save({ librarySort }),
     onLaunch: launch,
-    onFavorite: favorite,
-  };
+    onFavorite: (game) => void data.favorite(game)
+  }
 
   return (
     <>
       {!settings.libraryPaths.length ? (
-        <div className="onboarding">
-          <h1>Offli-Launcher</h1>
-          <p>Choisis le dossier où sont rangés tes fangames et tes romhacks.</p>
-          <p>Offli-Launcher le parcourt et les range pour toi.</p>
-          {/* Même liste de dossiers que le tutoriel et les paramètres */}
-          <div className="onboarding-folders">
-            <FolderList
-              paths={settings.libraryPaths}
-              onChange={(libraryPaths) => save({ libraryPaths })}
-              games={shownGames}
-              scanning={scanning}
-            />
-          </div>
-        </div>
-      ) : view === "bigpicture" ? (
-        <BigPictureView {...props} onExit={() => setView("library")} />
+        <Onboarding
+          paths={settings.libraryPaths}
+          onChange={(libraryPaths) => save({ libraryPaths })}
+          games={shownGames}
+          scanning={scanning}
+        />
+      ) : view === 'bigpicture' ? (
+        <BigPictureView {...props} onExit={() => setView('library')} />
       ) : (
         <LibraryView
           {...props}
           scanning={scanning}
           onOpenSettings={() => setShowSettings(true)}
-          onBigPicture={() => setView("bigpicture")}
+          onBigPicture={() => setView('bigpicture')}
           customCovers={settings.coverOverrides}
           hasSgdbKey={!!settings.hasSteamGridDbKey}
-          onCoverChanged={(id) => void coverChanged(id)}
-          onRename={rename}
+          onCoverChanged={(id) => void data.coverChanged(id)}
+          onRename={data.rename}
           onHide={(game) => {
-            if (selectedId === game.id) setSelectedId(undefined);
-            void save({ hiddenGames: hideGame(settings.hiddenGames, game.id) });
+            if (selectedId === game.id) setSelectedId(undefined)
+            void save({ hiddenGames: hideGame(settings.hiddenGames, game.id) })
           }}
         />
       )}
@@ -196,17 +118,18 @@ export function App(): React.JSX.Element {
           games={games}
           onSave={save}
           scanning={scanning}
-          onScan={rescan}
+          onScan={data.rescan}
+          onImported={() => void data.load().then(() => data.rescan())}
           onReplayTour={() => {
-            setShowSettings(false);
-            setView("library");
-            setTourOpen(true);
+            setShowSettings(false)
+            setView('library')
+            setTourOpen(true)
           }}
           onClose={() => setShowSettings(false)}
         />
       )}
-      {/* Premier lancement : le tutoriel s'ouvre aussi par-dessus l'écran « Choisis le dossier » */}
-      {tourOpen && view === "library" && (
+      {/* First launch: the tutorial also opens over the folder picker screen */}
+      {tourOpen && view === 'library' && (
         <Tour
           settings={settings}
           games={shownGames}
@@ -215,19 +138,13 @@ export function App(): React.JSX.Element {
           onSelect={props.onSelect}
           onSave={save}
           onClose={() => {
-            setTourOpen(false);
-            // Terminé ou passé : le tutoriel ne s'ouvrira plus tout seul
-            if (!settings.tutorialDone) void save({ tutorialDone: true });
+            setTourOpen(false)
+            // Finished or skipped: never auto-open again
+            if (!settings.tutorialDone) void save({ tutorialDone: true })
           }}
         />
       )}
-      <div
-        className={`toast ${toast ? "show" : ""} ${toast?.error ? "error" : ""}`}
-        role="status"
-        aria-live="polite"
-      >
-        {toast?.text}
-      </div>
+      <ToastView toast={toast} />
     </>
-  );
+  )
 }

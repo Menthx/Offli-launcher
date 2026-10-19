@@ -24,9 +24,8 @@ describe('jeux masqués', () => {
 describe('réglage hiddenGames', () => {
   it('est vide par défaut et garde la liste enregistrée (ids stables, survivent aux rescans)', () => {
     expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), {}).hiddenGames).toEqual([])
-    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { hiddenGames: ['abc123', 42, 'def456'] }).hiddenGames).toEqual([
-      'abc123',
-      'def456'
-    ])
+    expect(
+      mergeSettings(structuredClone(DEFAULT_SETTINGS), { hiddenGames: ['abc123', 42, 'def456'] }).hiddenGames
+    ).toEqual(['abc123', 'def456'])
   })
 })

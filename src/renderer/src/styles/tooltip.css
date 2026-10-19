@@ -1,0 +1,40 @@
+/* Tooltip (tooltip.ts): elevated, arrow always points at the element */
+.tip {
+  position: fixed;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: var(--tooltip-max-width);
+  padding: var(--tooltip-padding-y) var(--tooltip-padding-x);
+  background: var(--color-elevated);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--tooltip-radius);
+  box-shadow: var(--shadow-md);
+  font-size: var(--tooltip-font-size);
+  line-height: 1.35;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity var(--t-fast), transform var(--t-fast);
+}
+.tip[data-side='bottom'] { transform: translateY(-2px); }
+.tip.is-on { opacity: 1; transform: none; }
+.tip kbd { flex: none; }
+.tip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: var(--arrow-x, 50%);
+  width: 8px;
+  height: 8px;
+  margin-top: -4px;
+  background: var(--color-elevated);
+  border-right: 1px solid var(--color-border-strong);
+  border-bottom: 1px solid var(--color-border-strong);
+  transform: translateX(-50%) rotate(45deg);
+}
+.tip[data-side='bottom']::after { top: auto; bottom: 100%; margin: 0 0 -4px; transform: translateX(-50%) rotate(225deg); }

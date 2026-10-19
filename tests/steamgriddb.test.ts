@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { GRIDS_PER_PAGE, SgdbError, SteamGridDb, isSteamGridDbUrl } from '../src/main/steamgriddb'
 
-/** fetch simulé : répond selon l'URL demandée et garde la trace des appels */
-function fakeFetch(routes: Record<string, { status?: number; body?: unknown }>): { fetch: typeof fetch; calls: string[] } {
+/** Fake fetch: answers by URL and records calls */
+function fakeFetch(routes: Record<string, { status?: number; body?: unknown }>): {
+  fetch: typeof fetch
+  calls: string[]
+} {
   const calls: string[] = []
   const impl = (async (input: string | URL | Request) => {
     const url = String(input)
@@ -40,7 +43,9 @@ describe('SteamGridDb', () => {
     let auth = ''
     const impl = (async (_url: string | URL | Request, init?: RequestInit) => {
       auth = new Headers(init?.headers).get('Authorization') ?? ''
-      return new Response(JSON.stringify({ data: [{ id: 7, name: 'Pokémon Reborn', release_date: 1420070400 }, { bad: true }] }))
+      return new Response(
+        JSON.stringify({ data: [{ id: 7, name: 'Pokémon Reborn', release_date: 1420070400 }, { bad: true }] })
+      )
     }) as typeof fetch
     const games = await new SteamGridDb('clé-test', impl).search('Pokémon Reborn')
     expect(auth).toBe('Bearer clé-test')
@@ -60,7 +65,11 @@ describe('SteamGridDb', () => {
   })
 
   it('écarte les images hors steamgriddb.com', async () => {
-    const { fetch } = fakeFetch({ '/grids/': { body: { data: [grid(1), grid(2, 'evil.example'), { ...grid(3), url: 'http://cdn2.steamgriddb.com/3.png' }] } } })
+    const { fetch } = fakeFetch({
+      '/grids/': {
+        body: { data: [grid(1), grid(2, 'evil.example'), { ...grid(3), url: 'http://cdn2.steamgriddb.com/3.png' }] }
+      }
+    })
     const { grids } = await new SteamGridDb('k', fetch).grids(7, 0)
     expect(grids.map((g) => g.id)).toEqual([1])
   })
