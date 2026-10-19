@@ -40,7 +40,7 @@ Si ça ne suffit pas : Réglages Système > Confidentialité et sécurité, puis
 
 - **Trouve tes jeux tout seul** : fangames RPG Maker et Pokémon SDK, romhacks GB, GBC, GBA, DS et 3DS. Les ROMs officielles non modifiées sont rangées à part.
 - **Regroupe les versions** d'un même fangame : une seule carte, et tu choisis la version dans la fiche.
-- **Met des jaquettes automatiquement** : écran titre du jeu, jaquette du jeu de base pour les romhacks, ou ton image à toi.
+- **Met des jaquettes automatiquement** : icône du jeu ou écran titre, jaquette du jeu de base pour les romhacks, ou ton image à toi.
 - **Retient tes favoris et ton temps de jeu**, avec une section « Récemment joués » et un tri par nom, date ou temps de jeu.
 - **Sauvegarde** : exporte et réimporte favoris, temps de jeu, noms, images et réglages (Paramètres > Bibliothèque).
 - **Big Picture** : un affichage pour jouer au clavier ou à la manette, depuis le canapé.

@@ -1,14 +1,20 @@
 import { existsSync } from 'node:fs'
-import { mkdir, open, rm, writeFile } from 'node:fs/promises'
+import { mkdir, open, readFile, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import type { Game, Settings } from '../shared/types'
 import { NDS_BANNER_ICON_SIZE, ndsBannerOffset, ndsIconToPng } from './ndsIcon'
 import { baseGameFor, libretroThumbnailUrls } from './romHeader'
 import { readRomHeader } from './scanner'
-import { exeIconPng } from './cover/exeIcon'
+import { exeIconPng, pngWidth } from './cover/exeIcon'
 import { IMAGE_EXT, download, fangameTitle, localImage, sniffExt } from './cover/files'
 
-/** Cover lookup order: user pick, cover.png / folder.png, fangame title screen or Icon.png, SteamGridDB, base game cover, .exe icon or NDS icon; downloads are cached */
+/** Below this, a fangame's .exe icon is too blurry to replace its title screen */
+const MIN_EXE_ICON = 48
+
+const pngFileWidth = async (path: string): Promise<number> =>
+  pngWidth(await readFile(path).catch(() => Buffer.alloc(0)))
+
+/** Cover lookup order: user pick, cover.png / folder.png, fangame .exe icon, title screen or Icon.png, SteamGridDB, base game cover, system or NDS icon; downloads are cached */
 export class CoverResolver {
   private memo = new Map<string, Promise<string | null>>()
 
@@ -47,6 +53,9 @@ export class CoverResolver {
     const local = await localImage(game)
     if (local) return local
 
+    // The .exe icon is the game's own artwork; Graphics/Titles guesses are sometimes wrong
+    const exe = game.kind === 'fangame' ? await this.exeIcon(game) : null
+    if (exe && (await pngFileWidth(exe)) >= MIN_EXE_ICON) return exe
     if (game.kind === 'fangame') {
       const title = await fangameTitle(game)
       if (title) return title
@@ -62,7 +71,7 @@ export class CoverResolver {
       if (base) return base
     }
 
-    if (game.kind === 'fangame') return this.exeIcon(game)
+    if (game.kind === 'fangame') return exe ?? this.systemIcon(game)
     if (game.platform === 'nds') return this.ndsIcon(game)
     return null
   }
@@ -124,10 +133,11 @@ export class CoverResolver {
   }
 
   private exeIcon(game: Game): Promise<string | null> {
-    return this.cached(
-      `${game.id}-exe`,
-      async () => (await exeIconPng(game.path)) ?? (await this.fileIcon?.(game.path)) ?? null
-    )
+    return this.cached(`${game.id}-exeicon`, () => exeIconPng(game.path))
+  }
+
+  private systemIcon(game: Game): Promise<string | null> {
+    return this.cached(`${game.id}-sysicon`, async () => (await this.fileIcon?.(game.path)) ?? null)
   }
 
   private ndsIcon(game: Game): Promise<string | null> {

@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises'
+import { type FileHandle, open } from 'node:fs/promises'
 import { encodePng } from '../ndsIcon'
 
 /** Reads a Windows .exe icon from its resources (no dependency): first icon group, largest image; PNG kept as is, BMP converted */
@@ -14,13 +14,50 @@ interface ResEntry {
   isDir: boolean
 }
 
+/** Never read more than this: the resource section sits well before it in a game .exe */
+const MAX_READ = 64 * 1024 * 1024
+
 export async function exeIconPng(path: string): Promise<Buffer | null> {
+  let fh: FileHandle | undefined
   try {
-    return extractIcon(await readFile(path))
+    fh = await open(path, 'r')
+    const head = await readAt(fh, 4096)
+    const end = resourceEnd(head)
+    if (!end || end > MAX_READ) return null
+    // Only up to the end of .rsrc: Godot and other engines append their data after the PE image
+    return extractIcon(end <= head.length ? head : await readAt(fh, end))
   } catch {
     return null
+  } finally {
+    await fh?.close()
   }
 }
+
+async function readAt(fh: FileHandle, length: number): Promise<Buffer> {
+  const buf = Buffer.alloc(length)
+  const { bytesRead } = await fh.read(buf, 0, length, 0)
+  return buf.subarray(0, bytesRead)
+}
+
+/** File offset where the resource section ends, from the PE headers; 0 without resources */
+export function resourceEnd(head: Buffer): number {
+  if (head.length < 64 || head.toString('ascii', 0, 2) !== 'MZ') return 0
+  const pe = head.readUInt32LE(0x3c)
+  if (head.toString('ascii', pe, pe + 4) !== 'PE\0\0') return 0
+  const opt = pe + 24
+  const rva = head.readUInt32LE(opt + (head.readUInt16LE(opt) === 0x20b ? 112 : 96) + 16)
+  const table = opt + head.readUInt16LE(pe + 20)
+  for (let i = 0; rva && i < head.readUInt16LE(pe + 6); i++) {
+    const s = table + i * 40
+    const va = head.readUInt32LE(s + 12)
+    const size = Math.max(head.readUInt32LE(s + 8), head.readUInt32LE(s + 16))
+    if (rva >= va && rva < va + size) return head.readUInt32LE(s + 20) + head.readUInt32LE(s + 16)
+  }
+  return 0
+}
+
+/** Width of a PNG, from its IHDR chunk */
+export const pngWidth = (png: Buffer): number => (png.length >= 24 ? png.readUInt32BE(16) : 0)
 
 export function extractIcon(buf: Buffer): Buffer | null {
   if (buf.length < 64 || buf.toString('ascii', 0, 2) !== 'MZ') return null

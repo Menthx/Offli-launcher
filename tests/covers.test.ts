@@ -5,6 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { CoverResolver } from '../src/main/covers'
 import { DEFAULT_SETTINGS } from '../src/main/store'
 import type { Game } from '../src/shared/types'
+import { dib32, fakeExe } from './helpers/fakeExe'
 
 let root: string
 let covers: CoverResolver
@@ -58,6 +59,12 @@ beforeAll(async () => {
   await file('Hunter/Hunter.gba')
   await file('Hunter/Hunter-0.png')
   await file('Hunter/cover.png')
+  await file('Uranium/Graphics/Titles/title.png')
+  await writeFile(join(root, 'Uranium/Game.exe'), fakeExe(dib32(64), 64))
+  await file('Tiny/Graphics/Titles/title.png')
+  await writeFile(join(root, 'Tiny/Game.exe'), fakeExe(dib32(32), 32))
+  await mkdir(join(root, 'TinyOnly'), { recursive: true })
+  await writeFile(join(root, 'TinyOnly/Game.exe'), fakeExe(dib32(32), 32))
 })
 
 afterAll(async () => {
@@ -76,6 +83,20 @@ describe('images des fangames', () => {
   it("se rabat sur l'icône du jeu", async () => {
     expect(await pick(fangame('Regis'))).toBe('Icon.png')
     expect(await pick(fangame('Renaissance'))).toBe('project_icon.png')
+  })
+})
+
+describe('icône du .exe des fangames', () => {
+  it("passe avant l'écran titre", async () => {
+    expect(await pick(fangame('Uranium'))).toBe('Uranium-exeicon.png')
+  })
+
+  it("laisse l'écran titre à une icône de moins de 48 px", async () => {
+    expect(await pick(fangame('Tiny'))).toBe('title.png')
+  })
+
+  it("reste l'image de secours sans autre image", async () => {
+    expect(await pick(fangame('TinyOnly'))).toBe('TinyOnly-exeicon.png')
   })
 })
 

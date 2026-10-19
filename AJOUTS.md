@@ -31,7 +31,7 @@ Ce document résume tout ce qui a été ajouté ou modifié par rapport à la ve
 - **Jeu en cours** : le process principal suit les jeux lancés. Le bouton affiche « En cours · 23 min » et un jeu déjà ouvert ne peut pas être relancé.
 - **Entrée** lance le jeu de la fiche (la version choisie), sauf quand un champ ou un autre bouton a le focus.
 - **Miniatures** : les cartes chargent une miniature de 360 px, gardée en cache dans `covers/thumbs`. La pleine taille ne sert qu'à la fiche et à Big Picture (`main/cover/thumbs.ts`).
-- **Icône des `.exe`** : un fangame sans image prend l'icône de son exécutable, lue directement dans le fichier (`main/cover/exeIcon.ts`, jusqu'à 256 px). Si la lecture échoue, l'icône système n'est utilisée que si elle fait au moins 48 px.
+- **Icône des `.exe`** : un fangame prend en priorité l'icône de son exécutable, lue directement dans le fichier (`main/cover/exeIcon.ts`, jusqu'à 256 px, sans lire les données ajoutées après les ressources). Seuls une image choisie, un `cover.png` ou un `folder.png` passent avant. Une icône de moins de 48 px laisse la place à l'écran titre et ne sert qu'en dernier recours. Si la lecture échoue, l'icône système n'est utilisée que si elle fait au moins 48 px.
 - **Images carrées** (Icon.png, icônes) : centrées sur un fond flou d'elles-mêmes au lieu d'être recadrées.
 - **Jeux de base** : leur nom suit la langue, d'après le code de la ROM (Rouge Feu, FireRed, Rojo Fuego).
 
