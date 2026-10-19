@@ -42,9 +42,9 @@ Sans image, la carte reste vide avec le nom du jeu.
 
 ## Thème
 
-Toutes les couleurs sont dans `src/renderer/src/theme/` : un fichier par thème, qui définit des variables sémantiques (`--bg`, `--surface`, `--text`, `--accent`, `--play`, `--focus`…). Pour ajouter un thème, il suffit d'ajouter un fichier sous `:root[data-theme="<nom>"]` et de l'importer dans `theme/index.ts`.
+Les tokens viennent du pack DA « Thème sombre doux » : `src/renderer/src/theme/tokens.css` définit les surfaces (`--color-inset` < `--color-bg` < `--color-surface` < `--color-elevated`), le texte, l'accent, les états, les rayons, les espacements, les ombres et la typo (Inter, JetBrains Mono). Les styles sont rangés par zone dans `src/renderer/src/styles/` (base, contrôles, bibliothèque, fiche, paramètres, superpositions, Big Picture, tutoriel) et n'utilisent que ces tokens. Un thème ne redéfinit que les couleurs `--color-*` (et `--play-bg`, `--fav-on`, `--badge-*`, `--pad-*`) sous `:root[data-theme="<nom>"]`, importé dans `theme/index.ts`.
 
-Quatre thèmes, au choix dans Paramètres > Affichage > Thème : **Console** (par défaut, `theme/console.css`), **Électrique** (`theme/electrique.css`), **Poké Ball** (`theme/pokeball.css`) et **Émeraude** (`theme/emeraude.css`). Le bouton JOUER reste vert dans tous. Contrastes vérifiés (WCAG AA : 4,5:1 pour le texte, 3:1 pour les composants et le texte large).
+Cinq thèmes, au choix dans Paramètres > Affichage > Thème : **Doux** (`theme/tokens.css`), **Console** (`theme/console.css`), **Électrique** (`theme/electrique.css`), **Poké Ball** (par défaut, `theme/pokeball.css`) et **Émeraude** (`theme/emeraude.css`). Le bouton Jouer prend l'accent dans Doux et reste vert dans les quatre autres. Contrastes vérifiés (WCAG AA : 4,5:1 pour le texte, 3:1 pour les composants et le texte large).
 
 ### Console
 
@@ -165,3 +165,15 @@ Les paquets dépréciés tirés indirectement par `electron-builder` sont rempla
 ## Mises à jour
 
 `electron-updater` lit les releases GitHub **publiées** (pas les brouillons ni les préversions) grâce aux fichiers `latest*.yml` produits par `release.yml`. L'appli vérifie une fois au démarrage (version empaquetée seulement) ; télécharger et installer demandent un clic. Installation automatique : installeur Windows et AppImage. Windows portable, `.deb` et macOS (non signé) : la nouvelle version est signalée et le bouton ouvre la page de la release. Une version qui n'embarque pas encore l'updater (0.2.0 et avant) ne peut pas se mettre à jour seule.
+
+## Langues (i18n)
+
+L'interface est traduite en français, anglais et espagnol. Les textes sont dans `src/shared/i18n/` : un dossier par langue (`fr/`, `en/`, `es/`), chacun découpé en `app.ts` (bibliothèque, fiche, Big Picture, messages du process principal) et `setup.ts` (paramètres, tutoriel, mises à jour, SteamGridDB). Le français est la référence : TypeScript et `tests/i18n.test.ts` vérifient que chaque langue a exactement les mêmes clés et les mêmes paramètres `{nom}`.
+
+Dans le code : `t('library.launching', { name })`. Une entrée `{ one, other }` choisit le singulier ou le pluriel d'après `{n}` (règles de `Intl.PluralRules`). Le réglage « Langue » (Paramètres > Affichage) vaut `auto` par défaut : la langue du système si elle est disponible, l'anglais sinon. Pour ajouter une langue : copier `en/`, traduire, l'ajouter à `LANGUAGES` et `DICTS` dans `i18n/index.ts` et à la liste acceptée par `mergeSettings` (`store.ts`).
+
+## Règles du code
+
+- **200 lignes au plus par fichier** (210 tolérées), découpé par thème. `npm run check:lines` le vérifie, en CI aussi.
+- **Formatage** : Prettier (`npm run format`, vérifié en CI par `npm run format:check`). Les feuilles de style gardent l'écriture compacte du pack DA (une règle par ligne) et ne passent pas par Prettier.
+- **Contrastes** : `tests/contrast.test.ts` mesure les couleurs des 5 thèmes (WCAG AA : 4,5:1 pour le texte, 3:1 pour les icônes et `--color-text-subtle`, réservé au décoratif).
