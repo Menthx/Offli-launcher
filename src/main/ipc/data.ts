@@ -17,7 +17,10 @@ export function registerDataIpc(ctx: MainContext): void {
     })
     if (r.canceled || !r.filePath) return null
     try {
-      await writeFile(r.filePath, JSON.stringify(makeBackup(ctx.settings.data, ctx.stats.data), null, 2))
+      await writeFile(
+        r.filePath,
+        JSON.stringify(makeBackup(ctx.settings.data, ctx.stats.data, new Date(), ctx.journal.data), null, 2)
+      )
       return { ok: true }
     } catch {
       return { ok: false, error: 'io' }
@@ -40,14 +43,16 @@ export function registerDataIpc(ctx: MainContext): void {
     if (!backup) return { ok: false, error: 'invalid' }
     ctx.settings.data = backup.settings
     ctx.stats.data = backup.stats
-    await Promise.all([ctx.settings.save(), ctx.stats.save()])
+    // An older backup has no notes: the current ones stay
+    if (backup.journal) ctx.journal.data = backup.journal
+    await Promise.all([ctx.settings.save(), ctx.stats.save(), ctx.journal.save()])
     ctx.dropCovers()
     ctx.applyLanguage()
     ctx.pushStats()
     return { ok: true }
   })
 
-  // Favorites and play time are player data, not settings: they stay
+  // Favorites, play time and notes are player data, not settings: they stay
   // Development only: the button is hidden in packaged builds
   ipcMain.handle('data:reset', async (): Promise<boolean> => {
     if (app.isPackaged) return false

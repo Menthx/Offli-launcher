@@ -1,7 +1,8 @@
-import type { GameStats, Settings } from '../shared/types'
+import type { GameJournal, GameStats, Settings } from '../shared/types'
+import { cleanJournals } from './journal/store'
 import { mergeSettings } from './store'
 
-/** Player data backup (favorites, play time, names, covers, settings); the SteamGridDB key is never exported */
+/** Player data backup (favorites, play time, notes, names, covers, settings); the SteamGridDB key is never exported */
 export const BACKUP_FORMAT = 'offli-launcher-backup'
 
 export interface Backup {
@@ -10,15 +11,23 @@ export interface Backup {
   exportedAt: string
   settings: Settings
   stats: Record<string, GameStats>
+  /** Absent from backups made before the journal existed */
+  journal?: Record<string, GameJournal>
 }
 
-export function makeBackup(settings: Settings, stats: Record<string, GameStats>, now = new Date()): Backup {
+export function makeBackup(
+  settings: Settings,
+  stats: Record<string, GameStats>,
+  now = new Date(),
+  journal: Record<string, GameJournal> = {}
+): Backup {
   return {
     format: BACKUP_FORMAT,
     version: 1,
     exportedAt: now.toISOString(),
     settings: { ...settings, steamGridDbKey: '', hasSteamGridDbKey: undefined },
-    stats
+    stats,
+    journal
   }
 }
 
@@ -40,7 +49,7 @@ function cleanStats(raw: unknown): Record<string, GameStats> {
 export function readBackup(
   text: string,
   current: Settings
-): { settings: Settings; stats: Record<string, GameStats> } | null {
+): { settings: Settings; stats: Record<string, GameStats>; journal?: Record<string, GameJournal> } | null {
   let data: Partial<Backup>
   try {
     data = JSON.parse(text) as Partial<Backup>
@@ -52,5 +61,9 @@ export function readBackup(
     ...data.settings,
     steamGridDbKey: current.steamGridDbKey
   })
-  return { settings, stats: cleanStats(data.stats) }
+  return {
+    settings,
+    stats: cleanStats(data.stats),
+    ...(data.journal !== undefined ? { journal: cleanJournals(data.journal) } : {})
+  }
 }

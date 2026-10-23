@@ -36,6 +36,36 @@ export interface GameStats {
   favorite: boolean
 }
 
+export interface JournalNote {
+  id: string
+  /** Written (or last edited) at, ms */
+  at: number
+  text: string
+}
+
+export interface GameLink {
+  url: string
+  /** Shown instead of the default label (Discord server, Wiki…) */
+  label?: string
+}
+
+/** Player notes and community links, by game id (shared by all versions) */
+export interface GameJournal {
+  notes: JournalNote[]
+  links: GameLink[]
+  /** Detected links the player removed */
+  hiddenLinks: string[]
+}
+
+/** Link found in a text file of the game folder */
+export interface DetectedLink {
+  url: string
+  /** File name it was found in */
+  file: string
+}
+
+export type LinkKind = 'server' | 'channel' | 'wiki' | 'site'
+
 export type Theme = 'doux' | 'console' | 'electrique' | 'pokeball' | 'emeraude'
 
 export type StartView = 'library' | 'bigpicture'
@@ -148,4 +178,11 @@ export interface OffliApi {
   /** Downloads the picked image and saves it as the game cover */
   sgdbPick(id: string, imageId: number): Promise<SgdbResult<null>>
   onStatsChanged(cb: (stats: Record<string, GameStats>) => void): () => void
+  getJournal(id: string): Promise<GameJournal>
+  /** Replaces the game's journal; returns it cleaned */
+  saveJournal(id: string, journal: GameJournal): Promise<GameJournal>
+  /** Discord and wiki links found in the game's text files */
+  detectLinks(id: string): Promise<DetectedLink[]>
+  /** http(s) only, in the default browser (or the Discord app) */
+  openLink(url: string): Promise<void>
 }

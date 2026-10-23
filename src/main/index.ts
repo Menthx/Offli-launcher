@@ -2,6 +2,7 @@ import { BrowserWindow, app, protocol } from 'electron'
 import { COVER_SCHEME, createContext } from './context'
 import { registerCoverIpc } from './ipc/covers'
 import { registerDataIpc } from './ipc/data'
+import { registerJournalIpc } from './ipc/journal'
 import { registerLibraryIpc } from './ipc/library'
 import { setupUpdater } from './updater'
 import { createWindow } from './window'
@@ -28,6 +29,7 @@ app.whenReady().then(() => {
   registerLibraryIpc(ctx)
   registerCoverIpc(ctx)
   registerDataIpc(ctx)
+  registerJournalIpc(ctx)
 
   openWindow()
   // Checks on startup (packaged app only); everything else on click

@@ -1,10 +1,11 @@
 import { type BrowserWindow, app } from 'electron'
 import { join } from 'node:path'
-import type { Game, GameStats, Settings } from '../shared/types'
+import type { Game, GameJournal, GameStats, Settings } from '../shared/types'
 import type { HashCache } from './baseRoms'
 import { CoverResolver } from './covers'
 import { imageStats } from './cover/imageStats'
 import { resolveLanguage, setLanguage } from '../shared/i18n'
+import { cleanJournals } from './journal/store'
 import { DEFAULT_SETTINGS, JsonFile, applyNames, emptyStats, mergeSettings } from './store'
 
 export const COVER_SCHEME = 'offli-img'
@@ -16,6 +17,7 @@ export function createContext(data: string, getWin: () => BrowserWindow | null) 
   // library.json keeps detected names; user names are applied on read
   const library = new JsonFile<Game[]>(join(data, 'library.json'), [])
   const hashes = new JsonFile<HashCache>(join(data, 'hashes.json'), {})
+  const journal = new JsonFile<Record<string, GameJournal>>(join(data, 'journal.json'), {}, (_f, l) => cleanJournals(l))
   const covers = new CoverResolver(
     join(data, 'covers'),
     () => settings.data,
@@ -45,6 +47,7 @@ export function createContext(data: string, getWin: () => BrowserWindow | null) 
     stats,
     library,
     hashes,
+    journal,
     covers,
     coverPaths,
     thumbPaths,

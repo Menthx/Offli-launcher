@@ -1,4 +1,4 @@
-import { type TKey, t } from '../../shared/i18n'
+import { type TKey, getLanguage, t } from '../../shared/i18n'
 import type { BaseRom, Game } from '../../shared/types'
 
 export const PLATFORM_LABEL: Record<Game['platform'], string> = {
@@ -29,6 +29,21 @@ export function lastPlayed(ts?: number): string {
   if (days < 14) return t('format.daysAgo', { n: days })
   if (days < 60) return t('format.weeksAgo', { n: Math.floor(days / 7) })
   return t('format.monthsAgo', { n: Math.floor(days / 30) })
+}
+
+/** Today / yesterday with the time, then the day and month */
+export function noteDate(ts: number, now = Date.now()): string {
+  const lang = getLanguage()
+  const time = new Date(ts).toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' })
+  const startOfToday = new Date(now).setHours(0, 0, 0, 0)
+  if (ts >= startOfToday) return `${t('format.today')} · ${time}`
+  if (ts >= startOfToday - 86_400_000) return `${t('format.yesterday')} · ${time}`
+  const sameYear = new Date(ts).getFullYear() === new Date(now).getFullYear()
+  return new Date(ts).toLocaleDateString(lang, {
+    day: 'numeric',
+    month: 'short',
+    ...(sameYear ? {} : { year: 'numeric' })
+  })
 }
 
 /** 3-letter codes (GBA, NDS) or internal title prefixes (GB, GBC) */

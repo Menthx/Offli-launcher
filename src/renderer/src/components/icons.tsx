@@ -20,7 +20,14 @@ const PATHS = {
   check: 'M5 12.5l4.5 4.5L19 7.5',
   sort: 'M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4',
   upload: 'M12 20V9M7 14l5-5 5 5M5 4h14',
-  download: 'M12 4v11M7 10l5 5 5-5M5 20h14'
+  download: 'M12 4v11M7 10l5 5 5-5M5 20h14',
+  // Speech bubble with two eyes (Discord server)
+  chat: 'M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4 3v-3H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM9 11h.01M15 11h.01',
+  hash: 'M9 4L7 20M17 4l-2 16M4 9h16M3 15h16',
+  book: 'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 21V5M8 7h7',
+  external: 'M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5',
+  plus: 'M12 5v14M5 12h14',
+  trash: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3'
 } as const
 
 export type IconName = keyof typeof PATHS | 'play'

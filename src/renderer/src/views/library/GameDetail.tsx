@@ -3,12 +3,15 @@ import { t } from '../../../../shared/i18n'
 import type { Game, GameStats } from '../../../../shared/types'
 import { GameActions, type MenuAction } from '../../components/GameActions'
 import { Icon } from '../../components/icons'
-import { Select } from '../../components/Select'
 import { useNow } from '../../hooks/useNow'
-import { PLATFORM_LABEL, baseGameName, kindLabel, lastPlayed, playtime } from '../../format'
+import { PLATFORM_LABEL, kindLabel, lastPlayed, playtime } from '../../format'
 import { steamGridDbAction } from '../../menuActions'
+import { CommunityLinks } from './CommunityLinks'
+import { GameFacts } from './GameFacts'
 import { GameHero } from './GameHero'
-import { NameEditor, PathSpoiler } from './NameEditor'
+import { Journal } from './Journal'
+import { NameEditor } from './NameEditor'
+import { useJournal } from './useJournal'
 
 interface Props {
   game: Game
@@ -29,7 +32,7 @@ interface Props {
   onPick(gameId: string, versionId: string): void
 }
 
-/** Game page (like Steam): banner with the name, Play bar, then facts; replaces the grid until Back or Esc */
+/** Game page (like Steam): banner with the name, Play bar, then journal, links and facts; replaces the grid until Back or Esc */
 export function GameDetail(p: Props): React.JSX.Element {
   const sel = p.game
   const target = sel.versions?.find((v) => v.id === p.picked[sel.id]) ?? sel
@@ -47,6 +50,8 @@ export function GameDetail(p: Props): React.JSX.Element {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
   const now = useNow(since !== undefined)
+  // Notes and links belong to the game, whatever version is picked
+  const { journal, detected, save } = useJournal(sel.id)
 
   const setCover = async (img: string | null): Promise<void> => {
     await window.offli.setCover(sel.id, img)
@@ -122,45 +127,13 @@ export function GameDetail(p: Props): React.JSX.Element {
           actions={actions}
         />
       </div>
-      <section className="gp-info">
-        <h5>{t('detail.info')}</h5>
-        <dl className="facts">
-          {sel.versions && (
-            <>
-              <dt>
-                <label htmlFor="version-select">{t('detail.version')}</label>
-              </dt>
-              <dd>
-                <Select
-                  id="version-select"
-                  className="select--sm"
-                  value={target.id}
-                  onChange={(id) => p.onPick(sel.id, id)}
-                  options={sel.versions.map((v, i) => ({
-                    value: v.id,
-                    label: (v.variant ?? v.name) + (i === 0 ? t('detail.latest') : '')
-                  }))}
-                />
-              </dd>
-            </>
-          )}
-          <dt>{t('detail.type')}</dt>
-          <dd>
-            {kindLabel(sel)} · {PLATFORM_LABEL[sel.platform]}
-          </dd>
-          {sel.kind !== 'fangame' && (
-            <>
-              <dt>{t('detail.base')}</dt>
-              <dd>{sel.baseRom ? `${baseGameName(sel.baseRom)} (${sel.baseRom.code})` : t('detail.unknownBase')}</dd>
-            </>
-          )}
-          {/* Last: the revealed path may wrap without moving anything below */}
-          <dt>{t('detail.file')}</dt>
-          <dd>
-            <PathSpoiler key={target.id} path={target.path} />
-          </dd>
-        </dl>
-      </section>
+      <div className="gp-columns">
+        <Journal journal={journal} onSave={save} />
+        <div className="gp-side">
+          <CommunityLinks journal={journal} detected={detected} onSave={save} />
+          <GameFacts game={sel} target={target} onPick={(id) => p.onPick(sel.id, id)} />
+        </div>
+      </div>
     </article>
   )
 }

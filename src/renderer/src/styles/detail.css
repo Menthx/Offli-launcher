@@ -86,15 +86,6 @@
 .gp-bar .rail-btn { background: var(--color-elevated); }
 .gp-bar .rail-btn:hover, .gp-bar .rail-btn[aria-expanded='true'] { background: var(--color-elevated-hover); }
 
-/* Facts table */
-.gp-info { display: flex; flex-direction: column; gap: var(--space-2); max-width: 720px; }
-.facts { display: grid; grid-template-columns: 136px minmax(0, 1fr); margin: 0; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); font-size: var(--font-size-sm); }
-.facts dt, .facts dd { margin: 0; padding: 9px 12px; border-top: 1px solid var(--color-border); }
-.facts dt:first-of-type, .facts dt:first-of-type + dd { border-top: none; }
-.facts dt { color: var(--color-text-muted); white-space: nowrap; }
-.facts dd { min-width: 0; padding-left: 0; overflow-wrap: anywhere; user-select: text; font-variant-numeric: tabular-nums; }
-.facts .select { max-width: 320px; }
-.gp-info h5 { margin: 0; }
 
 .game-actions { position: relative; display: flex; gap: 2px; }
 .rail-btn {

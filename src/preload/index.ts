@@ -43,6 +43,10 @@ const api: OffliApi = {
     ipcRenderer.on('update:status', listener)
     return () => ipcRenderer.removeListener('update:status', listener)
   },
+  getJournal: (id) => ipcRenderer.invoke('journal:get', id),
+  saveJournal: (id, journal) => ipcRenderer.invoke('journal:save', id, journal),
+  detectLinks: (id) => ipcRenderer.invoke('journal:detect', id),
+  openLink: (url) => ipcRenderer.invoke('link:open', url),
   onStatsChanged: (cb) => {
     const listener = (_e: unknown, stats: Record<string, GameStats>): void => cb(stats)
     ipcRenderer.on('stats:changed', listener)
