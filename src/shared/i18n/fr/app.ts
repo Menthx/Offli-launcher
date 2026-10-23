@@ -108,7 +108,9 @@ export const app = {
     linkLabel: 'Nom (facultatif)',
     linkInvalid: 'Adresse non valide',
     add: 'Ajouter',
-    removeLink: 'Retirer le lien',
+    editLink: 'Modifier le lien {name}',
+    saveLink: 'Enregistrer',
+    removeLink: 'Retirer le lien {name}',
     noLinks: 'Ajoute le Discord du créateur, le salon du jeu ou son wiki.'
   },
   bp: {

@@ -60,6 +60,8 @@ export interface GameJournal {
 /** Link found in a text file of the game folder */
 export interface DetectedLink {
   url: string
+  /** Name given in offli.md or by a .url shortcut */
+  label?: string
   /** File name it was found in */
   file: string
 }

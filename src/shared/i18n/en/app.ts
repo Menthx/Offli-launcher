@@ -107,7 +107,9 @@ export const app = {
     linkLabel: 'Name (optional)',
     linkInvalid: 'Invalid address',
     add: 'Add',
-    removeLink: 'Remove link',
+    editLink: 'Edit link {name}',
+    saveLink: 'Save',
+    removeLink: 'Remove link {name}',
     noLinks: "Add the creator's Discord, the game's channel or its wiki."
   },
   bp: {

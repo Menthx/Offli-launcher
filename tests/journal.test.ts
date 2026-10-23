@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { makeBackup, readBackup } from '../src/main/backup'
 import { detectLinks, findLinks } from '../src/main/journal/detect'
+import { parseOffliMd, parseUrlShortcut } from '../src/main/journal/offliMd'
 import { cleanJournal, cleanJournals } from '../src/main/journal/store'
 import { DEFAULT_SETTINGS } from '../src/main/store'
 import { linkKind, normalizeUrl } from '../src/shared/links'
@@ -47,6 +48,39 @@ describe('links', () => {
       'https://pokefallen.fandom.com/wiki/Soluce',
       'https://discord.com/channels/111/222'
     ])
+  })
+})
+
+describe('offli.md', () => {
+  it('reads named links of the Liens section, skips template addresses and comments', () => {
+    const md = [
+      '# Pokémon Decay',
+      '- Hors section : https://discord.gg/ignore',
+      '## Liens',
+      '- Discord : https://discord.gg/decay',
+      '- Salon : https://discord.com/channels/XXXX/XXXX',
+      '- [Wiki](https://decay.fandom.com/wiki/Accueil)',
+      '- Objets: <https://docs.google.com/spreadsheets/d/abc/edit>',
+      '- https://example.org',
+      '<!-- - Ancien : https://discord.gg/vieux -->',
+      '## Notes',
+      '- Pas un lien : https://discord.gg/nope'
+    ].join('\n')
+    expect(parseOffliMd(md)).toEqual([
+      { url: 'https://discord.gg/decay', label: 'Discord' },
+      { url: 'https://decay.fandom.com/wiki/Accueil', label: 'Wiki' },
+      { url: 'https://docs.google.com/spreadsheets/d/abc/edit', label: 'Objets' },
+      { url: 'https://example.org/' }
+    ])
+  })
+
+  it('names a .url shortcut after its file', () => {
+    const text = '[InternetShortcut]\r\nURL=https://docs.google.com/spreadsheets/d/x/edit\r\n'
+    expect(parseUrlShortcut(text, 'Useful Links - TalemDex.url')).toEqual({
+      url: 'https://docs.google.com/spreadsheets/d/x/edit',
+      label: 'TalemDex'
+    })
+    expect(parseUrlShortcut('[InternetShortcut]', 'Vide.url')).toBeNull()
   })
 })
 
@@ -100,14 +134,22 @@ describe('detectLinks', () => {
     mkdirSync(fan)
     writeFileSync(join(fan, 'Lisez-moi.txt'), 'Discord : https://discord.gg/fallen')
     writeFileSync(join(fan, 'Game.exe'), 'discord.gg/binaire')
+    writeFileSync(
+      join(fan, 'offli.md'),
+      '## Liens\n- Wiki : https://fallen.fandom.com/wiki/A\n- Discord : https://discord.gg/fallen'
+    )
+    writeFileSync(join(fan, 'Useful Links - Items.url'), '[InternetShortcut]\nURL=https://docs.google.com/x')
     const roms = join(root, 'GBA')
     mkdirSync(roms)
     writeFileSync(join(roms, 'Odyssey.gba'), '')
     writeFileSync(join(roms, 'Odyssey - lisez-moi.txt'), 'discord.gg/odyssey')
     writeFileSync(join(roms, 'Autre jeu.txt'), 'discord.gg/autre')
 
+    // offli.md first, so its names win over the same link found elsewhere
     expect(await detectLinks([game({ dir: fan, path: join(fan, 'Game.exe') })])).toEqual([
-      { url: 'https://discord.gg/fallen', file: 'Lisez-moi.txt' }
+      { url: 'https://fallen.fandom.com/wiki/A', label: 'Wiki', file: 'offli.md' },
+      { url: 'https://discord.gg/fallen', label: 'Discord', file: 'offli.md' },
+      { url: 'https://docs.google.com/x', label: 'Items', file: 'Useful Links - Items.url' }
     ])
     expect(
       await detectLinks([game({ kind: 'romhack', platform: 'gba', dir: roms, path: join(roms, 'Odyssey.gba') })])

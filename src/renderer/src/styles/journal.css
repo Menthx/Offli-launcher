@@ -43,13 +43,13 @@
 
 /* Community links: Discord in its own color, others neutral */
 .links { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
-.link { position: relative; }
+.com-link { position: relative; }
 .link__open {
   display: flex;
   align-items: center;
   gap: var(--space-3);
   width: 100%;
-  padding: 8px 40px 8px 8px;
+  padding: 8px 72px 8px 8px;
   border: none;
   border-radius: var(--radius-md);
   background: var(--color-elevated);
@@ -61,14 +61,15 @@
 .link__open:hover { background: var(--color-elevated-hover); }
 .link__open > svg { flex: none; color: var(--color-text-subtle); }
 .link__icon { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: var(--radius-sm); background: var(--color-surface-hover); color: var(--color-text-muted); }
-.link--server .link__icon { background: #5865f2; color: #fff; }
-.link--channel .link__icon { color: #8c95ff; }
+.com-link--server .link__icon { background: #5865f2; color: #fff; }
+.com-link--channel .link__icon { color: #8c95ff; }
 .link__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .link__label { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
 .link__text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--font-size-xs); color: var(--color-text-muted); }
-.link__remove { position: absolute; top: 50%; right: 6px; width: 28px; height: 28px; transform: translateY(-50%); opacity: 0; }
-.link:hover .link__remove, .link__remove:focus-visible { opacity: 1; }
-.link:hover .link__open > svg, .link:focus-within .link__open > svg { visibility: hidden; }
+.link__tools { position: absolute; top: 50%; right: 6px; display: flex; gap: 2px; transform: translateY(-50%); opacity: 0; transition: opacity var(--t-fast); }
+.link__tools .icon-btn { width: 28px; height: 28px; }
+.com-link:hover .link__tools, .link__tools:focus-within { opacity: 1; }
+.com-link:hover .link__open > svg, .com-link:focus-within .link__open > svg { visibility: hidden; }
 .link-form { display: flex; flex-direction: column; gap: var(--space-2); }
 .link-form .input[aria-invalid='true'] { border-color: var(--color-danger); }
 .link-error { margin: 0; font-size: var(--font-size-xs); color: var(--color-danger); }
