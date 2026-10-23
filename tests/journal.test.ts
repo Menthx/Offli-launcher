@@ -3,10 +3,11 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { makeBackup, readBackup } from '../src/main/backup'
-import { detectLinks, findLinks } from '../src/main/journal/detect'
+import { detectLinks, findLinks, resolveIcon } from '../src/main/journal/detect'
 import { parseOffliMd, parseUrlShortcut } from '../src/main/journal/offliMd'
 import { cleanJournal, cleanJournals } from '../src/main/journal/store'
 import { DEFAULT_SETTINGS } from '../src/main/store'
+import { iconName, linkIcon } from '../src/shared/linkIcons'
 import { linkKind, normalizeUrl } from '../src/shared/links'
 import type { Game } from '../src/shared/types'
 
@@ -74,6 +75,27 @@ describe('offli.md', () => {
     ])
   })
 
+  it('reads the icon after |', () => {
+    const md =
+      '## Liens\n- Chaîne : https://youtube.com/@decay | YouTube\n- Patch : https://mega.nz/x | images/patch.png'
+    expect(parseOffliMd(md)).toEqual([
+      { url: 'https://youtube.com/@decay', label: 'Chaîne', icon: 'YouTube' },
+      { url: 'https://mega.nz/x', label: 'Patch', icon: 'images/patch.png' }
+    ])
+  })
+
+  it('knows icon names, aliases and defaults from the address', () => {
+    expect(iconName('Téléchargement')).toBe('telechargement')
+    expect(iconName('GitHub')).toBe('code')
+    expect(iconName('licorne')).toBeNull()
+    expect(linkIcon('https://example.com', 'Site', 'youtube')).toBe('youtube')
+    expect(linkIcon('https://discord.gg/x')).toBe('discord')
+    expect(linkIcon('https://youtu.be/x')).toBe('youtube')
+    expect(linkIcon('https://github.com/a/b')).toBe('code')
+    expect(linkIcon('https://docs.google.com/spreadsheets/d/x/edit')).toBe('tableur')
+    expect(linkIcon('https://example.com', undefined, 'licorne')).toBe('site')
+  })
+
   it('names a .url shortcut after its file', () => {
     const text = '[InternetShortcut]\r\nURL=https://docs.google.com/spreadsheets/d/x/edit\r\n'
     expect(parseUrlShortcut(text, 'Useful Links - TalemDex.url')).toEqual({
@@ -121,6 +143,23 @@ describe('journal store', () => {
     expect(back.journal).toEqual(journal)
     const old = { ...makeBackup(DEFAULT_SETTINGS, {}), journal: undefined }
     expect(readBackup(JSON.stringify(old), DEFAULT_SETTINGS)!.journal).toBeUndefined()
+  })
+})
+
+describe('resolveIcon', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'offli-icon-'))
+  mkdirSync(join(dir, 'images'))
+  writeFileSync(join(dir, 'images', 'patch.png'), Buffer.from([0x89, 0x50, 0x4e, 0x47]))
+  writeFileSync(join(dir, 'gros.png'), Buffer.alloc(200 * 1024))
+  writeFileSync(join(tmpdir(), 'dehors.png'), Buffer.from([1]))
+
+  it('keeps names, reads images of the game folder only, drops the rest', async () => {
+    expect(await resolveIcon('Wiki', dir)).toBe('wiki')
+    expect(await resolveIcon('images/patch.png', dir)).toBe('data:image/png;base64,iVBORw==')
+    expect(await resolveIcon('../dehors.png', dir)).toBeUndefined()
+    expect(await resolveIcon('gros.png', dir)).toBeUndefined()
+    expect(await resolveIcon('absent.png', dir)).toBeUndefined()
+    expect(await resolveIcon('licorne', dir)).toBeUndefined()
   })
 })
 

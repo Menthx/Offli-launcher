@@ -60,9 +60,12 @@
 }
 .link__open:hover { background: var(--color-elevated-hover); }
 .link__open > svg { flex: none; color: var(--color-text-subtle); }
-.link__icon { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: var(--radius-sm); background: var(--color-surface-hover); color: var(--color-text-muted); }
-.com-link--server .link__icon { background: #5865f2; color: #fff; }
-.com-link--channel .link__icon { color: #8c95ff; }
+.link__icon { width: 34px; height: 34px; flex: none; display: grid; place-items: center; overflow: hidden; border-radius: var(--radius-sm); background: var(--color-surface-hover); color: var(--color-text-muted); }
+.com-link--discord .link__icon { background: #5865f2; color: #fff; }
+.com-link--salon .link__icon { color: #8c95ff; }
+.com-link--youtube .link__icon { background: #e62117; color: #fff; }
+.com-link--tableur .link__icon { color: #34a853; }
+.link__icon img { width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }
 .link__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .link__label { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
 .link__text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--font-size-xs); color: var(--color-text-muted); }

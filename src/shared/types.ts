@@ -47,6 +47,8 @@ export interface GameLink {
   url: string
   /** Shown instead of the default label (Discord server, Wiki…) */
   label?: string
+  /** Icon name (see LINK_ICONS) or image data URL, from offli.md */
+  icon?: string
 }
 
 /** Player notes and community links, by game id (shared by all versions) */
@@ -62,6 +64,8 @@ export interface DetectedLink {
   url: string
   /** Name given in offli.md or by a .url shortcut */
   label?: string
+  /** Icon picked in offli.md: icon name or image data URL */
+  icon?: string
   /** File name it was found in */
   file: string
 }

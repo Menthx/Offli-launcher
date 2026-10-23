@@ -1,24 +1,46 @@
 import { useState } from 'react'
 import { t } from '../../../../shared/i18n'
+import { type LinkIcon, isIconImage, linkIcon } from '../../../../shared/linkIcons'
 import { linkKind } from '../../../../shared/links'
-import type { DetectedLink, GameJournal, GameLink, LinkKind } from '../../../../shared/types'
+import type { DetectedLink, GameJournal, GameLink } from '../../../../shared/types'
 import { Icon, type IconName } from '../../components/icons'
 import { LinkForm } from './LinkForm'
 
-const KIND_ICON: Record<LinkKind, IconName> = { server: 'chat', channel: 'hash', wiki: 'book', site: 'external' }
+const ICONS: Record<LinkIcon, IconName> = {
+  discord: 'chat',
+  salon: 'hash',
+  wiki: 'book',
+  site: 'external',
+  youtube: 'video',
+  code: 'code',
+  tableur: 'sheet',
+  telechargement: 'download'
+}
 
 interface Row {
   url: string
   /** Name given by the player, offli.md or a shortcut (default label otherwise) */
   name?: string
-  kind: LinkKind
+  /** As saved: icon name or image data URL (offli.md) */
+  chosen?: string
+  icon: LinkIcon
   /** File it was found in, for detected links */
   file?: string
 }
 
 /** Host and path without the scheme, as people write it */
 const shortUrl = (url: string): string => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')
-const toLink = (url: string, label: string): GameLink => (label ? { url, label } : { url })
+const toLink = (url: string, label: string, icon?: string): GameLink => ({
+  url,
+  ...(label ? { label } : {}),
+  ...(icon ? { icon } : {})
+})
+const toRow = (l: GameLink | DetectedLink): Omit<Row, 'file'> => ({
+  url: l.url,
+  name: l.label,
+  chosen: l.icon,
+  icon: linkIcon(l.url, l.label, l.icon)
+})
 
 /** Creator's Discord, game channel, wiki: added by the player, or found in offli.md and the game's text files */
 export function CommunityLinks(p: {
@@ -31,10 +53,10 @@ export function CommunityLinks(p: {
   const j = p.journal
   const own = new Set(j?.links.map((l) => l.url))
   const rows: Row[] = [
-    ...(j?.links ?? []).map((l) => ({ url: l.url, name: l.label, kind: linkKind(l.url, l.label) })),
+    ...(j?.links ?? []).map(toRow),
     ...p.detected
       .filter((d) => !own.has(d.url) && !j?.hiddenLinks.includes(d.url))
-      .map((d) => ({ url: d.url, name: d.label, kind: linkKind(d.url, d.label), file: d.file }))
+      .map((d) => ({ ...toRow(d), file: d.file }))
   ]
   const hide = (url: string): string[] => (j!.hiddenLinks.includes(url) ? j!.hiddenLinks : [...j!.hiddenLinks, url])
   const remove = (row: Row): void => {
@@ -59,7 +81,7 @@ export function CommunityLinks(p: {
       {rows.length > 0 && (
         <ul className="links">
           {rows.map((row) => {
-            const label = row.name ?? t(`journal.${row.kind}`)
+            const label = row.name ?? t(`journal.${linkKind(row.url)}`)
             if (editing === row.url)
               return (
                 <li key={row.url}>
@@ -68,16 +90,23 @@ export function CommunityLinks(p: {
                     onClose={() => setEditing(undefined)}
                     onSubmit={(url, name) => {
                       setEditing(undefined)
-                      replace(row, toLink(url, name))
+                      replace(row, toLink(url, name, row.chosen))
                     }}
                   />
                 </li>
               )
             return (
-              <li key={row.url} className={`com-link com-link--${row.kind}`}>
+              <li
+                key={row.url}
+                className={`com-link com-link--${row.chosen && isIconImage(row.chosen) ? 'image' : row.icon}`}
+              >
                 <button className="link__open" onClick={() => void window.offli.openLink(row.url)}>
                   <span className="link__icon">
-                    <Icon name={KIND_ICON[row.kind]} size={18} />
+                    {row.chosen && isIconImage(row.chosen) ? (
+                      <img src={row.chosen} alt="" draggable={false} />
+                    ) : (
+                      <Icon name={ICONS[row.icon]} size={18} />
+                    )}
                   </span>
                   <span className="link__text">
                     <span className="link__label">{label}</span>

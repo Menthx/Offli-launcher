@@ -6,9 +6,16 @@ export const OFFLI_MD = 'offli.md'
 /** Template addresses still to fill in */
 const PLACEHOLDER = /x{4,}/i
 
-/** Lines of the "Liens" section: `- Name : address`, `- Name: <address>` or `- [Name](address)` */
-export function parseOffliMd(text: string): { url: string; label?: string }[] {
-  const out: { url: string; label?: string }[] = []
+export interface OffliLink {
+  url: string
+  label?: string
+  /** What follows `|`: an icon name or an image file of the game folder, not checked yet */
+  icon?: string
+}
+
+/** Lines of the "Liens" section: `- Name : address`, `- Name: <address>` or `- [Name](address)`, then `| icon` */
+export function parseOffliMd(text: string): OffliLink[] {
+  const out: OffliLink[] = []
   let inLinks = false
   for (const raw of text.replace(/<!--[\s\S]*?-->/g, '').split(/\r?\n/)) {
     const line = raw.trim()
@@ -18,14 +25,17 @@ export function parseOffliMd(text: string): { url: string; label?: string }[] {
       continue
     }
     if (!inLinks || !/^[-*]\s/.test(line)) continue
-    const item = line.slice(2).trim()
+    const [item, icon] = line
+      .slice(2)
+      .trim()
+      .split(/\s+\|\s+/)
     const m =
       /^\[([^\]]+)\]\(([^)\s]+)\)/.exec(item) ??
       (/^https?:/i.test(item) ? null : /^([^:]+?)\s*:\s*<?(\S+?)>?$/.exec(item))
     const [label, address] = m ? [m[1].trim(), m[2]] : ['', item]
     if (PLACEHOLDER.test(address)) continue
     const url = normalizeUrl(address)
-    if (url) out.push(label ? { url, label } : { url })
+    if (url) out.push({ url, ...(label ? { label } : {}), ...(icon?.trim() ? { icon: icon.trim() } : {}) })
   }
   return out
 }
