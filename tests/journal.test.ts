@@ -19,6 +19,13 @@ describe('links', () => {
     expect(linkKind('https://reliccastle.com/x')).toBe('site')
   })
 
+  it("follows the player's name for the link", () => {
+    expect(linkKind('https://github.com/Menthx/Offli-launcher', 'wiki')).toBe('wiki')
+    expect(linkKind('https://example.com', 'Salon entraide')).toBe('channel')
+    expect(linkKind('https://example.com', 'Mon Discord')).toBe('server')
+    expect(linkKind('https://discord.gg/abc', 'Communauté')).toBe('server')
+  })
+
   it('accepts bare addresses, refuses other schemes', () => {
     expect(normalizeUrl('discord.gg/abc')).toBe('https://discord.gg/abc')
     expect(normalizeUrl('  https://wiki.example.org ')).toBe('https://wiki.example.org/')

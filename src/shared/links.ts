@@ -1,7 +1,11 @@
 import type { LinkKind } from './types'
 
-/** Discord invite, channel or wiki, from the URL alone */
-export function linkKind(url: string): LinkKind {
+/** The player's name wins (a GitHub page named "Wiki"), then the URL decides */
+export function linkKind(url: string, label?: string): LinkKind {
+  const name = label?.toLowerCase() ?? ''
+  if (/wiki|guide|soluce|walkthrough|gu[ií]a/.test(name)) return 'wiki'
+  if (/salon|channel|canal/.test(name)) return 'channel'
+  if (/discord|serveur|server|servidor/.test(name)) return 'server'
   let u: URL
   try {
     u = new URL(url)

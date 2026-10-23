@@ -9,6 +9,7 @@ const KIND_ICON: Record<LinkKind, IconName> = { server: 'chat', channel: 'hash',
 interface Row {
   url: string
   label: string
+  kind: LinkKind
   /** File it was found in, for detected links */
   file?: string
 }
@@ -74,10 +75,13 @@ export function CommunityLinks(p: {
   const j = p.journal
   const own = new Set(j?.links.map((l) => l.url))
   const rows: Row[] = [
-    ...(j?.links ?? []).map((l) => ({ url: l.url, label: l.label ?? t(`journal.${linkKind(l.url)}`) })),
+    ...(j?.links ?? []).map((l) => {
+      const kind = linkKind(l.url, l.label)
+      return { url: l.url, kind, label: l.label ?? t(`journal.${kind}`) }
+    }),
     ...p.detected
       .filter((d) => !own.has(d.url) && !j?.hiddenLinks.includes(d.url))
-      .map((d) => ({ url: d.url, label: t(`journal.${linkKind(d.url)}`), file: d.file }))
+      .map((d) => ({ url: d.url, kind: linkKind(d.url), label: t(`journal.${linkKind(d.url)}`), file: d.file }))
   ]
   const remove = (row: Row): void => {
     if (!j) return
@@ -96,10 +100,10 @@ export function CommunityLinks(p: {
       {rows.length > 0 && (
         <ul className="links">
           {rows.map((row) => (
-            <li key={row.url} className={`link link--${linkKind(row.url)}`}>
+            <li key={row.url} className={`link link--${row.kind}`}>
               <button className="link__open" onClick={() => void window.offli.openLink(row.url)}>
                 <span className="link__icon">
-                  <Icon name={KIND_ICON[linkKind(row.url)]} size={18} />
+                  <Icon name={KIND_ICON[row.kind]} size={18} />
                 </span>
                 <span className="link__text">
                   <span className="link__label">{row.label}</span>
