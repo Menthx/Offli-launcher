@@ -40,6 +40,8 @@ export function TourBody({ step, settings, games, scanning, onSave }: Props): Re
       )
     case 'sidebar':
       return <p>{t('tour.sidebarBody')}</p>
+    case 'pickGame':
+      return <p>{t('tour.pickGameBody')}</p>
     case 'detail':
       return <p>{t('tour.detailBody')}</p>
     case 'settings':

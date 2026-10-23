@@ -3,8 +3,16 @@ import { DEFAULT_SETTINGS, mergeSettings } from '../src/main/store'
 import { TOUR_STEPS, libraryStatus, shouldAutoStartTour, tourReduce } from '../src/renderer/src/tour'
 
 describe('tutoriel', () => {
-  it('compte six étapes', () => {
-    expect(TOUR_STEPS.map((s) => s.id)).toEqual(['welcome', 'folders', 'sidebar', 'detail', 'settings', 'bigpicture'])
+  it('compte sept étapes', () => {
+    expect(TOUR_STEPS.map((s) => s.id)).toEqual([
+      'welcome',
+      'folders',
+      'sidebar',
+      'pickGame',
+      'detail',
+      'settings',
+      'bigpicture'
+    ])
   })
 
   it('avance, recule et ne descend pas sous la première étape', () => {

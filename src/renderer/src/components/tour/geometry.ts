@@ -11,9 +11,9 @@ export interface Rect {
 export const PAD = 8
 const BUBBLE_W = 320
 
-/** Bounding box of every [data-tour="<target>"] element */
-export function targetRect(target: string): Rect | null {
-  const els = [...document.querySelectorAll<HTMLElement>(`[data-tour="${target}"]`)]
+/** Bounding box of every [data-tour="<target>"] element, or of the first one */
+export function targetRect(target: string, first = false): Rect | null {
+  const els = [...document.querySelectorAll<HTMLElement>(`[data-tour="${target}"]`)].slice(0, first ? 1 : undefined)
   if (!els.length) return null
   const rs = els.map((e) => e.getBoundingClientRect())
   const top = Math.min(...rs.map((r) => r.top))

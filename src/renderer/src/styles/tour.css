@@ -1,6 +1,9 @@
 /* First-launch tutorial: full-screen layer, highlight ring, elevated card */
 .tour { position: fixed; inset: 0; z-index: 40; }
 .tour-scrim { position: fixed; inset: 0; background: var(--color-scrim); }
+/* 'Open a game' step: clicks reach the library under the dimmed layer */
+.tour.is-passthrough { pointer-events: none; }
+.tour.is-passthrough .tour-card { pointer-events: auto; }
 .tour-ring {
   position: fixed;
   border: 2px solid var(--color-accent);

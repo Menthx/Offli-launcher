@@ -84,15 +84,18 @@ export const setup = {
     welcome: 'Bienvenue sur Offli-Launcher',
     folders: 'Où sont tes jeux ?',
     sidebar: 'Tes jeux sont déjà rangés',
-    detail: 'Clique sur un jeu, puis Jouer',
+    pickGame: "Ouvre la page d'un jeu",
+    detail: 'Tout sur ton jeu',
     settings: 'Fais-le à ton goût',
     bigpicture: 'Joue depuis ton canapé',
     welcomeBody:
-      'Tous tes fangames et romhacks Pokémon au même endroit. On fait le tour en six étapes, ça prend une minute.',
+      'Tous tes fangames et romhacks Pokémon au même endroit. On fait le tour en sept étapes, ça prend une minute.',
     sidebarBody:
       'Fangames et ROMs ont chacun leur section. Tape un nom dans la recherche pour retrouver un jeu en un instant.',
+    pickGameBody:
+      'Clique sur un jeu pour ouvrir sa page, avec ton journal, ses liens et le bouton Jouer. Un double-clic le lance directement.',
     detailBody:
-      "L'étoile l'ajoute à tes favoris. Le bouton ☰ permet d'ouvrir le dossier du jeu, de changer son image ou d'en choisir une sur SteamGridDB. Ton temps de jeu est compté tout seul.",
+      "Jouer lance le jeu. L'étoile l'ajoute à tes favoris et le bouton ☰ ouvre son dossier ou change son image. Plus bas, note où tu en es dans le journal. Échap te ramène à la bibliothèque.",
     settingsBody:
       'La roue dentée ouvre les paramètres : dossiers de jeux, émulateurs, images, thème et langue. Choisis tes couleurs :',
     bigpictureBody: 'Big Picture affiche tes jeux en grand, à piloter avec une manette.',

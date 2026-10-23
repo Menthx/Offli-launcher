@@ -39,11 +39,12 @@ export function cardActions(
 export function GameGrid(p: GridProps): React.JSX.Element {
   return (
     <div className="grid">
-      {p.games.map((g) => (
+      {p.games.map((g, i) => (
         <button
           key={g.id}
           className={`card ${g.id === p.selectedId ? 'sel' : ''}`}
           data-game={g.id}
+          data-tour={i === 0 ? 'game-card' : undefined}
           style={
             p.animated
               ? ({

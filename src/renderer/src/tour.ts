@@ -1,7 +1,7 @@
 /** First-launch tutorial steps and navigation, React-free (testable in Node) */
 import { t } from '../../shared/i18n'
 
-export type TourStepId = 'welcome' | 'folders' | 'sidebar' | 'detail' | 'settings' | 'bigpicture'
+export type TourStepId = 'welcome' | 'folders' | 'sidebar' | 'pickGame' | 'detail' | 'settings' | 'bigpicture'
 
 export interface TourStep {
   id: TourStepId
@@ -9,12 +9,16 @@ export interface TourStep {
   kind: 'modal' | 'spotlight'
   target?: string
   side?: 'right' | 'left' | 'top'
+  /** Highlight only the first match (one card, not every section's first card) */
+  first?: boolean
 }
 
 export const TOUR_STEPS: TourStep[] = [
   { id: 'welcome', kind: 'modal' },
   { id: 'folders', kind: 'modal' },
   { id: 'sidebar', kind: 'spotlight', target: 'sidebar', side: 'right' },
+  // Waits for a click on a game (Next opens the first one)
+  { id: 'pickGame', kind: 'spotlight', target: 'game-card', side: 'right', first: true },
   { id: 'detail', kind: 'spotlight', target: 'detail-actions', side: 'top' },
   { id: 'settings', kind: 'spotlight', target: 'settings', side: 'right' },
   { id: 'bigpicture', kind: 'modal' }

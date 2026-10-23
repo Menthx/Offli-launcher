@@ -16,7 +16,7 @@ interface Props {
   onClose(): void
 }
 
-/** Six steps: centered dialogs or bubbles next to highlighted elements */
+/** Seven steps: centered dialogs or bubbles next to highlighted elements */
 export function Tour({ settings, games, scanning, selectedId, onSelect, onSave, onClose }: Props): React.JSX.Element {
   const [step, setStep] = useState(0)
   const [rect, setRect] = useState<Rect | null>(null)
@@ -41,23 +41,36 @@ export function Tour({ settings, games, scanning, selectedId, onSelect, onSave, 
     [step, onClose]
   )
 
-  // 'detail' step: select the first game if none is selected
+  // Game steps: the grid for 'pickGame', a game page for 'detail' (the first game if none was clicked);
+  // the selection from before comes back when leaving them
   useEffect(() => {
     const sb = selectionBefore.current
-    if (current.id === 'detail') {
-      if (!sb.saved) {
-        sb.saved = true
-        sb.id = selectedId
-        if (!selectedId) {
-          const first = games.find((g) => g.kind !== 'baserom')
-          if (first) onSelect(first.id)
-        }
-      }
-    } else if (sb.saved) {
+    const inGame = current.id === 'pickGame' || current.id === 'detail'
+    if (inGame && !sb.saved) {
+      sb.saved = true
+      sb.id = selectedId
+    }
+    if (current.id === 'pickGame' && selectedId) onSelect(undefined)
+    if (current.id === 'detail' && !selectedId) {
+      const first = games.find((g) => g.kind !== 'baserom')
+      if (first) onSelect(first.id)
+    }
+    if (!inGame && sb.saved) {
       sb.saved = false
       if (sb.id !== selectedId) onSelect(sb.id)
     }
   }, [current.id])
+
+  // 'pickGame' moves on by itself once a game is opened
+  const waitingForClick = useRef(false)
+  useEffect(() => {
+    if (current.id !== 'pickGame') waitingForClick.current = false
+    else if (!selectedId) waitingForClick.current = true
+    else if (waitingForClick.current) {
+      waitingForClick.current = false
+      go('next')
+    }
+  }, [current.id, selectedId, go])
 
   // Highlight position, measured again on resize
   useLayoutEffect(() => {
@@ -69,7 +82,7 @@ export function Tour({ settings, games, scanning, selectedId, onSelect, onSave, 
     let frame = 0
     const measure = (): void => {
       cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(() => setRect(targetRect(target)))
+      frame = requestAnimationFrame(() => setRect(targetRect(target, current.first)))
     }
     measure()
     // The game sheet may animate in: measure again once it's done
@@ -111,7 +124,10 @@ export function Tour({ settings, games, scanning, selectedId, onSelect, onSave, 
   const spotlight = current.kind === 'spotlight' && !!rect
 
   return (
-    <div className={`tour ${spotlight ? 'is-spotlight' : 'is-modal'}`} onKeyDown={onKeyDown}>
+    <div
+      className={`tour ${spotlight ? 'is-spotlight' : 'is-modal'} ${spotlight && current.id === 'pickGame' ? 'is-passthrough' : ''}`}
+      onKeyDown={onKeyDown}
+    >
       {spotlight && rect ? (
         <div
           className="tour-ring"
