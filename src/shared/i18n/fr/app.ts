@@ -59,8 +59,8 @@ export const app = {
     launchFailed: 'Le lancement a échoué.'
   },
   detail: {
+    info: 'Infos',
     sheetOf: 'Fiche de {name}',
-    closeSheet: 'Fermer la fiche',
     moreActions: "Plus d'actions",
     actionsMenu: 'Actions du jeu',
     openFolder: 'Ouvrir le dossier',

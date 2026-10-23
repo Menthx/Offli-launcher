@@ -31,28 +31,28 @@ function cardCover(id: string | undefined): HTMLElement | null {
 }
 
 function detailCover(): HTMLElement | null {
-  return document.querySelector<HTMLElement>('.lib-detail .cover')
+  return document.querySelector<HTMLElement>('.game-page .gp-hero__art')
 }
 
 function name(el: HTMLElement | null, value: string): void {
   if (el) el.style.setProperty('view-transition-name', value)
 }
 
-/** Shared-element transition between the card cover and the game sheet; the transition name is set only during the animation */
+/** Shared-element transition between the card cover and the game page banner; the transition name is set only during the animation */
 export function animateSelection(fromId: string | undefined, toId: string | undefined, apply: () => void): void {
   const start = startViewTransition()
   if (!start || fromId === toId) {
     apply()
     return
   }
-  // Before: the clicked card (open, switch) or the sheet (close)
+  // Before: the clicked card (open, switch) or the page banner (close)
   const before = toId ? cardCover(toId) : detailCover()
   name(before, HERO)
   let after: HTMLElement | null = null
   const transition = start(() => {
     flushSync(apply)
     name(before, '')
-    // After: the sheet cover, or the card of the game just closed
+    // After: the banner art, or the card of the game just closed
     after = toId ? detailCover() : cardCover(fromId)
     name(after, HERO)
   })

@@ -1,104 +1,101 @@
-/* Game sheet, action menu, rename, hidden path */
-/* Full-width row under the selected card: upright cover, then name, fact pills and the Play row */
-.lib-detail {
+/* Game page, action menu, rename, hidden path */
+/* Page like Steam: banner with the name, Play bar, then the facts; replaces the grid */
+.game-page { display: flex; flex-direction: column; gap: var(--space-5); padding-bottom: var(--space-6); }
+
+/* Banner: a wide title screen fills it, anything else sits whole on the right of a blurred copy */
+.gp-hero {
   position: relative;
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: 160px minmax(0, 1fr);
-  grid-template-rows: auto auto 1fr;
-  grid-template-areas: 'cover name' 'cover pills' 'cover actions';
-  column-gap: var(--space-5);
-  row-gap: var(--space-3);
-  padding: var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  flex: none;
+  height: clamp(220px, 38vh, 380px);
+  overflow: hidden;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  background: var(--color-inset);
+  isolation: isolate;
 }
-.lib-detail > .cover { grid-area: cover; align-self: start; box-shadow: var(--shadow-md); }
-.lib-detail > .name-editor { grid-area: name; padding-right: calc(var(--icon-btn-md) + var(--space-3)); }
-.lib-detail > .pills { grid-area: pills; }
-.lib-detail > .detail-actions { grid-area: actions; align-self: end; }
-@media (max-width: 900px) {
-  .lib-detail { grid-template-columns: 120px minmax(0, 1fr); }
+.gp-hero__bg { position: absolute; inset: -40px; width: calc(100% + 80px); height: calc(100% + 80px); object-fit: cover; filter: blur(32px) saturate(1.3) brightness(0.55); z-index: -2; }
+.gp-hero__art { position: absolute; top: 8%; right: 4%; height: 84%; max-width: 46%; object-fit: contain; border-radius: var(--radius-md); filter: drop-shadow(0 16px 32px rgb(0 0 0 / 0.45)); z-index: -1; }
+.gp-hero.is-wide .gp-hero__bg { display: none; }
+.gp-hero.is-wide .gp-hero__art { inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; border-radius: 0; filter: none; }
+/* Darkens the bottom left so the name always reads */
+.gp-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(0deg, rgb(0 0 0 / 0.72) 0%, rgb(0 0 0 / 0) 55%), linear-gradient(90deg, rgb(0 0 0 / 0.45) 0%, rgb(0 0 0 / 0) 60%);
+  pointer-events: none;
 }
-
-/* Facts: one pill each, muted label then value */
-.pills { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0; }
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 30px;
-  padding: 0 12px;
-  border-radius: var(--radius-full);
-  background: var(--color-elevated);
-  font-size: var(--font-size-sm);
-}
-.pill dt { color: var(--color-text-muted); }
-.pill dd { margin: 0; font-variant-numeric: tabular-nums; user-select: text; }
-.pill--select { padding-right: 4px; }
-.pill--select .select { min-width: 160px; }
-
-/* Play rail on the left, hidden file path on the right */
-.detail-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-4); }
-.detail-actions .play-rail { flex: 0 1 440px; min-width: 280px; }
-.detail-file { display: flex; align-items: center; gap: var(--space-2); margin-left: auto; min-width: 0; font-size: var(--font-size-xs); color: var(--color-text-muted); }
-.detail-file .spoiler { width: 180px; }
-.detail-file .spoiler-shown { max-width: 360px; }
-.close-detail {
+.gp-back {
   position: absolute;
   top: var(--space-4);
-  right: var(--space-4);
-  z-index: 2;
-  width: var(--icon-btn-md);
+  left: var(--space-4);
   height: var(--icon-btn-md);
-  display: grid;
-  place-items: center;
-  padding: 0;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--color-bg) 72%, transparent);
+  padding: 0 var(--space-3);
+  border: 1px solid rgb(255 255 255 / 0.18);
+  border-radius: var(--radius-full);
+  background: rgb(0 0 0 / 0.45);
   backdrop-filter: blur(10px);
-  color: var(--color-text);
+  color: #fff;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: background var(--t-fast);
 }
-.close-detail:hover { background: var(--color-danger); border-color: transparent; color: var(--color-accent-text); }
+.gp-back:hover { background: rgb(0 0 0 / 0.65); }
+.gp-title { position: absolute; left: var(--space-6); right: 50%; bottom: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); color: #fff; }
+.gp-hero.is-wide .gp-title { right: var(--space-6); }
+.gp-kind { font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); letter-spacing: 0.08em; text-transform: uppercase; color: rgb(255 255 255 / 0.8); }
+.gp-title h3 { font-size: var(--font-size-3xl); text-shadow: 0 2px 12px rgb(0 0 0 / 0.5); }
+.gp-title .name-btn svg { color: rgb(255 255 255 / 0.7); }
 
-/* Inset rail: raised Play, flat favorite and menu */
-.play-rail {
+/* Play bar: big Play, last session and playtime, then favorite and menu */
+.gp-bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 2px;
-  padding: 3px;
-  background: var(--color-inset);
+  gap: var(--space-3) var(--space-6);
+  padding: var(--space-3);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
 }
-.play-main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
+.gp-play {
+  display: inline-flex;
   align-items: center;
   gap: 10px;
-  height: 46px;
-  padding: 0 var(--space-3) 0 var(--space-4);
+  height: var(--play-btn-height);
+  padding: 0 var(--space-6);
   border: none;
-  border-radius: var(--radius-sm);
-  background: var(--color-elevated);
-  box-shadow: var(--shadow-sm);
-  color: var(--color-text);
+  border-radius: var(--radius-md);
+  background: var(--play-bg);
+  color: var(--play-text);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: background var(--t-fast);
 }
-.play-main:hover { background: var(--color-elevated-hover); }
-.play-main:active { transform: translateY(1px); }
-.play-main > svg { flex: none; color: var(--play-bg); }
-.play-main__label { flex: 1; text-align: left; }
-.play-main kbd { background: var(--color-inset); border-color: transparent; color: var(--color-text-muted); }
+.gp-play:hover { background: var(--play-bg-hover); }
+.gp-play:active { transform: translateY(1px); }
+.gp-play kbd { background: rgb(0 0 0 / 0.18); border-color: transparent; color: inherit; }
+.gp-play.is-running { background: var(--color-elevated); color: var(--color-success); cursor: default; }
+.gp-stats { display: flex; gap: var(--space-6); margin: 0; }
+.gp-stats div { display: flex; flex-direction: column; gap: 2px; }
+.gp-stats dt { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.gp-stats dd { margin: 0; font-weight: var(--font-weight-semibold); font-variant-numeric: tabular-nums; }
+.gp-bar .game-actions { margin-left: auto; }
+.gp-bar .rail-btn { background: var(--color-elevated); }
+.gp-bar .rail-btn:hover, .gp-bar .rail-btn[aria-expanded='true'] { background: var(--color-elevated-hover); }
+
+/* Facts table */
+.gp-info { display: flex; flex-direction: column; gap: var(--space-2); max-width: 720px; }
+.facts { display: grid; grid-template-columns: 136px minmax(0, 1fr); margin: 0; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); font-size: var(--font-size-sm); }
+.facts dt, .facts dd { margin: 0; padding: 9px 12px; border-top: 1px solid var(--color-border); }
+.facts dt:first-of-type, .facts dt:first-of-type + dd { border-top: none; }
+.facts dt { color: var(--color-text-muted); white-space: nowrap; }
+.facts dd { min-width: 0; padding-left: 0; overflow-wrap: anywhere; user-select: text; font-variant-numeric: tabular-nums; }
+.facts .select { max-width: 320px; }
+.gp-info h5 { margin: 0; }
+
 .game-actions { position: relative; display: flex; gap: 2px; }
 .rail-btn {
   width: 46px;
@@ -155,7 +152,7 @@
 .menu-hint { font-size: var(--font-size-xs); color: var(--color-text-muted); }
 
 /* Click-to-rename title */
-.lib-detail h3 { margin: 0; font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold, 700); line-height: var(--line-height-tight); letter-spacing: -0.01em; }
+.game-page h3 { margin: 0; font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold, 700); line-height: var(--line-height-tight); letter-spacing: -0.01em; }
 .name-editor { display: flex; flex-direction: column; gap: 4px; }
 .name-btn { display: inline-flex; align-items: baseline; gap: var(--space-2); padding: 0; border: none; background: none; font: inherit; text-align: left; cursor: text; border-radius: var(--radius-xs); }
 .name-btn svg { flex: none; opacity: 0; color: var(--color-text-subtle); transition: opacity var(--t-fast); }
@@ -183,8 +180,6 @@
 .spoiler-shown { display: block; min-width: 0; overflow-wrap: anywhere; user-select: text; font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--color-text-muted); }
 
 /* Running game: pulsing green dot, disabled button */
-.play-main.is-running { cursor: default; color: var(--color-success); }
-.play-main.is-running:hover { background: var(--color-elevated); }
 .run-dot { width: 10px; height: 10px; flex: none; border-radius: 50%; background: var(--color-success); box-shadow: 0 0 0 0 var(--color-success-soft); animation: run-pulse 1.6s ease-out infinite; }
 @keyframes run-pulse { 70% { box-shadow: 0 0 0 8px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
 .play:disabled { cursor: default; opacity: 0.85; }

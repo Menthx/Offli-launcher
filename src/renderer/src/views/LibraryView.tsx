@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { t } from '../../../shared/i18n'
 import type { Game } from '../../../shared/types'
 import type { ViewProps } from '../App'
@@ -64,39 +64,18 @@ export function LibraryView(p: Props): React.JSX.Element {
   const target = sel && (sel.versions?.find((v) => v.id === picked[sel.id]) ?? sel)
   useLibraryKeys(search, target && !p.running[target.id] ? () => p.onLaunch(target) : undefined)
 
-  // Sheet opens as a new row under the clicked card, in the section it was clicked in
-  const [selSection, setSelSection] = useState<string>()
-  const shown = filter === 'all' ? SECTIONS.map((s) => s.filter) : [filter]
-  const holds = (sec: string): boolean =>
-    !!sel && visible.some((g) => g.id === sel.id && matches(sec as Filter, g, p.stats[g.id]))
-  const host = selSection && shown.includes(selSection as Filter) && holds(selSection) ? selSection : shown.find(holds)
-  const detail = sel && (
-    <GameDetail
-      game={sel}
-      stats={p.stats[sel.id]}
-      hasCustomCover={!!p.customCovers[sel.id]}
-      hasSgdbKey={p.hasSgdbKey}
-      picked={picked}
-      runningSince={p.running}
-      onPick={(gameId, versionId) => setPicked({ ...picked, [gameId]: versionId })}
-      onClose={() => p.onSelect(undefined)}
-      onLaunch={p.onLaunch}
-      onFavorite={p.onFavorite}
-      onRename={p.onRename}
-      onCoverChanged={p.onCoverChanged}
-      onPickSgdb={setSgdbFor}
-      onHide={p.onHide}
-    />
-  )
+  // Back from the game page lands where the grid was left
+  const main = useRef<HTMLElement>(null)
+  const gridScroll = useRef(0)
+  useLayoutEffect(() => {
+    if (main.current) main.current.scrollTop = sel ? 0 : gridScroll.current
+  }, [sel?.id])
 
   const gridProps = {
     animated: visible.length <= MAX_ANIMATED_CARDS,
     stats: p.stats,
     selectedId: sel?.id,
-    onSelect: (id: string | undefined, section?: string): void => {
-      setSelSection(section)
-      p.onSelect(id)
-    },
+    onSelect: p.onSelect,
     onLaunch: p.onLaunch
   }
 
@@ -131,58 +110,80 @@ export function LibraryView(p: Props): React.JSX.Element {
         onOpenSettings={p.onOpenSettings}
       />
 
-      <main className="lib-main">
-        <div className="lib-toolbar">
-          <label htmlFor="lib-sort" className="lib-toolbar__label">
-            <Icon name="sort" size={14} />
-            {t('library.sort')}
-          </label>
-          <Select
-            id="lib-sort"
-            className="select--sm lib-sort"
-            value={p.sort}
-            onChange={(sort) => animate(() => p.onSort(sort))}
-            options={SORTS.map((s) => ({ value: s.id, label: t(s.label) }))}
+      <main
+        className="lib-main"
+        ref={main}
+        onScroll={(e) => {
+          if (!sel) gridScroll.current = e.currentTarget.scrollTop
+        }}
+      >
+        {sel ? (
+          <GameDetail
+            game={sel}
+            stats={p.stats[sel.id]}
+            hasCustomCover={!!p.customCovers[sel.id]}
+            hasSgdbKey={p.hasSgdbKey}
+            picked={picked}
+            runningSince={p.running}
+            onPick={(gameId, versionId) => setPicked({ ...picked, [gameId]: versionId })}
+            onClose={() => p.onSelect(undefined)}
+            onLaunch={p.onLaunch}
+            onFavorite={p.onFavorite}
+            onRename={p.onRename}
+            onCoverChanged={p.onCoverChanged}
+            onPickSgdb={setSgdbFor}
+            onHide={p.onHide}
           />
-        </div>
-        {recent.length > 0 && !query && filter === 'all' && <RecentRow {...gridProps} games={recent} />}
-        {visible.length === 0 ? (
-          <section className="stack-s">
-            <h5>{filterLabel(filter)} · 0</h5>
-            <p className="muted">{emptyText}</p>
-          </section>
-        ) : filter === 'all' ? (
-          SECTIONS.map((sec) => {
-            const games = visible.filter((g) => matches(sec.filter, g, p.stats[g.id]))
-            if (games.length === 0) return null
-            return (
-              <section key={sec.filter} className="stack-s">
-                <h5>
-                  <button
-                    className="section-link"
-                    onClick={() => changeFilter(sec.filter)}
-                    data-tooltip={t('library.onlyThis', { label: sec.label() })}
-                  >
-                    {sec.label()}
-                  </button>{' '}
-                  · {games.length}
-                </h5>
-                <GameGrid
-                  {...gridProps}
-                  section={sec.filter}
-                  games={games}
-                  detail={host === sec.filter ? detail : undefined}
-                />
-              </section>
-            )
-          })
         ) : (
-          <section className="stack-s">
-            <h5>
-              {filterLabel(filter)} · {visible.length}
-            </h5>
-            <GameGrid {...gridProps} section={filter} games={visible} detail={detail} />
-          </section>
+          <>
+            <div className="lib-toolbar">
+              <label htmlFor="lib-sort" className="lib-toolbar__label">
+                <Icon name="sort" size={14} />
+                {t('library.sort')}
+              </label>
+              <Select
+                id="lib-sort"
+                className="select--sm lib-sort"
+                value={p.sort}
+                onChange={(sort) => animate(() => p.onSort(sort))}
+                options={SORTS.map((s) => ({ value: s.id, label: t(s.label) }))}
+              />
+            </div>
+            {recent.length > 0 && !query && filter === 'all' && <RecentRow {...gridProps} games={recent} />}
+            {visible.length === 0 ? (
+              <section className="stack-s">
+                <h5>{filterLabel(filter)} · 0</h5>
+                <p className="muted">{emptyText}</p>
+              </section>
+            ) : filter === 'all' ? (
+              SECTIONS.map((sec) => {
+                const games = visible.filter((g) => matches(sec.filter, g, p.stats[g.id]))
+                if (games.length === 0) return null
+                return (
+                  <section key={sec.filter} className="stack-s">
+                    <h5>
+                      <button
+                        className="section-link"
+                        onClick={() => changeFilter(sec.filter)}
+                        data-tooltip={t('library.onlyThis', { label: sec.label() })}
+                      >
+                        {sec.label()}
+                      </button>{' '}
+                      · {games.length}
+                    </h5>
+                    <GameGrid {...gridProps} section={sec.filter} games={games} />
+                  </section>
+                )
+              })
+            ) : (
+              <section className="stack-s">
+                <h5>
+                  {filterLabel(filter)} · {visible.length}
+                </h5>
+                <GameGrid {...gridProps} section={filter} games={visible} />
+              </section>
+            )}
+          </>
         )}
       </main>
 

@@ -58,8 +58,8 @@ export const app = {
     launchFailed: 'The game could not be launched.'
   },
   detail: {
+    info: 'Details',
     sheetOf: '{name} details',
-    closeSheet: 'Close details',
     moreActions: 'More actions',
     actionsMenu: 'Game actions',
     openFolder: 'Open folder',

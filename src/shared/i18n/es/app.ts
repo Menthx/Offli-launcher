@@ -58,8 +58,8 @@ export const app = {
     launchFailed: 'No se pudo iniciar el juego.'
   },
   detail: {
+    info: 'Información',
     sheetOf: 'Ficha de {name}',
-    closeSheet: 'Cerrar la ficha',
     moreActions: 'Más acciones',
     actionsMenu: 'Acciones del juego',
     openFolder: 'Abrir la carpeta',

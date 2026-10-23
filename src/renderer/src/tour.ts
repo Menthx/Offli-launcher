@@ -15,7 +15,7 @@ export const TOUR_STEPS: TourStep[] = [
   { id: 'welcome', kind: 'modal' },
   { id: 'folders', kind: 'modal' },
   { id: 'sidebar', kind: 'spotlight', target: 'sidebar', side: 'right' },
-  { id: 'detail', kind: 'spotlight', target: 'detail-actions', side: 'left' },
+  { id: 'detail', kind: 'spotlight', target: 'detail-actions', side: 'top' },
   { id: 'settings', kind: 'spotlight', target: 'settings', side: 'right' },
   { id: 'bigpicture', kind: 'modal' }
 ]
