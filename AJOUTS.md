@@ -24,7 +24,7 @@ Ce document résume tout ce qui a été ajouté ou modifié par rapport à la ve
   - infobulles `tooltip.ts` sur tout élément `data-tooltip="Texte|Raccourci"` et sur les boutons-icônes ;
   - paramètres en deux colonnes (navigation à gauche, groupes en cartes à droite) ;
   - rail Jouer de la fiche : Jouer surélevé avec le raccourci Entrée, favori et menu ☰ à plat.
-  - page du jeu façon Steam à la place de la grille (bouton « ← Bibliothèque » ou Échap pour revenir, la grille reprend où on l'était) : grande bannière avec le nom, barre Jouer avec dernière session et temps de jeu, puis les infos.
+  - page du jeu façon Steam à la place de la grille (bouton « ← Bibliothèque » ou Échap pour revenir, la grille reprend où on l'était ; le logo, un filtre ou la recherche ramènent aussi à la grille) : grande bannière avec le nom, barre Jouer avec dernière session et temps de jeu, puis les infos.
 
 ## Bibliothèque
 

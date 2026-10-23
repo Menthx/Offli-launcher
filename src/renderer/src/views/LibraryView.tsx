@@ -46,7 +46,6 @@ export function LibraryView(p: Props): React.JSX.Element {
   const [picked, setPicked] = useState<Record<string, string>>({})
   const [sgdbFor, setSgdbFor] = useState<Game>()
   const search = useRef<HTMLInputElement>(null)
-  const changeFilter = (f: Filter): void => animate(() => setFilter(f))
 
   useEffect(() => {
     if (query === appliedQuery) return
@@ -67,6 +66,14 @@ export function LibraryView(p: Props): React.JSX.Element {
   // Back from the game page lands where the grid was left
   const main = useRef<HTMLElement>(null)
   const gridScroll = useRef(0)
+  // From the game page, the logo, a filter or the search show the grid again, from the top
+  const backToGrid = (update: () => void): void => {
+    update()
+    if (!sel) return
+    gridScroll.current = 0
+    p.onSelect(undefined)
+  }
+  const changeFilter = (f: Filter): void => (sel ? backToGrid(() => setFilter(f)) : animate(() => setFilter(f)))
   useLayoutEffect(() => {
     if (main.current) main.current.scrollTop = sel ? 0 : gridScroll.current
   }, [sel?.id])
@@ -104,7 +111,7 @@ export function LibraryView(p: Props): React.JSX.Element {
         filter={filter}
         onFilter={changeFilter}
         query={query}
-        onQuery={setQuery}
+        onQuery={(q) => backToGrid(() => setQuery(q))}
         onSearchKey={onSearchKey}
         onBigPicture={p.onBigPicture}
         onOpenSettings={p.onOpenSettings}
