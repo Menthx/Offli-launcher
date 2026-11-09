@@ -150,6 +150,7 @@ export const app = {
   main: {
     shortcutFailed: 'The shortcut could not be created.',
     shortcutUnsupported: 'Shortcuts are only available on Windows and Linux.',
+    jumpListTitle: 'Last played',
     jumpListPlay: 'Play {name}',
     alreadyRunning: '{name} is already running.',
     gameNotFound: 'Game not found, run a new scan.',

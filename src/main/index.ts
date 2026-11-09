@@ -19,6 +19,9 @@ protocol.registerSchemesAsPrivileged([
 // Separate data folder (tests, portable profile)
 if (process.env['OFFLI_USER_DATA']) app.setPath('userData', process.env['OFFLI_USER_DATA'])
 
+// Taskbar button and its right-click menu belong to Offli (same id as the installer), not to Electron
+if (process.platform === 'win32') app.setAppUserModelId('fr.menthx.offli')
+
 // One Offli at a time: both would write the same files; opening it again shows the open window
 if (!app.requestSingleInstanceLock()) app.exit(0)
 

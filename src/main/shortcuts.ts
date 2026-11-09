@@ -87,14 +87,17 @@ export function updateJumpList(games: Game[], stats: Record<string, GameStats>):
     .filter((g) => stats[g.id]?.lastPlayed)
     .sort((a, b) => stats[b.id]!.lastPlayed! - stats[a.id]!.lastPlayed!)
     .slice(0, JUMP_LIST_SIZE)
-  app.setUserTasks(
-    recent.map((g) => ({
-      program: appTarget(),
-      arguments: winArgs(launchArgs(g.id)),
-      title: g.variant ? `${g.name} (${g.variant})` : g.name,
-      description: t('main.jumpListPlay', { name: g.name }),
-      iconPath: g.kind === 'fangame' ? g.path : appTarget(),
-      iconIndex: 0
-    }))
-  )
+  const items = recent.map((g) => ({
+    type: 'task' as const,
+    program: appTarget(),
+    args: winArgs(launchArgs(g.id)),
+    title: g.variant ? `${g.name} (${g.variant})` : g.name,
+    description: t('main.jumpListPlay', { name: g.name }),
+    iconPath: g.kind === 'fangame' ? g.path : appTarget(),
+    iconIndex: 0
+  }))
+  // Own "Last played" section; Windows refuses it when recent items are turned off in its settings
+  const result = app.setJumpList(items.length ? [{ type: 'custom', name: t('main.jumpListTitle'), items }] : null)
+  if (result !== 'ok')
+    app.setUserTasks(items.map(({ args, ...i }) => ({ ...i, arguments: args })).map(({ type: _t, ...i }) => i))
 }

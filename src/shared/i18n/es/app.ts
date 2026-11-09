@@ -150,6 +150,7 @@ export const app = {
   main: {
     shortcutFailed: 'No se pudo crear el acceso directo.',
     shortcutUnsupported: 'Los accesos directos solo están disponibles en Windows y Linux.',
+    jumpListTitle: 'Últimos juegos',
     jumpListPlay: 'Jugar a {name}',
     alreadyRunning: '{name} ya está en marcha.',
     gameNotFound: 'Juego no encontrado, vuelve a analizar.',

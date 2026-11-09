@@ -151,6 +151,7 @@ export const app = {
   main: {
     shortcutFailed: "Le raccourci n'a pas pu être créé.",
     shortcutUnsupported: 'Les raccourcis ne sont disponibles que sous Windows et Linux.',
+    jumpListTitle: 'Derniers jeux',
     jumpListPlay: 'Jouer à {name}',
     alreadyRunning: '{name} est déjà lancé.',
     gameNotFound: 'Jeu introuvable, relance un scan.',
