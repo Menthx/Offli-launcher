@@ -88,10 +88,16 @@
 .facts dt { color: var(--color-text-muted); white-space: nowrap; }
 .facts dd { min-width: 0; overflow-wrap: anywhere; user-select: text; font-variant-numeric: tabular-nums; }
 
-/* Status and collections */
-.tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
-.tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 4px 2px 10px; border-radius: var(--radius-full); background: var(--color-accent-soft); color: var(--color-accent); font-size: var(--font-size-sm); }
+/* Status and collections, one row above the journal */
+.gp-progress { flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: var(--space-4) var(--space-6); }
+.gp-progress__field { display: grid; gap: var(--space-2); min-width: 0; }
+.gp-progress__field:first-child { width: 190px; }
+.gp-progress__tags { flex: 1; min-width: 220px; }
+.gp-progress h5 { margin: 0; font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); }
+.tag-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 32px; }
+.tag { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 4px 0 10px; border-radius: var(--radius-full); background: var(--color-accent-soft); color: var(--color-accent); font-size: var(--font-size-sm); }
 .tag__remove { display: inline-grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: inherit; cursor: pointer; }
 .tag__remove:hover { background: color-mix(in srgb, currentColor 18%, transparent); }
-.tag-add { display: flex; gap: var(--space-2); }
-.tag-add .input { flex: 1; min-width: 0; }
+.tag-add { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 10px; border: 1px dashed var(--color-border-strong, var(--color-border)); border-radius: var(--radius-full); color: var(--color-text-muted); }
+.tag-add:focus-within { border-style: solid; border-color: var(--color-accent); color: var(--color-text); }
+.tag-add input { width: 110px; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; font-size: var(--font-size-sm); outline: none; }

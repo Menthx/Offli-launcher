@@ -29,48 +29,46 @@ const add = (): void => {
 </script>
 
 <template>
-  <section class="gp-box gp-progress" aria-labelledby="progress-title">
-    <header class="gp-box__head">
+  <section class="gp-box gp-progress" :aria-label="t('detail.status')">
+    <div class="gp-progress__field">
       <h5 id="progress-title">{{ t('detail.status') }}</h5>
-    </header>
-    <AppSelect
-      id="status-select"
-      v-model="status"
-      class="select--sm"
-      :options="statusOptions"
-      :aria-label="t('detail.status')"
-    />
-    <header class="gp-box__head">
-      <h5>{{ t('detail.collections') }}</h5>
-    </header>
-    <ul v-if="tags.length" class="tag-list">
-      <li v-for="tag in tags" :key="tag" class="tag">
-        {{ tag }}
-        <button
-          class="tag__remove"
-          :aria-label="t('detail.removeTag', { name: tag })"
-          @click="saveTags(tags.filter((x) => x !== tag))"
-        >
-          <Icon name="close" :size="12" />
-        </button>
-      </li>
-    </ul>
-    <form class="tag-add" @submit.prevent="add">
-      <input
-        v-model="draft"
-        class="input"
-        list="tag-suggestions"
-        :maxlength="TAG_MAX_LENGTH"
-        :placeholder="t('detail.tagPlaceholder')"
-        :aria-label="t('detail.addTag')"
-        @keydown.esc.stop="draft = ''"
+      <AppSelect
+        id="status-select"
+        v-model="status"
+        class="select--sm"
+        :options="statusOptions"
+        :aria-label="t('detail.status')"
       />
-      <datalist id="tag-suggestions">
-        <option v-for="s in suggestions" :key="s" :value="s" />
-      </datalist>
-      <button class="icon-square" type="submit" :aria-label="t('detail.addTag')" :data-tooltip="t('detail.addTag')">
-        <Icon name="plus" :size="16" />
-      </button>
-    </form>
+    </div>
+    <div class="gp-progress__field gp-progress__tags">
+      <h5>{{ t('detail.collections') }}</h5>
+      <div class="tag-row">
+        <span v-for="tag in tags" :key="tag" class="tag">
+          {{ tag }}
+          <button
+            class="tag__remove"
+            :aria-label="t('detail.removeTag', { name: tag })"
+            @click="saveTags(tags.filter((x) => x !== tag))"
+          >
+            <Icon name="close" :size="12" />
+          </button>
+        </span>
+        <form class="tag-add" @submit.prevent="add">
+          <Icon name="plus" :size="14" />
+          <input
+            v-model="draft"
+            list="tag-suggestions"
+            :maxlength="TAG_MAX_LENGTH"
+            :placeholder="t('detail.tagPlaceholder')"
+            :aria-label="t('detail.addTag')"
+            @keydown.esc.stop="draft = ''"
+            @blur="add"
+          />
+          <datalist id="tag-suggestions">
+            <option v-for="s in suggestions" :key="s" :value="s" />
+          </datalist>
+        </form>
+      </div>
+    </div>
   </section>
 </template>

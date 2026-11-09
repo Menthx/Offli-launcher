@@ -122,9 +122,11 @@ const actions = computed<MenuAction[]>(() => {
       />
     </div>
     <div class="gp-columns">
-      <JournalBox :journal="journal" @save="save" />
       <div class="gp-side">
         <GameProgress :game-id="game.id" :stats="stats" :all-tags="allTags" />
+        <JournalBox :journal="journal" @save="save" />
+      </div>
+      <div class="gp-side">
         <CommunityLinks :journal="journal" :detected="detected" @save="save" />
         <GameFacts
           :game="game"
