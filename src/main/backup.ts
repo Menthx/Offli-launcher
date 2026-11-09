@@ -1,3 +1,4 @@
+import { GAME_STATUSES, cleanTags } from '../shared/gameStatus'
 import type { GameJournal, GameStats, Settings } from '../shared/types'
 import { cleanJournals } from './journal/store'
 import { mergeSettings } from './store'
@@ -39,7 +40,9 @@ function cleanStats(raw: unknown): Record<string, GameStats> {
     out[id] = {
       playtimeSec: Number.isFinite(v.playtimeSec) ? Math.max(0, Number(v.playtimeSec)) : 0,
       favorite: v.favorite === true,
-      ...(Number.isFinite(v.lastPlayed) ? { lastPlayed: Number(v.lastPlayed) } : {})
+      ...(Number.isFinite(v.lastPlayed) ? { lastPlayed: Number(v.lastPlayed) } : {}),
+      ...(v.status && GAME_STATUSES.includes(v.status) ? { status: v.status } : {}),
+      ...(cleanTags(v.tags).length ? { tags: cleanTags(v.tags) } : {})
     }
   }
   return out

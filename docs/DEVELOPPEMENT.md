@@ -25,7 +25,9 @@ npm run dist:win   # installeur Windows (aussi dist:linux, dist:mac)
 - **ROMs de base** : une ROM officielle non modifiée (reconnue par son empreinte SHA-1, d'après No-Intro) n'est pas un romhack ; elle est rangée dans « ROMs de base ». Les empreintes sont gardées en cache (chemin, taille, date) pour que les rescans restent rapides.
 - **Versions** : plusieurs dossiers du même fangame (même titre) donnent une seule carte, la version la plus récente d'après le nom du dossier (« Fr 1.1.3 ») ; les autres se choisissent dans la fiche.
 - **Renommer un jeu** : clic sur son nom dans la fiche. Le nom choisi est gardé d'un scan à l'autre ; « Rétablir » revient au nom détecté.
-- **Temps de jeu** et dernière session sont mesurés à la fermeture du jeu.
+- **Temps de jeu** : compté toutes les minutes pendant la partie (`main/sessions.ts`), puis à la fermeture du jeu. Les parties en cours sont notées dans `sessions.json` : si Offli est fermé pendant une partie, il retrouve le jeu au démarrage suivant (même pid et même nom d'exécutable) et continue de compter.
+- **Une seule instance** : rouvrir Offli ramène la fenêtre déjà ouverte. `--launch <id>` lance un jeu (raccourci bureau, liste de la barre des tâches Windows, `main/shortcuts.ts`).
+- **Pendant une partie** : la fenêtre se réduit et revient au premier plan à la fermeture du jeu (réglage `minimizeOnLaunch`). La manette n'est lue que quand la fenêtre d'Offli a le focus.
 
 ## Images
 

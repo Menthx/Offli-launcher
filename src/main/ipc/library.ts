@@ -1,13 +1,15 @@
 import { dialog, ipcMain, shell } from 'electron'
-import type { LaunchResult, Settings } from '../../shared/types'
+import { GAME_STATUSES, cleanTags } from '../../shared/gameStatus'
+import type { GameStats, LaunchResult, Settings } from '../../shared/types'
 import { t } from '../../shared/i18n'
 import type { MainContext } from '../context'
-import { buildCommand, resolveAssociation, runCommand } from '../launcher'
+import type { Player } from '../play'
 import { scanLibrary } from '../scanner'
+import { createDesktopShortcut } from '../shortcuts'
 import { mergeSettings } from '../store'
 
 /** Settings, dialogs, library, stats and game launching */
-export function registerLibraryIpc(ctx: MainContext): void {
+export function registerLibraryIpc(ctx: MainContext, player: Player): void {
   const { settings, stats, library, hashes, covers } = ctx
 
   ipcMain.handle('settings:get', () => ctx.publicSettings())
@@ -70,6 +72,21 @@ export function registerLibraryIpc(ctx: MainContext): void {
     await stats.save()
     return s
   })
+  ipcMain.handle('stats:update', async (_e, id: string, patch: Pick<GameStats, 'status' | 'tags'>) => {
+    const s = ctx.statsOf(id)
+    if ('status' in patch) {
+      if (patch.status && GAME_STATUSES.includes(patch.status)) s.status = patch.status
+      else delete s.status
+    }
+    if ('tags' in patch) {
+      const tags = cleanTags(patch.tags)
+      if (tags.length) s.tags = tags
+      else delete s.tags
+    }
+    await stats.save()
+    ctx.pushStats()
+    return s
+  })
 
   ipcMain.handle('game:rename', async (_e, id: string, name: string | null) => {
     const clean = name?.trim()
@@ -84,46 +101,15 @@ export function registerLibraryIpc(ctx: MainContext): void {
     return ctx.games()
   })
 
-  // Running games: id → launch time; a running game can't be launched again
-  const running = new Map<string, number>()
-  const pushRunning = (): void => ctx.getWin()?.webContents.send('game:running', Object.fromEntries(running))
-  ipcMain.handle('game:running', () => Object.fromEntries(running))
-
-  ipcMain.handle('game:launch', async (_e, id: string): Promise<LaunchResult> => {
+  ipcMain.handle('game:running', () => player.running())
+  ipcMain.handle('game:launch', (_e, id: string): Promise<LaunchResult> => player.launch(id))
+  ipcMain.handle('game:shortcut', async (_e, id: string) => {
     const game = ctx.findGame(id)
-    if (!game) return { ok: false, error: t('main.gameNotFound') }
-    if (running.has(id))
-      return {
-        ok: false,
-        error: t('main.alreadyRunning', { name: game.name })
-      }
-    const built = buildCommand(game, settings.data)
-    if (!built.ok) return { ok: false, error: built.error }
-    // ROM without an emulator: run the associated app (mGBA…) directly
-    const command = await resolveAssociation(built.command)
-    running.set(id, Date.now())
-    pushRunning()
-    const error = await runCommand(
-      command,
-      (seconds) => {
-        ctx.statsOf(id).playtimeSec += seconds
-        void stats.save()
-        ctx.pushStats()
-      },
-      () => {
-        running.delete(id)
-        pushRunning()
-      }
-    )
-    if (error) {
-      running.delete(id)
-      pushRunning()
-      return { ok: false, error }
-    }
-    ctx.statsOf(id).lastPlayed = Date.now()
-    await stats.save()
-    ctx.pushStats()
-    return { ok: true }
+    const r = game ? await createDesktopShortcut(game) : { ok: false, error: t('main.gameNotFound') }
+    ctx
+      .getWin()
+      ?.webContents.send('app:notify', r.ok ? { text: t('detail.shortcutDone') } : { text: r.error, error: true })
+    return r
   })
   ipcMain.handle('game:folder', (_e, id: string) => {
     const game = ctx.findGame(id)

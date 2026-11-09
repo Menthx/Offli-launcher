@@ -1,7 +1,10 @@
 import { type TKey, getLanguage, t } from '../../i18n'
-import type { Game, GameStats, LibrarySort } from '../../../../shared/types'
+import { GAME_STATUSES } from '../../../../shared/gameStatus'
+import type { Game, GameStats, GameStatus, LibrarySort } from '../../../../shared/types'
 
-export type Filter = 'all' | 'fav' | 'fangame' | 'gba' | 'nds' | 'gb' | '3ds' | 'new' | 'base'
+/** status:<status> and tag:<collection> come from the player's own data */
+export type Filter =
+  'all' | 'fav' | 'fangame' | 'gba' | 'nds' | 'gb' | '3ds' | 'new' | 'base' | `status:${GameStatus}` | `tag:${string}`
 
 /** A label containing a dot is a translation key */
 export const FILTERS: { id: Filter; label: TKey | string; group?: TKey }[] = [
@@ -44,12 +47,30 @@ export const SECTIONS: { filter: Filter; label(): string }[] = [
   }
 ]
 
-export const filterLabel = (f: Filter): string => text(FILTERS.find((x) => x.id === f)!.label)
+export function filterLabel(f: Filter): string {
+  if (f.startsWith('status:')) return t(`status.${f.slice(7) as GameStatus}`)
+  if (f.startsWith('tag:')) return f.slice(4)
+  return text(FILTERS.find((x) => x.id === f)?.label ?? 'library.all')
+}
+
+/** Statuses and collections in use, for the sidebar */
+export function playerFilters(stats: Record<string, GameStats>): { status: Filter[]; tags: Filter[] } {
+  const used = Object.values(stats)
+  const tags = [...new Set(used.flatMap((s) => s.tags ?? []))].sort((a, b) =>
+    a.localeCompare(b, getLanguage(), { sensitivity: 'base' })
+  )
+  return {
+    status: GAME_STATUSES.filter((st) => used.some((s) => s.status === st)).map((st) => `status:${st}` as const),
+    tags: tags.map((tag) => `tag:${tag}` as const)
+  }
+}
 export const groupLabel = (group: TKey): string => t(group)
 
 export function matches(f: Filter, g: Game, s: GameStats | undefined): boolean {
   // Unmodified official ROMs have their own entry
   if (g.kind === 'baserom' || f === 'base') return f === 'base' && g.kind === 'baserom'
+  if (f.startsWith('status:')) return s?.status === f.slice(7)
+  if (f.startsWith('tag:')) return !!s?.tags?.includes(f.slice(4))
   switch (f) {
     case 'all':
       return true

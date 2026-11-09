@@ -5,7 +5,7 @@ import SgdbPicker from '../components/SgdbPicker.vue'
 import { t } from '../i18n'
 import { animate } from '../viewTransition'
 import type { CardHandlers } from './library/cards'
-import { type Filter, filterGames, firstShown, recentGames, sortGames } from './library/filters'
+import { type Filter, filterGames, firstShown, playerFilters, recentGames, sortGames } from './library/filters'
 import GameDetail from './library/GameDetail.vue'
 import LibraryGrid from './library/LibraryGrid.vue'
 import LibrarySidebar from './library/LibrarySidebar.vue'
@@ -52,6 +52,7 @@ const visible = computed(() =>
   sortGames(filterGames(p.games, p.stats, filter.value, appliedQuery.value), p.stats, p.sort)
 )
 const recent = computed(() => recentGames(p.games, p.stats))
+const allTags = computed(() => playerFilters(p.stats).tags.map((f) => f.slice(4)))
 // Picked version (newest by default) is what Enter launches
 const target = computed(
   () => p.selected && (p.selected.versions?.find((v) => v.id === picked.value[p.selected!.id]) ?? p.selected)
@@ -140,6 +141,7 @@ const emptyText = computed(() =>
         :has-sgdb-key="hasSgdbKey"
         :picked="picked"
         :running-since="running"
+        :all-tags="allTags"
         @pick="(gameId, versionId) => (picked = { ...picked, [gameId]: versionId })"
         @close="emit('select', undefined)"
         @launch="emit('launch', $event)"

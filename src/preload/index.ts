@@ -10,6 +10,13 @@ const api: OffliApi = {
   scan: () => ipcRenderer.invoke('library:scan'),
   getStats: () => ipcRenderer.invoke('stats:get'),
   toggleFavorite: (id) => ipcRenderer.invoke('stats:favorite', id),
+  updateGame: (id, patch) => ipcRenderer.invoke('stats:update', id, patch),
+  createShortcut: (id) => ipcRenderer.invoke('game:shortcut', id),
+  onNotify: (cb) => {
+    const listener = (_e: unknown, n: Parameters<typeof cb>[0]): void => cb(n)
+    ipcRenderer.on('app:notify', listener)
+    return () => ipcRenderer.removeListener('app:notify', listener)
+  },
   resolveCover: (id, size) => ipcRenderer.invoke('cover:resolve', id, size),
   setCover: (id, path) => ipcRenderer.invoke('cover:set', id, path),
   renameGame: (id, name) => ipcRenderer.invoke('game:rename', id, name),

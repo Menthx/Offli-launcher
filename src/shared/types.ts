@@ -30,10 +30,16 @@ export interface Game {
   originalName?: string
 }
 
+/** Where the player is in the game, set by hand */
+export type GameStatus = 'todo' | 'playing' | 'done' | 'dropped'
+
 export interface GameStats {
   lastPlayed?: number
   playtimeSec: number
   favorite: boolean
+  status?: GameStatus
+  /** Player collections (Nuzlocke, Avec des amis…) */
+  tags?: string[]
 }
 
 export interface JournalNote {
@@ -89,6 +95,8 @@ export interface Settings {
   startView: StartView
   /** Switch the window to full screen when entering Big Picture */
   bigPictureFullscreen: boolean
+  /** Minimize Offli while a game runs, bring it back when the game closes */
+  minimizeOnLaunch: boolean
   /** First-launch tutorial finished or skipped */
   tutorialDone: boolean
   /** Hidden games by stable id (kept across scans) */
@@ -154,6 +162,12 @@ export interface OffliApi {
   scan(): Promise<Game[]>
   getStats(): Promise<Record<string, GameStats>>
   toggleFavorite(id: string): Promise<GameStats>
+  /** Status and collections; returns the updated stats */
+  updateGame(id: string, patch: Pick<GameStats, 'status' | 'tags'>): Promise<GameStats>
+  /** Desktop shortcut that launches the game through Offli */
+  createShortcut(id: string): Promise<{ ok: boolean; error?: string }>
+  /** Messages from the main process (launch from a shortcut, errors) */
+  onNotify(cb: (n: { text: string; error?: boolean }) => void): () => void
   /** 'thumb' for grid cards, 'full' for the game sheet and Big Picture */
   resolveCover(id: string, size?: CoverSize): Promise<string | null>
   setCover(id: string, path: string | null): Promise<string | null>

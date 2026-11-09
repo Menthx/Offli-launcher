@@ -27,6 +27,10 @@ const bpFullscreen = computed({
   get: () => props.settings.bigPictureFullscreen,
   set: (on: boolean) => emit('save', { bigPictureFullscreen: on })
 })
+const minimize = computed({
+  get: () => props.settings.minimizeOnLaunch,
+  set: (on: boolean) => emit('save', { minimizeOnLaunch: on })
+})
 
 // Arrows toggle the two options and move focus (radio group)
 const onStartKey = (e: KeyboardEvent, v: StartView): void => {
@@ -83,6 +87,9 @@ const onStartKey = (e: KeyboardEvent, v: StartView): void => {
     </SettingsRow>
     <SettingsSwitch id="set-bp-fullscreen" v-model="bpFullscreen" :desc="t('settings.bpFullscreenDesc')">
       {{ t('settings.bpFullscreen') }}
+    </SettingsSwitch>
+    <SettingsSwitch id="set-minimize" v-model="minimize" :desc="t('settings.minimizeOnLaunchDesc')">
+      {{ t('settings.minimizeOnLaunch') }}
     </SettingsSwitch>
   </SettingsGroup>
 

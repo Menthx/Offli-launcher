@@ -32,6 +32,8 @@ export const app = {
     baserom: 'ROM de base'
   },
   library: {
+    groupStatus: 'Statuts',
+    groupCollections: 'Collections',
     sort: 'Trier',
     sortName: 'Nom (A → Z)',
     sortRecent: 'Joués récemment',
@@ -59,6 +61,14 @@ export const app = {
     launchFailed: 'Le lancement a échoué.'
   },
   detail: {
+    shortcut: 'Créer un raccourci sur le bureau',
+    shortcutDone: 'Raccourci créé sur le bureau',
+    status: 'Statut',
+    statusNone: 'Aucun',
+    collections: 'Collections',
+    tagPlaceholder: 'Ajouter…',
+    addTag: 'Ajouter à une collection',
+    removeTag: 'Retirer de {name}',
     info: 'Infos',
     sheetOf: 'Fiche de {name}',
     moreActions: "Plus d'actions",
@@ -113,7 +123,19 @@ export const app = {
     removeLink: 'Retirer le lien {name}',
     noLinks: 'Ajoute le Discord du créateur, le salon du jeu ou son wiki.'
   },
+  status: {
+    todo: 'À jouer',
+    playing: 'Commencé',
+    done: 'Terminé',
+    dropped: 'Abandonné'
+  },
   bp: {
+    version: 'Version : {name}',
+    versionHint: 'Version',
+    journal: 'Journal',
+    journalEmpty: 'Aucune note pour ce jeu. Écris-en depuis la bibliothèque.',
+    links: 'Liens',
+    close: 'Fermer',
     section: 'Section',
     sortHint: 'Trier',
     back: '← Bibliothèque',
@@ -127,6 +149,9 @@ export const app = {
     favorite: 'Favori'
   },
   main: {
+    shortcutFailed: "Le raccourci n'a pas pu être créé.",
+    shortcutUnsupported: 'Les raccourcis ne sont disponibles que sous Windows et Linux.',
+    jumpListPlay: 'Jouer à {name}',
     alreadyRunning: '{name} est déjà lancé.',
     gameNotFound: 'Jeu introuvable, relance un scan.',
     wineMissing: 'Indique la commande Wine dans les paramètres pour lancer les fangames.',

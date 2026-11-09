@@ -1,12 +1,16 @@
 import { onBeforeUnmount } from 'vue'
 
 /** Standard gamepad layout (Xbox: A=0, B=1, X=2, Y=3) */
-const BTN = { A: 0, B: 1, X: 2, Y: 3, LB: 4, RB: 5, LEFT: 14, RIGHT: 15 }
+const BTN = { A: 0, B: 1, X: 2, Y: 3, LB: 4, RB: 5, MENU: 9, UP: 12, DOWN: 13, LEFT: 14, RIGHT: 15 }
 /** Repeat delay while the stick or an arrow is held */
 const REPEAT_MS = 180
 
 export interface BigPictureActions {
   move(delta: number): void
+  /** Up / Down: version of the game, or a line of the journal */
+  vertical(delta: number): void
+  /** Menu (Start), J: journal and links */
+  journal(): void
   /** LB / RB, Q / E, PageUp / PageDown */
   section(delta: number): void
   /** Y, S */
@@ -27,7 +31,12 @@ export function useBigPictureInput(a: BigPictureActions): void {
       if (e.repeat && performance.now() - lastMove < REPEAT_MS) return e.preventDefault()
       lastMove = performance.now()
       a.move(e.key === 'ArrowRight' ? 1 : -1)
-    } else if (e.key === 'PageUp' || e.key.toLowerCase() === 'q') a.section(-1)
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      if (e.repeat && performance.now() - lastMove < REPEAT_MS) return e.preventDefault()
+      lastMove = performance.now()
+      a.vertical(e.key === 'ArrowDown' ? 1 : -1)
+    } else if (e.key.toLowerCase() === 'j') a.journal()
+    else if (e.key === 'PageUp' || e.key.toLowerCase() === 'q') a.section(-1)
     else if (e.key === 'PageDown' || e.key.toLowerCase() === 'e') a.section(1)
     else if (e.key.toLowerCase() === 's') a.sort()
     else if (e.key === 'Enter' && !onButton) a.launch()
@@ -44,16 +53,32 @@ export function useBigPictureInput(a: BigPictureActions): void {
   let lastAxisMove = 0
   const loop = (): void => {
     const pad = navigator.getGamepads().find((g) => g)
-    if (pad) {
+    // Offli behind a game: buttons pressed while playing are not for us
+    if (pad && !document.hasFocus()) {
+      prev.clear()
+      pad.buttons.forEach((b, i) => b.pressed && prev.add(i))
+    } else if (pad) {
       const pressed = new Set(pad.buttons.flatMap((b, i) => (b.pressed ? [i] : [])))
       const hit = (b: number): boolean => pressed.has(b) && !prev.has(b)
       if (hit(BTN.RIGHT)) a.move(1)
       if (hit(BTN.LEFT)) a.move(-1)
       const x = pad.axes[0] ?? 0
-      if (Math.abs(x) > 0.6 && performance.now() - lastAxisMove > REPEAT_MS) {
+      if (
+        Math.abs(x) > 0.6 &&
+        Math.abs(x) >= Math.abs(pad.axes[1] ?? 0) &&
+        performance.now() - lastAxisMove > REPEAT_MS
+      ) {
         a.move(x > 0 ? 1 : -1)
         lastAxisMove = performance.now()
       }
+      const y = pad.axes[1] ?? 0
+      if (Math.abs(y) > 0.6 && Math.abs(y) > Math.abs(x) && performance.now() - lastAxisMove > REPEAT_MS) {
+        a.vertical(y > 0 ? 1 : -1)
+        lastAxisMove = performance.now()
+      }
+      if (hit(BTN.UP)) a.vertical(-1)
+      if (hit(BTN.DOWN)) a.vertical(1)
+      if (hit(BTN.MENU)) a.journal()
       if (hit(BTN.LB)) a.section(-1)
       if (hit(BTN.RB)) a.section(1)
       if (hit(BTN.Y)) a.sort()

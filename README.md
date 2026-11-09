@@ -48,6 +48,9 @@ Si ça ne suffit pas : Réglages Système > Confidentialité et sécurité, puis
 - **5 thèmes de couleurs** : Poké Ball (par défaut), Doux, Console, Électrique et Émeraude.
 - **Chemin des fichiers masqué** dans la fiche : il ne s'affiche que si tu cliques sur « Afficher » (pratique pour les captures d'écran).
 - **Renomme un jeu** en cliquant sur son nom dans la fiche.
+- **Statuts et collections** : marque un jeu « À jouer », « Commencé », « Terminé » ou « Abandonné », range-le dans tes collections (Nuzlocke…), puis filtre-les dans la barre latérale.
+- **Lance un jeu sans ouvrir la bibliothèque** : clic droit sur l'icône d'Offli dans la barre des tâches Windows pour les derniers jeux, ou **☰ > Créer un raccourci sur le bureau** dans la page du jeu.
+- **Discret pendant que tu joues** : Offli se réduit au lancement d'un jeu et revient quand tu le quittes (Paramètres > Affichage). Le temps de jeu est gardé même si tu fermes Offli en pleine partie.
 
 ![La première ouverture d'Offli-Launcher](docs/accueil.png)
 
@@ -60,7 +63,7 @@ Si ça ne suffit pas : Réglages Système > Confidentialité et sécurité, puis
 | Échap                      | Vider la recherche, fermer une fenêtre, quitter Big Picture |
 | F11                        | Passer de la bibliothèque à Big Picture, et inversement     |
 
-En Big Picture, à la manette : la croix ou le stick pour choisir, **LB** / **RB** pour changer de section, **Y** pour changer le tri, **A** pour jouer, **X** pour les favoris, **B** pour revenir à la bibliothèque. Au clavier : les flèches, **Q** / **E**, **S**, **Entrée**, **F** et **Échap**.
+En Big Picture, à la manette : la croix ou le stick pour choisir, **LB** / **RB** pour changer de section, **Y** pour changer le tri, **haut** / **bas** pour choisir la version d'un fangame, **A** pour jouer, **X** pour les favoris, **Menu** pour le journal et les liens du jeu, **B** pour revenir à la bibliothèque. Au clavier : les flèches, **Q** / **E**, **S**, **Entrée**, **F**, **J** et **Échap**.
 
 ## Questions fréquentes
 

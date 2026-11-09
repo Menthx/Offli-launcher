@@ -132,3 +132,21 @@
 .bp-bumper { padding: 2px 6px; border-radius: var(--radius-xs); background: var(--color-elevated); color: var(--color-text-muted); font-size: 10px; font-weight: var(--font-weight-bold); }
 .bp-top { gap: var(--space-4); }
 .pad.y { background: var(--color-accent); }
+
+/* Version of the current game (Up / Down) */
+.bp-version { display: flex; align-items: center; gap: 6px; margin: 0; font-size: var(--font-size-md); color: var(--color-text); text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8); }
+.pad.menu { background: var(--color-elevated); color: var(--color-text); }
+
+/* Journal and links over the rail (Menu or J) */
+.bp-journal { position: absolute; inset: 0; z-index: 5; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; background: color-mix(in srgb, var(--color-bg) 88%, transparent); backdrop-filter: blur(18px); animation: bp-rise 200ms var(--motion-ease) both; }
+.bp-journal header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-6) var(--bp-pad) var(--space-4); }
+.bp-journal h3 { margin: 0; font-size: var(--font-size-xl); }
+.bp-journal__list { margin: 0; padding: 0 var(--bp-pad) var(--space-6); list-style: none; overflow-y: auto; display: grid; align-content: start; gap: var(--space-2); max-width: 900px; }
+.bp-journal__group { margin-top: var(--space-4); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); color: var(--color-accent); text-transform: uppercase; letter-spacing: 0.06em; }
+.bp-journal__link button { display: flex; align-items: center; gap: var(--space-3); width: 100%; padding: var(--space-3) var(--space-4); border: 0; border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-text); font: inherit; text-align: left; cursor: pointer; }
+.bp-journal__link small { margin-left: auto; color: var(--color-text-muted); }
+.bp-journal__note { padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); background: var(--color-surface); }
+.bp-journal__note time { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.bp-journal__note p { margin: var(--space-1) 0 0; white-space: pre-wrap; line-height: 1.5; }
+.bp-journal__empty { color: var(--color-text-muted); }
+.bp-journal .cur, .bp-journal .cur button { box-shadow: 0 0 0 2px var(--color-accent); }

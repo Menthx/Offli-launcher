@@ -40,6 +40,8 @@ export const setup = {
     openAtStart: 'Abrir al iniciar',
     bpFullscreen: 'Pantalla completa en Big Picture',
     bpFullscreenDesc: 'Big Picture pasa a pantalla completa, la biblioteca vuelve a ventana.',
+    minimizeOnLaunch: 'Minimizar Offli mientras juegas',
+    minimizeOnLaunchDesc: 'Offli se minimiza al iniciar un juego y vuelve al frente cuando se cierra.',
     help: 'Ayuda',
     tour: 'Tutorial',
     tourDesc: 'La visita guiada del primer inicio.',

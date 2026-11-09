@@ -110,7 +110,9 @@ export function runCommand(
   command: Command,
   onExit: (seconds: number) => void,
   /** Called on every exit, even when play time isn't counted */
-  onEnd?: () => void
+  onEnd?: () => void,
+  /** Process id of the started game */
+  onSpawn?: (pid: number) => void
 ): Promise<string | null> {
   return new Promise((resolve) => {
     const started = Date.now()
@@ -133,6 +135,7 @@ export function runCommand(
     })
     child.once('spawn', () => {
       settled = true
+      if (child.pid) onSpawn?.(child.pid)
       resolve(null)
     })
     child.once('exit', () => {

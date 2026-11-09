@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { mkdir, rename, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import type { Game, GameStats, Settings } from '../shared/types'
@@ -7,6 +7,7 @@ export const DEFAULT_SETTINGS: Settings = {
   libraryPaths: [],
   startView: 'library',
   bigPictureFullscreen: false,
+  minimizeOnLaunch: true,
   tutorialDone: false,
   hiddenGames: [],
   theme: 'pokeball',
@@ -56,6 +57,14 @@ export class JsonFile<T> {
     })
     return this.writing
   }
+
+  /** Last write before quitting (async writes may not finish) */
+  saveSync(): void {
+    mkdirSync(dirname(this.path), { recursive: true })
+    const tmp = `${this.path}.tmp`
+    writeFileSync(tmp, JSON.stringify(this.data, null, 2), 'utf8')
+    renameSync(tmp, this.path)
+  }
 }
 
 /** Keeps only each emulator path (the old args field is ignored) */
@@ -91,6 +100,7 @@ export function mergeSettings(fallback: Settings, loaded: unknown): Settings {
           : fallback.startView,
     bigPictureFullscreen:
       typeof l.bigPictureFullscreen === 'boolean' ? l.bigPictureFullscreen : fallback.bigPictureFullscreen,
+    minimizeOnLaunch: typeof l.minimizeOnLaunch === 'boolean' ? l.minimizeOnLaunch : fallback.minimizeOnLaunch,
     tutorialDone: typeof l.tutorialDone === 'boolean' ? l.tutorialDone : fallback.tutorialDone,
     hiddenGames: Array.isArray(l.hiddenGames) ? l.hiddenGames.filter((id): id is string => typeof id === 'string') : [],
     theme: (['doux', 'console', 'electrique', 'pokeball', 'emeraude'] as const).includes(l.theme as Settings['theme'])

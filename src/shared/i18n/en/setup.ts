@@ -40,6 +40,8 @@ export const setup = {
     openAtStart: 'Open at startup',
     bpFullscreen: 'Full screen in Big Picture',
     bpFullscreenDesc: 'Big Picture goes full screen, the library goes back to a window.',
+    minimizeOnLaunch: 'Minimize Offli while playing',
+    minimizeOnLaunchDesc: 'Offli minimizes when a game starts and comes back to the front when it closes.',
     help: 'Help',
     tour: 'Tutorial',
     tourDesc: 'The first-launch guided tour.',

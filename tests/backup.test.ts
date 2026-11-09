@@ -33,3 +33,15 @@ describe('sauvegarde', () => {
     expect(readBackup(JSON.stringify(raw), DEFAULT_SETTINGS)!.stats).toEqual({ x: { playtimeSec: 0, favorite: false } })
   })
 })
+
+describe('statuts et collections', () => {
+  it('sont gardés par la sauvegarde, nettoyés', () => {
+    const b = makeBackup(settings, {
+      z: { playtimeSec: 0, favorite: false, status: 'done', tags: [' Nuzlocke ', 'nuzlocke', 'Amis'] },
+      y: { playtimeSec: 0, favorite: false, status: 'bizarre' as never }
+    })
+    const r = readBackup(JSON.stringify(b), settings)!
+    expect(r.stats['z']).toMatchObject({ status: 'done', tags: ['Nuzlocke', 'Amis'] })
+    expect(r.stats['y']!.status).toBeUndefined()
+  })
+})

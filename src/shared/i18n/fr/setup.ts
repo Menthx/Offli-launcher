@@ -40,6 +40,8 @@ export const setup = {
     openAtStart: 'Ouvrir au démarrage',
     bpFullscreen: 'Plein écran en Big Picture',
     bpFullscreenDesc: 'Big Picture passe en plein écran, la bibliothèque revient en fenêtre.',
+    minimizeOnLaunch: 'Réduire Offli pendant une partie',
+    minimizeOnLaunchDesc: 'Offli se réduit au lancement d’un jeu et revient au premier plan quand il se ferme.',
     help: 'Aide',
     tour: 'Tutoriel',
     tourDesc: 'La visite guidée du premier lancement.',

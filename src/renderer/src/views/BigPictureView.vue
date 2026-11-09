@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import type { GameStats } from '../../../shared/types'
+import { computed, ref, useTemplateRef, watch } from 'vue'
+import type { Game, GameStats } from '../../../shared/types'
 import GameCover from '../components/GameCover.vue'
 import Icon from '../components/Icon.vue'
 import { useCover } from '../composables/useCover'
@@ -9,6 +9,7 @@ import { vFocus } from '../directives/focus'
 import { PLATFORM_LABEL, baseGameName, kindLabel, lastPlayed, playtime } from '../format'
 import { t } from '../i18n'
 import BpBackdrop from './bigpicture/BpBackdrop.vue'
+import BpJournal from './bigpicture/BpJournal.vue'
 import BpTabs from './bigpicture/BpTabs.vue'
 import type { BpSection } from './bigpicture/sections'
 import { useBigPictureInput } from './bigpicture/useBigPictureInput'
@@ -48,7 +49,17 @@ const rawIdx = ref(0)
 const idx = computed(() => Math.min(rawIdx.value, Math.max(0, order.value.length - 1)))
 const cur = computed(() => order.value[idx.value])
 const url = useCover(() => cur.value?.id ?? '')
-const since = computed(() => (cur.value ? p.running[cur.value.id] : undefined))
+// Picked version by game (newest first in versions), Up / Down
+const picked = ref<Record<string, number>>({})
+const target = computed<Game | undefined>(() => cur.value?.versions?.[picked.value[cur.value.id] ?? 0] ?? cur.value)
+const versionLabel = computed(() => {
+  const v = cur.value?.versions
+  const i = cur.value ? (picked.value[cur.value.id] ?? 0) : 0
+  return v ? (v[i]?.variant ?? v[i]?.name ?? '') + (i === 0 ? t('detail.latest') : '') : ''
+})
+const since = computed(() => (target.value ? p.running[target.value.id] : undefined))
+const journalOpen = ref(false)
+const journal = useTemplateRef('journal')
 const now = useNow(() => since.value !== undefined)
 const st = computed(() => (cur.value ? p.stats[cur.value.id] : undefined))
 const fav = computed(() => !!st.value?.favorite)
@@ -58,17 +69,31 @@ const pickSection = (f: Filter): void => {
   rawIdx.value = 0
 }
 useBigPictureInput({
-  move: (d) => (rawIdx.value = Math.max(0, Math.min(order.value.length - 1, idx.value + d))),
+  vertical: (d) => {
+    if (journalOpen.value) return journal.value?.move(d)
+    const g = cur.value
+    if (!g?.versions) return
+    picked.value = {
+      ...picked.value,
+      [g.id]: Math.max(0, Math.min(g.versions.length - 1, (picked.value[g.id] ?? 0) + d))
+    }
+  },
+  journal: () => (journalOpen.value = !journalOpen.value && !!cur.value),
+  move: (d) => journalOpen.value || (rawIdx.value = Math.max(0, Math.min(order.value.length - 1, idx.value + d))),
   section: (d) => {
+    if (journalOpen.value) return
     const list = sections.value
     const i = list.findIndex((s) => s.filter === section.value)
     const next = list[(i + d + list.length) % list.length]
     if (next) pickSection(next.filter)
   },
   sort: () => emit('sort', SORTS[(SORTS.findIndex((s) => s.id === p.sort) + 1) % SORTS.length]!.id),
-  launch: () => cur.value && since.value === undefined && emit('launch', cur.value),
+  launch: () =>
+    journalOpen.value
+      ? journal.value?.activate()
+      : target.value && since.value === undefined && emit('launch', target.value),
   favorite: () => cur.value && emit('favorite', cur.value),
-  exit: () => emit('exit')
+  exit: () => (journalOpen.value ? (journalOpen.value = false) : emit('exit'))
 })
 
 const sortLabel = computed(() => t(SORTS.find((x) => x.id === p.sort)!.label))
@@ -78,8 +103,7 @@ const playLabel = computed(() =>
     : t('common.play')
 )
 const onTile = (i: number): void => {
-  const game = order.value[i]
-  if (i === idx.value && game) emit('launch', game)
+  if (i === idx.value && target.value) emit('launch', target.value)
   else rawIdx.value = i
 }
 </script>
@@ -109,11 +133,14 @@ const onTile = (i: number): void => {
         <span v-if="cur.versions">{{ t('bp.versions', { n: cur.versions.length }) }}</span>
       </p>
       <h2>{{ cur.name }}</h2>
+      <p v-if="cur.versions" class="bp-version">
+        {{ t('bp.version', { name: versionLabel }) }} <kbd aria-hidden="true">↑</kbd> <kbd aria-hidden="true">↓</kbd>
+      </p>
       <p class="bp-meta">
         {{ t('bp.meta', { time: playtime(st?.playtimeSec ?? 0), last: lastPlayed(st?.lastPlayed) }) }}
       </p>
       <div class="bp-actions">
-        <button class="play bp-play" :disabled="since !== undefined" @click="emit('launch', cur)">
+        <button class="play bp-play" :disabled="since !== undefined" @click="target && emit('launch', target)">
           <span class="play-icon">
             <span v-if="since !== undefined" class="run-dot" aria-hidden="true" />
             <Icon v-else name="play" :size="18" />
@@ -153,11 +180,13 @@ const onTile = (i: number): void => {
       <span><span class="pad a">A</span>{{ t('common.play') }}</span>
       <span><span class="pad x">X</span>{{ t('bp.favorite') }}</span>
       <span><span class="pad y">Y</span>{{ t('bp.sortHint') }}</span>
+      <span><span class="pad menu">≡</span>{{ t('bp.journal') }}</span>
       <span><span class="pad b">B</span>{{ t('common.library') }}</span>
       <span class="bp-keys">
-        <kbd>←</kbd> <kbd>→</kbd> <kbd>Q</kbd> <kbd>E</kbd> <kbd>S</kbd> <kbd>{{ t('common.keyEnter') }}</kbd>
-        <kbd>F</kbd> <kbd>{{ t('common.keyEsc') }}</kbd>
+        <kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd> <kbd>J</kbd> <kbd>Q</kbd> <kbd>E</kbd> <kbd>S</kbd>
+        <kbd>{{ t('common.keyEnter') }}</kbd> <kbd>F</kbd> <kbd>{{ t('common.keyEsc') }}</kbd>
       </span>
     </footer>
+    <BpJournal v-if="journalOpen" ref="journal" :game-id="cur.id" :name="cur.name" @close="journalOpen = false" />
   </div>
 </template>

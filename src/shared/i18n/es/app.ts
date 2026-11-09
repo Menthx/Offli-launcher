@@ -31,6 +31,8 @@ export const app = {
     baserom: 'ROM base'
   },
   library: {
+    groupStatus: 'Estados',
+    groupCollections: 'Colecciones',
     sort: 'Ordenar',
     sortName: 'Nombre (A → Z)',
     sortRecent: 'Jugados recientemente',
@@ -58,6 +60,14 @@ export const app = {
     launchFailed: 'No se pudo iniciar el juego.'
   },
   detail: {
+    shortcut: 'Crear un acceso directo en el escritorio',
+    shortcutDone: 'Acceso directo creado en el escritorio',
+    status: 'Estado',
+    statusNone: 'Ninguno',
+    collections: 'Colecciones',
+    tagPlaceholder: 'Añadir…',
+    addTag: 'Añadir a una colección',
+    removeTag: 'Quitar de {name}',
     info: 'Información',
     sheetOf: 'Ficha de {name}',
     moreActions: 'Más acciones',
@@ -112,7 +122,19 @@ export const app = {
     removeLink: 'Quitar el enlace {name}',
     noLinks: 'Añade el Discord del creador, el canal del juego o su wiki.'
   },
+  status: {
+    todo: 'Por jugar',
+    playing: 'Empezado',
+    done: 'Terminado',
+    dropped: 'Abandonado'
+  },
   bp: {
+    version: 'Versión: {name}',
+    versionHint: 'Versión',
+    journal: 'Diario',
+    journalEmpty: 'Aún no hay notas para este juego. Escríbelas desde la biblioteca.',
+    links: 'Enlaces',
+    close: 'Cerrar',
     section: 'Sección',
     sortHint: 'Ordenar',
     back: '← Biblioteca',
@@ -126,6 +148,9 @@ export const app = {
     favorite: 'Favorito'
   },
   main: {
+    shortcutFailed: 'No se pudo crear el acceso directo.',
+    shortcutUnsupported: 'Los accesos directos solo están disponibles en Windows y Linux.',
+    jumpListPlay: 'Jugar a {name}',
     alreadyRunning: '{name} ya está en marcha.',
     gameNotFound: 'Juego no encontrado, vuelve a analizar.',
     wineMissing: 'Indica el comando de Wine en los ajustes para lanzar los fangames.',

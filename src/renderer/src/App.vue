@@ -38,6 +38,9 @@ watchEffect(() => settings.value && applyAppearance(settings.value), { flush: 's
 const fullscreen = computed(() => view.value === 'bigpicture' && !!settings.value?.bigPictureFullscreen)
 watch(fullscreen, (on) => void window.offli.setFullScreen(on), { immediate: true })
 
+// Launch from a desktop shortcut or the taskbar menu that failed
+window.offli.onNotify((n) => notify(n))
+
 // F11 is caught by the main process
 window.offli.onToggleView(() => (view.value = view.value === 'bigpicture' ? 'library' : 'bigpicture'))
 

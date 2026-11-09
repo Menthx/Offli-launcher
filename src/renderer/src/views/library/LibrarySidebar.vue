@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useTemplateRef } from 'vue'
+import { computed, useTemplateRef } from 'vue'
 import type { Game, GameStats } from '../../../../shared/types'
 import logo from '../../assets/logo.png'
 import Icon from '../../components/Icon.vue'
 import UpdateButton from '../../components/UpdateButton.vue'
 import { t } from '../../i18n'
-import { FILTERS, type Filter, filterLabel, groupLabel, matches } from './filters'
+import { FILTERS, type Filter, filterLabel, groupLabel, matches, playerFilters } from './filters'
 
 const props = defineProps<{ games: Game[]; stats: Record<string, GameStats>; filter: Filter }>()
 const query = defineModel<string>('query', { required: true })
@@ -19,6 +19,14 @@ const emit = defineEmits<{
 const search = useTemplateRef('search')
 defineExpose({ search })
 
+// Shown only once the player has used them; counted on visible games
+const own = computed(() => {
+  const { status, tags } = playerFilters(props.stats)
+  return [
+    { group: 'library.groupStatus' as const, ids: status.filter((f) => count(f) > 0) },
+    { group: 'library.groupCollections' as const, ids: tags.filter((f) => count(f) > 0) }
+  ].filter((g) => g.ids.length)
+})
 const count = (f: Filter): number => props.games.filter((g) => matches(f, g, props.stats[g.id])).length
 </script>
 
@@ -49,6 +57,15 @@ const count = (f: Filter): number => props.games.filter((g) => matches(f, g, pro
           <span class="count">{{ count(f.id) }}</span>
         </button>
       </div>
+      <template v-for="g in own" :key="g.group">
+        <div v-for="(id, i) in g.ids" :key="id" class="side-item">
+          <h4 v-if="i === 0">{{ groupLabel(g.group) }}</h4>
+          <button :class="{ on: filter === id }" :aria-pressed="filter === id" @click="emit('filter', id)">
+            <span>{{ filterLabel(id) }}</span>
+            <span class="count">{{ count(id) }}</span>
+          </button>
+        </div>
+      </template>
     </nav>
     <div class="side-foot">
       <button

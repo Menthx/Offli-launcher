@@ -11,6 +11,7 @@ import { steamGridDbAction } from '../../menuActions'
 import CommunityLinks from './CommunityLinks.vue'
 import GameFacts from './GameFacts.vue'
 import GameHero from './GameHero.vue'
+import GameProgress from './GameProgress.vue'
 import JournalBox from './JournalBox.vue'
 import NameEditor from './NameEditor.vue'
 import { useJournal } from './useJournal'
@@ -25,6 +26,8 @@ const props = defineProps<{
   picked: Record<string, string>
   /** Launch time of running games, by id */
   runningSince: Record<string, number>
+  /** Collections used by any game, suggested when adding one */
+  allTags: string[]
 }>()
 const emit = defineEmits<{
   close: []
@@ -64,6 +67,7 @@ const actions = computed<MenuAction[]>(() => {
   const sel = props.game
   return [
     { label: t('detail.openFolder'), icon: 'folder', run: () => window.offli.openFolder(target.value.id) },
+    { label: t('detail.shortcut'), icon: 'external', run: () => void window.offli.createShortcut(target.value.id) },
     {
       label: t('detail.changeImage'),
       icon: 'image',
@@ -117,6 +121,7 @@ const actions = computed<MenuAction[]>(() => {
     <div class="gp-columns">
       <JournalBox :journal="journal" @save="save" />
       <div class="gp-side">
+        <GameProgress :game-id="game.id" :stats="stats" :all-tags="allTags" />
         <CommunityLinks :journal="journal" :detected="detected" @save="save" />
         <GameFacts :game="game" :target="target" @pick="emit('pick', game.id, $event)" />
       </div>

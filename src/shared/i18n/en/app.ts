@@ -31,6 +31,8 @@ export const app = {
     baserom: 'Base ROM'
   },
   library: {
+    groupStatus: 'Status',
+    groupCollections: 'Collections',
     sort: 'Sort',
     sortName: 'Name (A → Z)',
     sortRecent: 'Recently played',
@@ -58,6 +60,14 @@ export const app = {
     launchFailed: 'The game could not be launched.'
   },
   detail: {
+    shortcut: 'Create a desktop shortcut',
+    shortcutDone: 'Shortcut created on the desktop',
+    status: 'Status',
+    statusNone: 'None',
+    collections: 'Collections',
+    tagPlaceholder: 'Add…',
+    addTag: 'Add to a collection',
+    removeTag: 'Remove from {name}',
     info: 'Details',
     sheetOf: '{name} details',
     moreActions: 'More actions',
@@ -112,7 +122,19 @@ export const app = {
     removeLink: 'Remove link {name}',
     noLinks: "Add the creator's Discord, the game's channel or its wiki."
   },
+  status: {
+    todo: 'To play',
+    playing: 'Started',
+    done: 'Finished',
+    dropped: 'Dropped'
+  },
   bp: {
+    version: 'Version: {name}',
+    versionHint: 'Version',
+    journal: 'Journal',
+    journalEmpty: 'No notes for this game yet. Write some from the library.',
+    links: 'Links',
+    close: 'Close',
     section: 'Section',
     sortHint: 'Sort',
     back: '← Library',
@@ -126,6 +148,9 @@ export const app = {
     favorite: 'Favorite'
   },
   main: {
+    shortcutFailed: 'The shortcut could not be created.',
+    shortcutUnsupported: 'Shortcuts are only available on Windows and Linux.',
+    jumpListPlay: 'Play {name}',
     alreadyRunning: '{name} is already running.',
     gameNotFound: 'Game not found, run a new scan.',
     wineMissing: 'Set the Wine command in Settings to launch fangames.',
