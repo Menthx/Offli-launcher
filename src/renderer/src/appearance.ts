@@ -1,4 +1,4 @@
-import { resolveLanguage, setLanguage } from '../../shared/i18n'
+import { resolveLanguage, setLanguage } from './i18n'
 import type { Settings } from '../../shared/types'
 import { applyTheme } from './theme'
 

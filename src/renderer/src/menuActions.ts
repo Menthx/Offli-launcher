@@ -1,6 +1,6 @@
-import { t } from '../../shared/i18n'
+import { t } from './i18n'
 
-/** React-free (testable in Node), compatible with MenuAction */
+/** Framework-free (testable in Node), compatible with MenuAction */
 export interface ActionSpec<I> {
   label: string
   icon: I

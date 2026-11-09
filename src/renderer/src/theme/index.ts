@@ -1,4 +1,4 @@
-import { t } from '../../../shared/i18n'
+import { t } from '../i18n'
 import type { Theme } from '../../../shared/types'
 import './tokens.css'
 import './motion.css'

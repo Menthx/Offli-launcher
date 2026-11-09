@@ -1,7 +1,7 @@
-import { t } from '../../shared/i18n'
+import { t } from './i18n'
 import { libraryStatus } from './tour'
 
-/** Folder list logic for FolderList, React-free: add without duplicates, remove, status line */
+/** Folder list logic for FolderList, framework-free: add without duplicates, remove, status line */
 export function addFolder(paths: string[], dir: string | null | undefined): string[] {
   if (!dir || paths.includes(dir)) return paths
   return [...paths, dir]

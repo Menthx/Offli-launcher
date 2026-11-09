@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'vue'
 import type { TourStep } from '../../tour'
 
 export interface Rect {
@@ -23,30 +24,35 @@ export function targetRect(target: string, first = false): Rect | null {
   return { top, left, width: right - left, height: bottom - top }
 }
 
+/** Vue style bindings need the unit */
+export function px(box: Record<string, number>): CSSProperties {
+  return Object.fromEntries(Object.entries(box).map(([k, v]) => [k, `${v}px`]))
+}
+
 /** Bubble next to the highlighted element, kept fully on screen */
-export function bubbleStyle(rect: Rect, side: TourStep['side'], cardH: number): React.CSSProperties {
+export function bubbleStyle(rect: Rect, side: TourStep['side'], cardH: number): CSSProperties {
   const vw = window.innerWidth
   const vh = window.innerHeight
   const clampTop = (t: number): number => Math.max(16, Math.min(t, vh - cardH - 16))
   if (side === 'right')
     // Short element (settings gear): align with its bottom, otherwise a bit below its top
-    return {
+    return px({
       top: clampTop(rect.height < 80 ? rect.top + rect.height - cardH : rect.top + 40),
       left: Math.min(rect.left + rect.width + PAD + 16, vw - BUBBLE_W - 16)
-    }
+    })
   if (side === 'left')
-    return {
+    return px({
       top: clampTop(rect.top),
       left: Math.max(16, rect.left - PAD - 16 - BUBBLE_W)
-    }
-  return {
+    })
+  return px({
     top: Math.max(16, rect.top - PAD - 16 - cardH),
     left: Math.max(16, Math.min(rect.left, vw - BUBBLE_W - 16))
-  }
+  })
 }
 
 /** Keeps Tab focus inside the tutorial dialog */
-export function trapFocus(e: React.KeyboardEvent, root: HTMLElement): void {
+export function trapFocus(e: KeyboardEvent, root: HTMLElement): void {
   const f = [...root.querySelectorAll<HTMLElement>('button:not(:disabled), input')]
   if (!f.length) return
   if (e.shiftKey && document.activeElement === f[0]) {

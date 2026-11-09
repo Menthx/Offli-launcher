@@ -1,5 +1,5 @@
-/** First-launch tutorial steps and navigation, React-free (testable in Node) */
-import { t } from '../../shared/i18n'
+/** First-launch tutorial steps and navigation, framework-free (testable in Node) */
+import { t } from './i18n'
 
 export type TourStepId = 'welcome' | 'folders' | 'sidebar' | 'pickGame' | 'detail' | 'settings' | 'bigpicture'
 

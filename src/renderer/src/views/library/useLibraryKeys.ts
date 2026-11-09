@@ -1,30 +1,26 @@
-import { type RefObject, useEffect, useRef } from 'react'
+import { onBeforeUnmount } from 'vue'
 
-/** Ctrl/Cmd+K focuses search; Enter launches the sheet's game unless a field or another button has focus */
+/** Ctrl/Cmd+K focuses search; Enter launches the page's game unless a field or another button has focus */
 export function useLibraryKeys(
-  search: RefObject<HTMLInputElement | null>,
-  launchSelected: (() => void) | undefined
-): void {
-  const launch = useRef(launchSelected)
-  launch.current = launchSelected
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent): void => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault()
-        search.current?.focus()
-        search.current?.select()
-        return
-      }
-      if (e.key !== 'Enter' || e.repeat || !launch.current) return
-      const el = e.target instanceof HTMLElement ? e.target : null
-      const busy = el?.closest("input, textarea, select, [role='menu'], [role='dialog'], .lib-side")
-      const otherControl = el?.closest('button, a') && !el.closest('.card.sel')
-      if (busy || otherControl) return
+  search: () => HTMLInputElement | null | undefined,
+  launch: () => (() => void) | undefined
+) {
+  const onKey = (e: KeyboardEvent): void => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault()
-      launch.current()
+      search()?.focus()
+      search()?.select()
+      return
     }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [search])
+    const run = launch()
+    if (e.key !== 'Enter' || e.repeat || !run) return
+    const el = e.target instanceof HTMLElement ? e.target : null
+    const busy = el?.closest("input, textarea, select, [role='menu'], [role='dialog'], .lib-side")
+    const otherControl = el?.closest('button, a') && !el.closest('.card.sel')
+    if (busy || otherControl) return
+    e.preventDefault()
+    run()
+  }
+  window.addEventListener('keydown', onKey)
+  onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }

@@ -20,7 +20,7 @@ Ce document résume tout ce qui a été ajouté ou modifié par rapport à la ve
 - **Styles** : l'ancien `styles.css` (1 576 lignes) est découpé par zone dans `src/renderer/src/styles/` : base, contrôles, bibliothèque, fiche, paramètres, superpositions, Big Picture, tutoriel, liste déroulante, infobulle.
 - **Police** : Inter et JetBrains Mono, embarquées avec fontsource (l'appli reste hors ligne).
 - **Composants du pack** :
-  - liste déroulante `components/Select.tsx` (langue, tri, version d'un fangame, choix SteamGridDB), utilisable entièrement au clavier ;
+  - liste déroulante `components/AppSelect.vue` (langue, tri, version d'un fangame, choix SteamGridDB), utilisable entièrement au clavier ;
   - infobulles `tooltip.ts` sur tout élément `data-tooltip="Texte|Raccourci"` et sur les boutons-icônes ;
   - paramètres en deux colonnes (navigation à gauche, groupes en cartes à droite) ;
   - rail Jouer de la fiche : Jouer surélevé avec le raccourci Entrée, favori et menu ☰ à plat.
@@ -45,7 +45,7 @@ Ce document résume tout ce qui a été ajouté ou modifié par rapport à la ve
 - **Fond** : un écran titre large remplit le fond ; une jaquette ou une icône donne un fond flou avec l'image entière à droite. Passage en fondu d'un jeu à l'autre.
 - **Sections** : onglets en haut (Tous, Favoris, Fangames, GBA…), avec LB / RB à la manette ou Q / E au clavier.
 - **Tri** : Y à la manette ou S au clavier.
-- **Code** : `views/BigPictureView.tsx`, `views/bigpicture/` (fond, onglets, commandes clavier et manette).
+- **Code** : `views/BigPictureView.vue`, `views/bigpicture/` (fond, onglets, commandes clavier et manette).
 
 ## Langues (i18n)
 
@@ -68,7 +68,7 @@ Ce document résume tout ce qui a été ajouté ou modifié par rapport à la ve
 ## Organisation du code
 
 - **Process principal** : `main/index.ts` ne fait plus que démarrer l'appli. L'état partagé est dans `context.ts`, les échanges avec l'interface dans `ipc/` (bibliothèque, jaquettes, sauvegarde), la fenêtre dans `window.ts`. Le scanner est découpé dans `scan/`, les jaquettes dans `cover/`.
-- **Interface** : les données et leurs actions sont dans `hooks/useLibraryData.ts`. La bibliothèque est découpée dans `views/library/`, les paramètres dans `components/settings/`, le tutoriel dans `components/tour/`. Les icônes sont regroupées dans `components/icons.tsx`.
+- **Interface** : les données et leurs actions sont dans `composables/useLibraryData.ts`. La bibliothèque est découpée dans `views/library/`, les paramètres dans `components/settings/`, le tutoriel dans `components/tour/`. Les icônes sont regroupées dans `components/icons.ts` (affichées par `components/Icon.vue`).
 - **Commentaires** : en anglais, sur une ligne, seulement là où ils apportent quelque chose.
 
 ## Contrôles

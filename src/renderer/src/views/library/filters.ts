@@ -1,4 +1,4 @@
-import { type TKey, getLanguage, t } from '../../../../shared/i18n'
+import { type TKey, getLanguage, t } from '../../i18n'
 import type { Game, GameStats, LibrarySort } from '../../../../shared/types'
 
 export type Filter = 'all' | 'fav' | 'fangame' | 'gba' | 'nds' | 'gb' | '3ds' | 'new' | 'base'

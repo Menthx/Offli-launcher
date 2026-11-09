@@ -4,7 +4,7 @@ import { join, relative } from 'node:path'
 
 const LIMIT = 210
 const ROOTS = ['src', 'tests', 'scripts']
-const EXT = /\.(ts|tsx|mts|mjs|js|css)$/
+const EXT = /\.(ts|vue|mts|mjs|js|css)$/
 
 function* walk(dir) {
   for (const name of readdirSync(dir)) {

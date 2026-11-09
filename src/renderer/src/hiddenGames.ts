@@ -1,4 +1,4 @@
-/** Hidden games are removed from every list and counter; React-free */
+/** Hidden games are removed from every list and counter; framework-free */
 export function withoutHidden<G extends { id: string }>(games: G[], hidden: string[]): G[] {
   if (!hidden.length) return games
   const set = new Set(hidden)

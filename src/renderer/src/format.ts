@@ -1,4 +1,4 @@
-import { type TKey, getLanguage, t } from '../../shared/i18n'
+import { type TKey, getLanguage, t } from './i18n'
 import type { BaseRom, Game } from '../../shared/types'
 
 export const PLATFORM_LABEL: Record<Game['platform'], string> = {

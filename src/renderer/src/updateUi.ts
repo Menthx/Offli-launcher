@@ -1,4 +1,4 @@
-import { t } from '../../shared/i18n'
+import { t } from './i18n'
 import type { UpdateStatus } from '../../shared/types'
 
 export type UpdateAction = 'check' | 'download' | 'open-page' | 'confirm-install' | 'none'

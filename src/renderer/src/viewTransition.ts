@@ -1,8 +1,8 @@
-import { flushSync } from 'react-dom'
+import { nextTick } from 'vue'
 
 /** Library animations with the View Transitions API; applied instantly without the API or with reduced motion */
 
-type StartViewTransition = (update: () => void) => { finished: Promise<void> }
+type StartViewTransition = (update: () => void | Promise<void>) => { finished: Promise<void> }
 
 function startViewTransition(): StartViewTransition | undefined {
   const doc = document as Document & {
@@ -19,7 +19,11 @@ export function animate(update: () => void): void {
     update()
     return
   }
-  start(() => flushSync(update))
+  // The browser waits for Vue to patch the DOM before taking the new snapshot
+  start(async () => {
+    update()
+    await nextTick()
+  })
 }
 
 const HERO = 'hero-cover'
@@ -49,8 +53,9 @@ export function animateSelection(fromId: string | undefined, toId: string | unde
   const before = toId ? cardCover(toId) : detailCover()
   name(before, HERO)
   let after: HTMLElement | null = null
-  const transition = start(() => {
-    flushSync(apply)
+  const transition = start(async () => {
+    apply()
+    await nextTick()
     name(before, '')
     // After: the banner art, or the card of the game just closed
     after = toId ? detailCover() : cardCover(fromId)

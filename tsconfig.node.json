@@ -18,6 +18,7 @@
     "src/main/**/*",
     "src/preload/**/*",
     "src/shared/**/*",
+    "src/renderer/src/i18n.ts",
     "src/renderer/src/menuActions.ts",
     "src/renderer/src/minDuration.ts",
     "src/renderer/src/tour.ts",

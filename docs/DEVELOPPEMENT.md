@@ -147,12 +147,23 @@ Les commits suivent [Conventional Commits](https://www.conventionalcommits.org/f
 ```
 src/main/       process Electron : scan, en-têtes ROM, images, lancement, stockage JSON
 src/preload/    pont IPC exposé au rendu (window.offli)
-src/renderer/   interface React : vue Bibliothèque, paramètres
+src/renderer/   interface Vue 3 : Bibliothèque, page du jeu, Big Picture, paramètres, tutoriel
 src/shared/     types partagés
 tests/          tests Vitest
 ```
 
 Les données (paramètres, statistiques, index, cache d'images) sont dans le dossier utilisateur d'Electron. `OFFLI_USER_DATA` permet d'en choisir un autre.
+
+## Interface (Vue)
+
+L'interface est en Vue 3 (`<script setup lang="ts">`, composants monofichiers `.vue`), compilée par `@vitejs/plugin-vue` dans electron-vite ; `npm run typecheck` passe les `.vue` à `vue-tsc`.
+
+- `App.vue` tient l'état de l'appli (données, vue affichée, jeu ouvert) ; les données et leurs actions viennent de `composables/useLibraryData.ts`.
+- Les composants reçoivent des props et remontent des événements (`emit`) ; `v-model` sert aux listes déroulantes, interrupteurs et champs de recherche.
+- Les données venues du process principal sont gardées dans des `shallowRef` : ce sont des objets simples, renvoyés tels quels par IPC (un proxy Vue ne passe pas le pont).
+- `i18n.ts` rend `t()` réactif : changer de langue redessine les textes sans recharger.
+- La logique sans interface (`filters.ts`, `tour.ts`, `folders.ts`, `updateUi.ts`…) reste en TypeScript pur, testée par Vitest.
+- `v-focus` (`directives/focus.ts`) donne le focus à un champ qui apparaît (l'attribut `autofocus` ne marche qu'au chargement de la page).
 
 ## Dépendances
 
