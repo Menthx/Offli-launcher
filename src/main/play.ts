@@ -2,7 +2,8 @@ import { join } from 'node:path'
 import { t } from '../shared/i18n'
 import type { LaunchResult } from '../shared/types'
 import type { MainContext } from './context'
-import { type Command, buildCommand, resolveAssociation, runCommand } from './launcher'
+import { mkdir } from 'node:fs/promises'
+import { type Command, buildCommand, resolveAssociation, runCommand, withPickedExe } from './launcher'
 import { CHECKPOINT_MS, type Session, SessionTracker, exeName, isGameProcess, pidExists } from './sessions'
 import { updateJumpList } from './shortcuts'
 import { JsonFile } from './store'
@@ -50,14 +51,16 @@ export function createPlayer(ctx: MainContext) {
   const timer = setInterval(() => tracker.checkpoint() && saveStats(), CHECKPOINT_MS)
   timer.unref()
 
-  /** Process name to find the game again: the game itself under Wine, not wine */
-  const processName = (c: Command): string => exeName(c.cmd === settings.data.winePath ? (c.args[0] ?? c.cmd) : c.cmd)
+  /** Process name to find the game again: the game itself under Wine or Proton, not the runner */
+  const processName = (c: Command): string => exeName(c.exeHint ?? c.cmd)
 
   async function launch(id: string): Promise<LaunchResult> {
     const game = ctx.findGame(id)
     if (!game) return { ok: false, error: t('main.gameNotFound') }
     if (running.has(id)) return { ok: false, error: t('main.alreadyRunning', { name: game.name }) }
-    const built = buildCommand(game, settings.data)
+    const protonPrefix = join(ctx.data, 'proton-prefix')
+    if (settings.data.windowsRunner === 'proton') await mkdir(protonPrefix, { recursive: true }).catch(() => {})
+    const built = buildCommand(withPickedExe(game, settings.data), settings.data, process.platform, protonPrefix)
     if (!built.ok) return { ok: false, error: built.error }
     // ROM without an emulator: run the associated app (mGBA…) directly
     const command = await resolveAssociation(built.command)

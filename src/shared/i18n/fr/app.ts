@@ -61,6 +61,9 @@ export const app = {
     launchFailed: 'Le lancement a échoué.'
   },
   detail: {
+    exe: 'Lancer avec',
+    exePerformance: 'Version performance',
+    exeLauncher: 'Launcher (mises à jour en ligne)',
     shortcut: 'Créer un raccourci sur le bureau',
     shortcutDone: 'Raccourci créé sur le bureau',
     status: 'Statut',
@@ -155,7 +158,11 @@ export const app = {
     jumpListPlay: 'Jouer à {name}',
     alreadyRunning: '{name} est déjà lancé.',
     gameNotFound: 'Jeu introuvable, relance un scan.',
-    wineMissing: 'Indique la commande Wine dans les paramètres pour lancer les fangames.',
+    runnerMissing: {
+      wine: 'Indique la commande Wine dans les paramètres pour lancer les fangames.',
+      proton: 'Choisis une version de Proton dans Paramètres > Émulateurs pour lancer les fangames.',
+      bottles: 'Indique la bouteille Bottles dans Paramètres > Émulateurs pour lancer les fangames.'
+    },
     exeNotFound: '{cmd} est introuvable. Vérifie le chemin dans les paramètres.',
     launchError: 'Impossible de lancer {cmd} : {message}',
     dialogImages: 'Images',

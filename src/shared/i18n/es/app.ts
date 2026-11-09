@@ -60,6 +60,9 @@ export const app = {
     launchFailed: 'No se pudo iniciar el juego.'
   },
   detail: {
+    exe: 'Iniciar con',
+    exePerformance: 'Versión de rendimiento',
+    exeLauncher: 'Launcher (actualizaciones en línea)',
     shortcut: 'Crear un acceso directo en el escritorio',
     shortcutDone: 'Acceso directo creado en el escritorio',
     status: 'Estado',
@@ -154,7 +157,11 @@ export const app = {
     jumpListPlay: 'Jugar a {name}',
     alreadyRunning: '{name} ya está en marcha.',
     gameNotFound: 'Juego no encontrado, vuelve a analizar.',
-    wineMissing: 'Indica el comando de Wine en los ajustes para lanzar los fangames.',
+    runnerMissing: {
+      wine: 'Indica el comando de Wine en los ajustes para iniciar los fangames.',
+      proton: 'Elige una versión de Proton en Ajustes > Emuladores para iniciar los fangames.',
+      bottles: 'Indica la botella de Bottles en Ajustes > Emuladores para iniciar los fangames.'
+    },
     exeNotFound: 'No se encontró {cmd}. Revisa la ruta en los ajustes.',
     launchError: 'No se pudo iniciar {cmd}: {message}',
     dialogImages: 'Imágenes',

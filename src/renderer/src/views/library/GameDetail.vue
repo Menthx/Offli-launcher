@@ -26,6 +26,8 @@ const props = defineProps<{
   picked: Record<string, string>
   /** Launch time of running games, by id */
   runningSince: Record<string, number>
+  /** Executable picked per game id */
+  launchExe: Record<string, string>
   /** Collections used by any game, suggested when adding one */
   allTags: string[]
 }>()
@@ -38,6 +40,7 @@ const emit = defineEmits<{
   pickSgdb: [game: Game]
   hide: [game: Game]
   pick: [gameId: string, versionId: string]
+  exe: [versionId: string, path: string]
 }>()
 
 const target = computed(() => props.game.versions?.find((v) => v.id === props.picked[props.game.id]) ?? props.game)
@@ -123,7 +126,13 @@ const actions = computed<MenuAction[]>(() => {
       <div class="gp-side">
         <GameProgress :game-id="game.id" :stats="stats" :all-tags="allTags" />
         <CommunityLinks :journal="journal" :detected="detected" @save="save" />
-        <GameFacts :game="game" :target="target" @pick="emit('pick', game.id, $event)" />
+        <GameFacts
+          :game="game"
+          :target="target"
+          :launch-exe="launchExe"
+          @pick="emit('pick', game.id, $event)"
+          @exe="(id, path) => emit('exe', id, path)"
+        />
       </div>
     </div>
   </article>

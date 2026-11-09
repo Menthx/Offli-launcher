@@ -78,7 +78,8 @@ async function scanDir(root: string, dir: string, depth: number, out: Game[], ha
       kind: 'fangame',
       platform: 'pc',
       path,
-      dir
+      dir,
+      ...(fangame.alternates ? { alternates: fangame.alternates } : {})
     })
     return
   }

@@ -11,6 +11,7 @@ const api: OffliApi = {
   getStats: () => ipcRenderer.invoke('stats:get'),
   toggleFavorite: (id) => ipcRenderer.invoke('stats:favorite', id),
   updateGame: (id, patch) => ipcRenderer.invoke('stats:update', id, patch),
+  detectRunners: () => ipcRenderer.invoke('runners:detect'),
   createShortcut: (id) => ipcRenderer.invoke('game:shortcut', id),
   onNotify: (cb) => {
     const listener = (_e: unknown, n: Parameters<typeof cb>[0]): void => cb(n)

@@ -66,6 +66,11 @@ const hide = (game: Game): void => {
   if (selectedId.value === game.id) selectedId.value = undefined
   void save({ hiddenGames: hideGame(settings.value!.hiddenGames, game.id) })
 }
+// Performance build or launcher picked on the game page; '' goes back to the detected exe
+const setExe = (id: string, path: string): void => {
+  const { [id]: _old, ...rest } = settings.value!.launchExe
+  void save({ launchExe: path ? { ...rest, [id]: path } : rest })
+}
 const replayTour = (): void => {
   showSettings.value = false
   view.value = 'library'
@@ -117,6 +122,7 @@ const closeTour = (): void => {
       :sort="settings.librarySort"
       :scanning="scanning"
       :custom-covers="settings.coverOverrides"
+      :launch-exe="settings.launchExe"
       :has-sgdb-key="!!settings.hasSteamGridDbKey"
       @select="select"
       @launch="launch"
@@ -127,6 +133,7 @@ const closeTour = (): void => {
       @cover-changed="data.coverChanged"
       @rename="data.rename"
       @hide="hide"
+      @exe="setExe"
     />
     <SettingsPanel
       v-if="showSettings"

@@ -26,12 +26,20 @@ export interface Game {
   variant?: string
   /** All versions, newest first (this one included) */
   versions?: Game[]
+  /** Other ways to start a fangame: performance build, online updater */
+  alternates?: GameExe[]
   /** Detected name, only set when the user renamed the game */
   originalName?: string
 }
 
 /** Where the player is in the game, set by hand */
 export type GameStatus = 'todo' | 'playing' | 'done' | 'dropped'
+
+export interface GameExe {
+  /** Absolute path */
+  path: string
+  kind: 'performance' | 'launcher'
+}
 
 export interface GameStats {
   lastPlayed?: number
@@ -88,6 +96,16 @@ export interface EmulatorConfig {
   path: string
 }
 
+export type WindowsRunner = 'wine' | 'proton' | 'bottles'
+
+/** Found on this computer (Linux only) */
+export interface DetectedRunners {
+  wine: boolean
+  protons: { name: string; path: string }[]
+  bottles: boolean
+  bottlesFlatpak: boolean
+}
+
 export type LibrarySort = 'name' | 'recent' | 'playtime'
 
 export interface Settings {
@@ -108,6 +126,16 @@ export interface Settings {
   emulators: Record<EmulatorPlatform, EmulatorConfig>
   /** Command used to run Game.exe outside Windows */
   winePath: string
+  /** What runs Windows fangames on Linux and macOS */
+  windowsRunner: WindowsRunner
+  /** Proton script picked among the detected ones (…/Proton 9.0/proton) */
+  protonPath: string
+  /** Bottles bottle the fangames run in */
+  bottlesBottle: string
+  /** Bottles installed from Flathub (bottles-cli runs through flatpak) */
+  bottlesFlatpak: boolean
+  /** Executable picked per game id (performance build, launcher); absent = the detected one */
+  launchExe: Record<string, string>
   useSteamGridDb: boolean
   steamGridDbKey: string
   /** Renderer only: a key is saved (the key itself never leaves the main process) */
@@ -164,6 +192,8 @@ export interface OffliApi {
   toggleFavorite(id: string): Promise<GameStats>
   /** Status and collections; returns the updated stats */
   updateGame(id: string, patch: Pick<GameStats, 'status' | 'tags'>): Promise<GameStats>
+  /** Wine, Proton and Bottles found on this computer */
+  detectRunners(): Promise<DetectedRunners>
   /** Desktop shortcut that launches the game through Offli */
   createShortcut(id: string): Promise<{ ok: boolean; error?: string }>
   /** Messages from the main process (launch from a shortcut, errors) */

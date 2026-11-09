@@ -60,6 +60,9 @@ export const app = {
     launchFailed: 'The game could not be launched.'
   },
   detail: {
+    exe: 'Launch with',
+    exePerformance: 'Performance build',
+    exeLauncher: 'Launcher (online updates)',
     shortcut: 'Create a desktop shortcut',
     shortcutDone: 'Shortcut created on the desktop',
     status: 'Status',
@@ -154,7 +157,11 @@ export const app = {
     jumpListPlay: 'Play {name}',
     alreadyRunning: '{name} is already running.',
     gameNotFound: 'Game not found, run a new scan.',
-    wineMissing: 'Set the Wine command in Settings to launch fangames.',
+    runnerMissing: {
+      wine: 'Set the Wine command in the settings to launch fangames.',
+      proton: 'Pick a Proton version in Settings > Emulators to launch fangames.',
+      bottles: 'Set the Bottles bottle in Settings > Emulators to launch fangames.'
+    },
     exeNotFound: '{cmd} was not found. Check the path in Settings.',
     launchError: 'Could not launch {cmd}: {message}',
     dialogImages: 'Images',

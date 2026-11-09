@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import type { EmulatorPlatform, Settings } from '../../../../shared/types'
 import { type TKey, t } from '../../i18n'
 import Icon from '../Icon.vue'
 import SettingsGroup from './SettingsGroup.vue'
+import RunnerGroup from './RunnerGroup.vue'
 import SettingsRow from './SettingsRow.vue'
 
 /** Console names stay untranslated; hints are translation keys */
@@ -19,7 +19,6 @@ const hintOf = (hint: string): string => (hint.includes('.') ? t(hint as TKey) :
 /** One executable per platform (empty = default app), plus Wine */
 const props = defineProps<{ settings: Settings }>()
 const emit = defineEmits<{ save: [patch: Partial<Settings>] }>()
-const wine = ref(props.settings.winePath)
 
 const setEmulator = (id: EmulatorPlatform, path: string): void =>
   emit('save', { emulators: { ...props.settings.emulators, [id]: { path } } })
@@ -58,9 +57,5 @@ const browse = async (id: EmulatorPlatform): Promise<void> => {
       </button>
     </SettingsRow>
   </SettingsGroup>
-  <SettingsGroup :title="t('settings.wineGroup')">
-    <SettingsRow label="Wine" :desc="t('settings.wineDesc')" html-for="set-wine">
-      <input id="set-wine" v-model="wine" class="input settings-path-input" @blur="emit('save', { winePath: wine })" />
-    </SettingsRow>
-  </SettingsGroup>
+  <RunnerGroup :settings="settings" @save="emit('save', $event)" />
 </template>

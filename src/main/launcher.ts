@@ -1,7 +1,8 @@
 import { execFile, spawn } from 'node:child_process'
-import { extname } from 'node:path'
+import { dirname, extname } from 'node:path'
 import { t } from '../shared/i18n'
 import type { Game, Settings } from '../shared/types'
+import { windowsRunner } from './runners'
 
 export interface Command {
   cmd: string
@@ -9,6 +10,10 @@ export interface Command {
   cwd: string
   /** Windows: replaced by the associated app (see resolveAssociation) */
   openWith?: string
+  /** Extra environment (Proton) */
+  env?: Record<string, string>
+  /** The game's .exe when a runner (Wine, Proton…) starts it: the process to look for later */
+  exeHint?: string
   /** Play time: 'exit' = process lifetime, 'none' = not tracked, 'default-app' = counted only if waiting worked */
   playtime?: 'exit' | 'none' | 'default-app'
 }
@@ -83,15 +88,25 @@ export async function resolveAssociation(command: Command): Promise<Command> {
 
 export type CommandResult = { ok: true; command: Command } | { ok: false; error: string }
 
-export function buildCommand(game: Game, settings: Settings, os: NodeJS.Platform = process.platform): CommandResult {
+/** The executable the player picked for this game (performance build, launcher), if it still exists */
+export function withPickedExe(game: Game, settings: Settings): Game {
+  const picked = settings.launchExe[game.id]
+  const alt = picked ? game.alternates?.find((a) => a.path === picked) : undefined
+  return alt ? { ...game, path: alt.path, dir: dirname(alt.path) } : game
+}
+
+export function buildCommand(
+  game: Game,
+  settings: Settings,
+  os: NodeJS.Platform = process.platform,
+  protonPrefix = ''
+): CommandResult {
   if (game.kind === 'fangame') {
     // RPG Maker reads files relative to the working directory
     if (os === 'win32') return { ok: true, command: { cmd: game.path, args: [], cwd: game.dir } }
-    if (!settings.winePath) return { ok: false, error: t('main.wineMissing') }
-    return {
-      ok: true,
-      command: { cmd: settings.winePath, args: [game.path], cwd: game.dir }
-    }
+    const runner = windowsRunner(game.path, settings, protonPrefix)
+    if (!runner) return { ok: false, error: t(`main.runnerMissing.${settings.windowsRunner}`) }
+    return { ok: true, command: { ...runner, cwd: game.dir, exeHint: game.path } }
   }
 
   const platform = game.platform as Exclude<Game['platform'], 'pc'>
@@ -119,6 +134,7 @@ export function runCommand(
     let settled = false
     const child = spawn(command.cmd, command.args, {
       cwd: command.cwd,
+      env: command.env ? { ...process.env, ...command.env } : process.env,
       detached: true,
       stdio: 'ignore',
       windowsHide: false

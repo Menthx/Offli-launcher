@@ -21,6 +21,11 @@ export const DEFAULT_SETTINGS: Settings = {
     '3ds': { path: '' }
   },
   winePath: 'wine',
+  windowsRunner: 'wine',
+  protonPath: '',
+  bottlesBottle: '',
+  bottlesFlatpak: false,
+  launchExe: {},
   useSteamGridDb: false,
   steamGridDbKey: '',
   useBaseRomCovers: true,
@@ -77,6 +82,12 @@ function mergeEmulators(fallback: Settings['emulators'], loaded: unknown): Setti
   return out
 }
 
+/** Keeps string values only */
+function stringRecord(raw: unknown): Record<string, string> {
+  if (!raw || typeof raw !== 'object') return {}
+  return Object.fromEntries(Object.entries(raw).filter((e): e is [string, string] => typeof e[1] === 'string'))
+}
+
 export function mergeSettings(fallback: Settings, loaded: unknown): Settings {
   // viewMode and libraryPath come from older settings files
   const { viewMode, libraryPath, ...l } = (loaded ?? {}) as Partial<Settings> & {
@@ -113,6 +124,13 @@ export function mergeSettings(fallback: Settings, loaded: unknown): Settings {
       ? (l.language as Settings['language'])
       : fallback.language,
     emulators: mergeEmulators(fallback.emulators, l.emulators),
+    windowsRunner: (['wine', 'proton', 'bottles'] as const).includes(l.windowsRunner as Settings['windowsRunner'])
+      ? (l.windowsRunner as Settings['windowsRunner'])
+      : fallback.windowsRunner,
+    protonPath: typeof l.protonPath === 'string' ? l.protonPath : fallback.protonPath,
+    bottlesBottle: typeof l.bottlesBottle === 'string' ? l.bottlesBottle : fallback.bottlesBottle,
+    bottlesFlatpak: typeof l.bottlesFlatpak === 'boolean' ? l.bottlesFlatpak : fallback.bottlesFlatpak,
+    launchExe: stringRecord(l.launchExe),
     coverOverrides: { ...(l.coverOverrides ?? {}) },
     nameOverrides: { ...(l.nameOverrides ?? {}) }
   }

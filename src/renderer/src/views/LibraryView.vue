@@ -19,6 +19,7 @@ const p = defineProps<
   ViewProps & {
     scanning: boolean
     customCovers: Record<string, string>
+    launchExe: Record<string, string>
     /** Lets the menu offer picking a cover */
     hasSgdbKey: boolean
   }
@@ -31,6 +32,7 @@ const emit = defineEmits<
     rename: [game: Game, name: string | null]
     /** Hides the game everywhere (closes its page if open) */
     hide: [game: Game]
+    exe: [versionId: string, path: string]
   }
 >()
 
@@ -142,6 +144,8 @@ const emptyText = computed(() =>
         :picked="picked"
         :running-since="running"
         :all-tags="allTags"
+        :launch-exe="launchExe"
+        @exe="(id, path) => emit('exe', id, path)"
         @pick="(gameId, versionId) => (picked = { ...picked, [gameId]: versionId })"
         @close="emit('select', undefined)"
         @launch="emit('launch', $event)"

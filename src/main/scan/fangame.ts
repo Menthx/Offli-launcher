@@ -1,5 +1,6 @@
-import { readFile } from 'node:fs/promises'
-import { basename, extname, join } from 'node:path'
+import { readFile, readdir } from 'node:fs/promises'
+import { basename, dirname, extname, join } from 'node:path'
+import type { GameExe } from '../../shared/types'
 
 /** Executables that aren't the game itself */
 const IGNORED_EXE = [
@@ -80,6 +81,36 @@ export interface FangameInfo {
   title?: string
   /** Name the game after the parent folder (launcher installs, e.g. Regis/app) */
   useParentName?: boolean
+  /** Performance build or launcher, offered instead of exe */
+  alternates?: GameExe[]
+}
+
+/** Updater launcher (PatchKit, Pokémon Studio…): Launcher.exe only, not its translated copies */
+const isLauncher = (f: string): boolean => /^launcher\.exe$/i.test(f)
+
+/** InfiniteFusion2-performance.exe next to InfiniteFusion2.exe, and Launcher.exe in the folder (or its parent for app/ installs) */
+export function findAlternates(dir: string, files: string[], exe: string, parentFiles: string[] = []): GameExe[] {
+  const out: GameExe[] = []
+  const perf = files.find((f) => f.toLowerCase() === `${stem(exe).toLowerCase()}-performance.exe`)
+  if (perf) out.push({ path: join(dir, perf), kind: 'performance' })
+  const here = files.find(isLauncher)
+  const parent = parentFiles.find(isLauncher)
+  if (here) out.push({ path: join(dir, here), kind: 'launcher' })
+  else if (parent) out.push({ path: join(dirname(dir), parent), kind: 'launcher' })
+  return out
+}
+
+const withAlternates = (info: FangameInfo, dir: string, files: string[], parentFiles: string[] = []): FangameInfo => {
+  const alternates = findAlternates(dir, files, info.exe, parentFiles)
+  return alternates.length ? { ...info, alternates } : info
+}
+
+async function listFiles(dir: string): Promise<string[]> {
+  try {
+    return (await readdir(dir, { withFileTypes: true })).filter((e) => e.isFile()).map((e) => e.name)
+  } catch {
+    return []
+  }
 }
 
 /** Fangame folder: launcher app_data.json, RPG Maker .ini, Data/ + RGSS*.dll, Pokémon SDK project.studio, or Game.exe */
@@ -93,7 +124,7 @@ export async function detectFangame(dir: string, files: string[], dirs: string[]
         start_exe_path?: unknown
       }
       const start = typeof data.start_exe_path === 'string' ? names.get(data.start_exe_path.toLowerCase()) : undefined
-      if (start) return { exe: start, useParentName: true }
+      if (start) return withAlternates({ exe: start, useParentName: true }, dir, files, await listFiles(dirname(dir)))
     } catch {
       // Unreadable app_data.json: try the other rules
     }
@@ -117,5 +148,5 @@ export async function detectFangame(dir: string, files: string[], dirs: string[]
   const title =
     (await readStudioTitle(dir, names.get('project.studio'))) ??
     (isPlaceholderTitle(ini?.title) ? undefined : ini?.title)
-  return { exe, title }
+  return withAlternates({ exe, title }, dir, files)
 }

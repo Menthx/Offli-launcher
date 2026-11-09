@@ -7,8 +7,22 @@ import { t } from '../../i18n'
 import PathSpoiler from './PathSpoiler.vue'
 
 /** Version picker, type, base ROM and hidden file path */
-const props = defineProps<{ game: Game; target: Game }>()
-const emit = defineEmits<{ pick: [versionId: string] }>()
+const props = defineProps<{ game: Game; target: Game; launchExe: Record<string, string> }>()
+const emit = defineEmits<{ pick: [versionId: string]; exe: [versionId: string, path: string] }>()
+
+// Detected exe, or its performance build / launcher; picked per version
+const exe = computed({
+  get: () => props.launchExe[props.target.id] ?? '',
+  set: (path: string) => emit('exe', props.target.id, path)
+})
+const fileName = (path: string): string => path.split(/[\\/]/).pop() ?? path
+const exeOptions = computed(() => [
+  { value: '', label: fileName(props.target.path) },
+  ...(props.target.alternates ?? []).map((a) => ({
+    value: a.path,
+    label: `${t(a.kind === 'performance' ? 'detail.exePerformance' : 'detail.exeLauncher')} · ${fileName(a.path)}`
+  }))
+])
 
 const version = computed({
   get: () => props.target.id,
@@ -34,6 +48,14 @@ const versionOptions = computed(() =>
         </dt>
         <dd>
           <AppSelect id="version-select" v-model="version" class="select--sm" :options="versionOptions" />
+        </dd>
+      </template>
+      <template v-if="target.alternates?.length">
+        <dt>
+          <label for="exe-select">{{ t('detail.exe') }}</label>
+        </dt>
+        <dd>
+          <AppSelect id="exe-select" v-model="exe" class="select--sm" :options="exeOptions" />
         </dd>
       </template>
       <dt>{{ t('detail.type') }}</dt>

@@ -4,6 +4,7 @@ import type { GameStats, LaunchResult, Settings } from '../../shared/types'
 import { t } from '../../shared/i18n'
 import type { MainContext } from '../context'
 import type { Player } from '../play'
+import { detectRunners } from '../runners'
 import { scanLibrary } from '../scanner'
 import { createDesktopShortcut } from '../shortcuts'
 import { mergeSettings } from '../store'
@@ -101,6 +102,7 @@ export function registerLibraryIpc(ctx: MainContext, player: Player): void {
     return ctx.games()
   })
 
+  ipcMain.handle('runners:detect', () => detectRunners())
   ipcMain.handle('game:running', () => player.running())
   ipcMain.handle('game:launch', (_e, id: string): Promise<LaunchResult> => player.launch(id))
   ipcMain.handle('game:shortcut', async (_e, id: string) => {

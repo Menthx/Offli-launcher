@@ -48,6 +48,7 @@ Si ça ne suffit pas : Réglages Système > Confidentialité et sécurité, puis
 - **5 thèmes de couleurs** : Poké Ball (par défaut), Doux, Console, Électrique et Émeraude.
 - **Chemin des fichiers masqué** dans la fiche : il ne s'affiche que si tu cliques sur « Afficher » (pratique pour les captures d'écran).
 - **Renomme un jeu** en cliquant sur son nom dans la fiche.
+- **Choisis l'exécutable** quand un fangame en a plusieurs : la version performance d'Infinite Fusion, ou le launcher de mise à jour (Infos > Lancer avec).
 - **Statuts et collections** : marque un jeu « À jouer », « Commencé », « Terminé » ou « Abandonné », range-le dans tes collections (Nuzlocke…), puis filtre-les dans la barre latérale.
 - **Lance un jeu sans ouvrir la bibliothèque** : clic droit sur l'icône d'Offli dans la barre des tâches Windows pour les derniers jeux, ou **☰ > Créer un raccourci sur le bureau** dans la page du jeu.
 - **Discret pendant que tu joues** : Offli se réduit au lancement d'un jeu et revient quand tu le quittes (Paramètres > Affichage). Le temps de jeu est gardé même si tu fermes Offli en pleine partie.
@@ -68,7 +69,7 @@ En Big Picture, à la manette : la croix ou le stick pour choisir, **LB** / **RB
 ## Questions fréquentes
 
 **Faut-il configurer un émulateur ?**
-Non. Si tes `.gba`, `.nds`… s'ouvrent déjà avec un émulateur quand tu double-cliques dessus (mGBA par exemple), Offli-Launcher utilise le même. Tu peux aussi en choisir un par console dans Paramètres > Émulateurs. Sous Linux et Mac, les fangames Windows se lancent avec Wine.
+Non. Si tes `.gba`, `.nds`… s'ouvrent déjà avec un émulateur quand tu double-cliques dessus (mGBA par exemple), Offli-Launcher utilise le même. Tu peux aussi en choisir un par console dans Paramètres > Émulateurs. Sous Linux et Mac, les fangames Windows se lancent avec Wine. Sous Linux, tu peux aussi choisir Proton (repéré tout seul dans Steam) ou une bouteille Bottles dans Paramètres > Émulateurs.
 
 **Comment changer l'image d'un jeu ?**
 Dans la fiche du jeu, bouton **⋯** puis **Changer l'image**. **Réinitialiser l'image** remet l'image automatique.
