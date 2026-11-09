@@ -3,7 +3,14 @@ import { type Command, buildCommand, parseAssocCommand, runCommand } from '../sr
 import { DEFAULT_SETTINGS } from '../src/main/store'
 import type { Game, Settings } from '../src/shared/types'
 
-const fangame: Game = { id: 'a', name: 'Reborn', kind: 'fangame', platform: 'pc', path: '/g/Reborn/Game.exe', dir: '/g/Reborn' }
+const fangame: Game = {
+  id: 'a',
+  name: 'Reborn',
+  kind: 'fangame',
+  platform: 'pc',
+  path: '/g/Reborn/Game.exe',
+  dir: '/g/Reborn'
+}
 const rom: Game = { id: 'b', name: 'Unbound', kind: 'romhack', platform: 'gba', path: '/g/Unbound.gba', dir: '/g' }
 
 function settings(patch: Partial<Settings> = {}): Settings {
@@ -25,12 +32,22 @@ describe('buildCommand', () => {
 
   it("passe par l'application associée sous Windows sans émulateur configuré", () => {
     const r = buildCommand(rom, settings(), 'win32')
-    expect(r.ok && r.command).toEqual({ cmd: 'explorer.exe', args: ['/g/Unbound.gba'], cwd: '/g', playtime: 'none', openWith: '/g/Unbound.gba' })
+    expect(r.ok && r.command).toEqual({
+      cmd: 'explorer.exe',
+      args: ['/g/Unbound.gba'],
+      cwd: '/g',
+      playtime: 'none',
+      openWith: '/g/Unbound.gba'
+    })
   })
 
   it("attend l'application par défaut sous macOS, pas sous Linux", () => {
     const mac = buildCommand(rom, settings(), 'darwin')
-    expect(mac.ok && [mac.command.cmd, mac.command.args, mac.command.playtime]).toEqual(['open', ['-W', '/g/Unbound.gba'], 'default-app'])
+    expect(mac.ok && [mac.command.cmd, mac.command.args, mac.command.playtime]).toEqual([
+      'open',
+      ['-W', '/g/Unbound.gba'],
+      'default-app'
+    ])
     const linux = buildCommand(rom, settings(), 'linux')
     expect(linux.ok && [linux.command.cmd, linux.command.playtime]).toEqual(['xdg-open', 'none'])
   })
@@ -44,7 +61,12 @@ describe('buildCommand', () => {
 })
 
 describe('runCommand', () => {
-  const node = (playtime: Command['playtime']): Command => ({ cmd: process.execPath, args: ['-e', ''], cwd: '.', playtime })
+  const node = (playtime: Command['playtime']): Command => ({
+    cmd: process.execPath,
+    args: ['-e', ''],
+    cwd: '.',
+    playtime
+  })
   const run = (c: Command): Promise<number | null> =>
     new Promise((resolve) => {
       void runCommand(c, resolve)
@@ -55,7 +77,7 @@ describe('runCommand', () => {
     expect(await run(node('exit'))).toBe(0)
   })
 
-  it("ne compte pas une application par défaut qui rend la main aussitôt", async () => {
+  it('ne compte pas une application par défaut qui rend la main aussitôt', async () => {
     expect(await run(node('default-app'))).toBeNull()
     expect(await run(node('none'))).toBeNull()
   })
@@ -70,7 +92,13 @@ describe('parseAssocCommand', () => {
   })
 
   it('retire les autres variables et ajoute la ROM si %1 manque', () => {
-    expect(parseAssocCommand(String.raw`C:\melonDS.exe %*`, rom)).toEqual({ cmd: String.raw`C:\melonDS.exe`, args: [rom] })
-    expect(parseAssocCommand(String.raw`"C:\emu.exe" -f "%L"`, rom)).toEqual({ cmd: String.raw`C:\emu.exe`, args: ['-f', rom] })
+    expect(parseAssocCommand(String.raw`C:\melonDS.exe %*`, rom)).toEqual({
+      cmd: String.raw`C:\melonDS.exe`,
+      args: [rom]
+    })
+    expect(parseAssocCommand(String.raw`"C:\emu.exe" -f "%L"`, rom)).toEqual({
+      cmd: String.raw`C:\emu.exe`,
+      args: ['-f', rom]
+    })
   })
 })

@@ -1,24 +1,23 @@
-/** Action de menu, sans dépendance à React (testable côté Node) ; compatible avec MenuAction */
+import { t } from './i18n'
+
+/** Framework-free (testable in Node), compatible with MenuAction */
 export interface ActionSpec<I> {
-  label: string;
-  icon: I;
-  run(): void;
-  disabled?: boolean;
-  hint?: string;
+  label: string
+  icon: I
+  run(): void
+  disabled?: boolean
+  hint?: string
 }
 
-/**
- * Entrée « Choisir sur SteamGridDB… » du menu de la fiche : toujours présente,
- * désactivée (avec une aide) tant qu'aucune clé API n'est enregistrée.
- */
+/** Always shown; disabled with a hint until an API key is saved */
 export function steamGridDbAction<I>(hasKey: boolean, icon: I, open: () => void): ActionSpec<I> {
   return hasKey
-    ? { label: "Choisir sur SteamGridDB…", icon, run: open }
+    ? { label: t('detail.sgdbPick'), icon, run: open }
     : {
-        label: "Choisir sur SteamGridDB…",
+        label: t('detail.sgdbPick'),
         icon,
         disabled: true,
-        hint: "Ajoute une clé API dans Paramètres > Images",
-        run: () => undefined,
-      };
+        hint: t('detail.sgdbHint'),
+        run: () => undefined
+      }
 }

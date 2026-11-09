@@ -6,7 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { BASE_ROM_SHA1, type HashCache, identifyBaseRom } from '../src/main/baseRoms'
 import { scanLibrary } from '../src/main/scanner'
 
-// Fausse ROM « officielle » : on enregistre son empreinte dans la table le temps du test
+// Fake 'official' ROM: its hash is added to the table for the test
 const CLEAN = Buffer.from('rom officielle de test')
 const CLEAN_SHA1 = createHash('sha1').update(CLEAN).digest('hex')
 
@@ -44,10 +44,10 @@ describe('ROMs de base', () => {
     const path = join(root, 'Lazarus', 'Pokemon Lazarus v1.0.gba')
     const cache: HashCache = {}
     expect(await identifyBaseRom(path, cache)).toBeUndefined()
-    // On falsifie l'empreinte en cache : si elle est réutilisée, la ROM passe pour officielle
+    // Tamper with the cached hash: if reused, the ROM looks official
     cache[path]!.sha1 = CLEAN_SHA1
     expect(await identifyBaseRom(path, cache)).toBe('Pokemon - Emerald Version (USA, Europe)')
-    // Fichier modifié : l'empreinte est recalculée
+    // Modified file: the hash is computed again
     await writeFile(path, 'romhack modifié')
     expect(await identifyBaseRom(path, cache)).toBeUndefined()
   })

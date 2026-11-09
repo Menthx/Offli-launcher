@@ -1,0 +1,80 @@
+/* Toast, SteamGridDB dialog, update confirmation */
+
+/* Elevated toast, icon colored by state */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: var(--space-6);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: min(420px, 70vw);
+  padding: 12px 14px;
+  background: var(--color-elevated);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  font-size: var(--font-size-sm);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 8px);
+  transition: opacity var(--t-normal), transform var(--t-normal);
+}
+.toast svg { flex: none; color: var(--color-success); }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast.error svg { color: var(--color-danger); }
+
+/* Fixed size, results scroll */
+.modal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  background: var(--color-elevated);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  user-select: text;
+  animation: rise-in var(--t-normal);
+}
+.modal.sgdb { width: min(760px, 92vw); height: min(640px, 88vh); overflow: hidden; }
+.modal-head { display: flex; align-items: center; justify-content: space-between; }
+.modal h2 { margin: 0; font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold); }
+.round-close:hover { background: var(--color-elevated-hover); }
+.sgdb-search { display: flex; gap: var(--space-2); }
+.sgdb-results { position: relative; flex: 1; min-height: 0; overflow-y: auto; padding: var(--space-3); background: var(--color-inset); border: 1px solid var(--color-border); border-radius: var(--radius-lg); }
+.sgdb-grid { display: grid; grid-template-columns: repeat(auto-fill, 112px); gap: var(--space-3); }
+.sgdb-thumb { position: relative; width: 112px; aspect-ratio: 2 / 3; padding: 0; overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); cursor: pointer; transition: border-color var(--t-fast), transform var(--t-fast); }
+.sgdb-thumb img { width: 100%; height: 100%; display: block; object-fit: cover; }
+.sgdb-thumb:hover { border-color: var(--color-accent); transform: translateY(-2px); }
+.sgdb-thumb:disabled { cursor: progress; }
+.sgdb-picking { position: absolute; inset: auto 0 0; padding: 4px; background: color-mix(in srgb, var(--color-bg) 85%, transparent); color: var(--color-text); font-size: var(--font-size-xs); }
+.sgdb-message { margin: 0; padding: var(--space-6) var(--space-2); text-align: center; color: var(--color-text-muted); }
+.sgdb-results > .sgdb-message[role='status'] { position: sticky; bottom: 0; background: var(--color-inset); }
+.sgdb-foot { display: flex; justify-content: center; min-height: 36px; }
+
+/* Sidebar update button and its confirmation */
+.update-wrap { position: relative; display: inline-flex; }
+.update-btn:disabled { opacity: 0.5; cursor: default; }
+.update-badge { position: absolute; top: 5px; right: 5px; width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--color-surface); }
+.update-badge.accent { background: var(--color-accent); }
+.update-badge.play { background: var(--color-success); }
+.update-ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); stroke: var(--color-accent); }
+.update-message { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.update-confirm {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  z-index: 20;
+  width: 260px;
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-elevated);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+.update-confirm p { margin: 0; font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
+.update-confirm .row-actions { justify-content: flex-end; }

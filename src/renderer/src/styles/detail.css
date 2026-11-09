@@ -1,0 +1,176 @@
+/* Game page, action menu, rename, hidden path */
+/* Page like Steam: banner with the name, Play bar, then the facts; replaces the grid */
+.game-page { display: flex; flex-direction: column; gap: var(--space-5); padding-bottom: var(--space-6); }
+
+/* Banner: a wide title screen fills it, anything else sits whole on the right of a blurred copy */
+.gp-hero {
+  position: relative;
+  flex: none;
+  height: clamp(220px, 38vh, 380px);
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--color-inset);
+  isolation: isolate;
+}
+.gp-hero__bg { position: absolute; inset: -40px; width: calc(100% + 80px); height: calc(100% + 80px); object-fit: cover; filter: blur(32px) saturate(1.3) brightness(0.55); z-index: -2; }
+.gp-hero__art { position: absolute; top: 8%; right: 4%; height: 84%; max-width: 46%; object-fit: contain; border-radius: var(--radius-md); filter: drop-shadow(0 16px 32px rgb(0 0 0 / 0.45)); z-index: -1; }
+.gp-hero.is-wide .gp-hero__bg { display: none; }
+.gp-hero.is-wide .gp-hero__art { inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; border-radius: 0; filter: none; }
+/* Darkens the bottom left so the name always reads */
+.gp-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(0deg, rgb(0 0 0 / 0.72) 0%, rgb(0 0 0 / 0) 55%), linear-gradient(90deg, rgb(0 0 0 / 0.45) 0%, rgb(0 0 0 / 0) 60%);
+  pointer-events: none;
+}
+.gp-back {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  height: var(--icon-btn-md);
+  padding: 0 var(--space-3);
+  border: 1px solid rgb(255 255 255 / 0.18);
+  border-radius: var(--radius-full);
+  background: rgb(0 0 0 / 0.45);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.gp-back:hover { background: rgb(0 0 0 / 0.65); }
+.gp-title { position: absolute; left: var(--space-6); right: 50%; bottom: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); color: #fff; }
+.gp-hero.is-wide .gp-title { right: var(--space-6); }
+.gp-kind { font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); letter-spacing: 0.08em; text-transform: uppercase; color: rgb(255 255 255 / 0.8); }
+.gp-title h3 { font-size: var(--font-size-3xl); text-shadow: 0 2px 12px rgb(0 0 0 / 0.5); }
+.gp-title .name-btn svg { color: rgb(255 255 255 / 0.7); }
+
+/* Play bar: big Play, last session and playtime, then favorite and menu */
+.gp-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-6);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+.gp-play {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: var(--play-btn-height);
+  padding: 0 var(--space-6);
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--play-bg);
+  color: var(--play-text);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.gp-play:hover { background: var(--play-bg-hover); }
+.gp-play:active { transform: translateY(1px); }
+.gp-play kbd { background: rgb(0 0 0 / 0.18); border-color: transparent; color: inherit; }
+.gp-play.is-running { background: var(--color-elevated); color: var(--color-success); cursor: default; }
+.gp-stats { display: flex; gap: var(--space-6); margin: 0; }
+.gp-stats div { display: flex; flex-direction: column; gap: 2px; }
+.gp-stats dt { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.gp-stats dd { margin: 0; font-weight: var(--font-weight-semibold); font-variant-numeric: tabular-nums; }
+.gp-bar .game-actions { margin-left: auto; }
+.gp-bar .rail-btn { background: var(--color-elevated); }
+.gp-bar .rail-btn:hover, .gp-bar .rail-btn[aria-expanded='true'] { background: var(--color-elevated-hover); }
+
+
+.game-actions { position: relative; display: flex; gap: 2px; }
+.rail-btn {
+  width: 46px;
+  height: 46px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.rail-btn:hover, .rail-btn[aria-expanded='true'] { background: var(--color-surface-hover); color: var(--color-text); }
+.fav-btn.on { color: var(--fav-on); }
+
+/* Elevated menu, strong border, large shadow */
+.action-menu {
+  position: absolute;
+  top: calc(100% + var(--menu-offset));
+  right: 0;
+  z-index: 5;
+  width: 240px;
+  display: grid;
+  padding: var(--menu-padding);
+  background: var(--color-elevated);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+.action-menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: var(--menu-item-padding-y) var(--menu-item-padding-x);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  text-align: left;
+  cursor: pointer;
+}
+.action-menu button svg { width: 16px; height: 16px; flex: none; color: var(--color-text-muted); }
+.action-menu button:hover, .action-menu button:focus-visible { background: var(--color-elevated-hover); box-shadow: none; }
+.action-menu button.danger { margin-top: 5px; position: relative; color: var(--color-danger); }
+.action-menu button.danger svg { color: currentColor; }
+.action-menu button.danger::before { content: ''; position: absolute; top: -3px; left: 6px; right: 6px; height: 1px; background: var(--color-border-strong); }
+.action-menu button.disabled { color: var(--color-text-subtle); cursor: default; }
+.menu-text { display: flex; flex-direction: column; gap: 2px; }
+.menu-hint { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+
+/* Click-to-rename title */
+.game-page h3 { margin: 0; font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold, 700); line-height: var(--line-height-tight); letter-spacing: -0.01em; }
+.name-editor { display: flex; flex-direction: column; gap: 4px; }
+.name-btn { display: inline-flex; align-items: baseline; gap: var(--space-2); padding: 0; border: none; background: none; font: inherit; text-align: left; cursor: text; border-radius: var(--radius-xs); }
+.name-btn svg { flex: none; opacity: 0; color: var(--color-text-subtle); transition: opacity var(--t-fast); }
+.name-btn:hover svg, .name-btn:focus-visible svg { opacity: 1; }
+.name-input { height: 34px; font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
+
+/* Fixed height: show / hide never moves anything */
+.spoiler {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 22px;
+  padding: 0 8px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-inset);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.spoiler-blur { max-width: 100%; overflow: hidden; white-space: nowrap; color: color-mix(in srgb, var(--color-text-muted) 45%, transparent); filter: blur(5px); }
+.spoiler-hint { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 0 8px; border-radius: var(--radius-full); background: var(--color-elevated); color: var(--color-text); font-size: 11px; font-weight: var(--font-weight-medium); }
+.spoiler-shown { display: block; min-width: 0; overflow-wrap: anywhere; user-select: text; font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--color-text-muted); }
+
+/* Running game: pulsing green dot, disabled button */
+.run-dot { width: 10px; height: 10px; flex: none; border-radius: 50%; background: var(--color-success); box-shadow: 0 0 0 0 var(--color-success-soft); animation: run-pulse 1.6s ease-out infinite; }
+@keyframes run-pulse { 70% { box-shadow: 0 0 0 8px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+.play:disabled { cursor: default; opacity: 0.85; }

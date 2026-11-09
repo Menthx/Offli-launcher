@@ -1,52 +1,49 @@
-/**
- * Tutoriel du premier lancement : description des six étapes et navigation,
- * sans dépendance à React (testable côté Node).
- */
+/** First-launch tutorial steps and navigation, framework-free (testable in Node) */
+import { t } from './i18n'
 
-export type TourStepId = "welcome" | "folders" | "sidebar" | "detail" | "settings" | "bigpicture";
+export type TourStepId = 'welcome' | 'folders' | 'sidebar' | 'pickGame' | 'detail' | 'settings' | 'bigpicture'
 
 export interface TourStep {
-  id: TourStepId;
-  /** Fenêtre centrée, ou bulle à côté d'un élément mis en lumière (attribut data-tour) */
-  kind: "modal" | "spotlight";
-  target?: string;
-  /** Côté de la bulle par rapport à l'élément mis en lumière */
-  side?: "right" | "left" | "top";
-  title: string;
+  id: TourStepId
+  /** Centered dialog, or a bubble next to a highlighted [data-tour] element */
+  kind: 'modal' | 'spotlight'
+  target?: string
+  side?: 'right' | 'left' | 'top'
+  /** Highlight only the first match (one card, not every section's first card) */
+  first?: boolean
 }
 
 export const TOUR_STEPS: TourStep[] = [
-  { id: "welcome", kind: "modal", title: "Bienvenue sur Offli-Launcher" },
-  { id: "folders", kind: "modal", title: "Où sont tes jeux ?" },
-  { id: "sidebar", kind: "spotlight", target: "sidebar", side: "right", title: "Tes jeux sont déjà rangés" },
-  { id: "detail", kind: "spotlight", target: "detail-actions", side: "left", title: "Clique sur un jeu, puis Jouer" },
-  { id: "settings", kind: "spotlight", target: "settings", side: "right", title: "Fais-le à ton goût" },
-  { id: "bigpicture", kind: "modal", title: "Joue depuis ton canapé" },
-];
+  { id: 'welcome', kind: 'modal' },
+  { id: 'folders', kind: 'modal' },
+  { id: 'sidebar', kind: 'spotlight', target: 'sidebar', side: 'right' },
+  // Waits for a click on a game (Next opens the first one)
+  { id: 'pickGame', kind: 'spotlight', target: 'game-card', side: 'right', first: true },
+  { id: 'detail', kind: 'spotlight', target: 'detail-actions', side: 'top' },
+  { id: 'settings', kind: 'spotlight', target: 'settings', side: 'right' },
+  { id: 'bigpicture', kind: 'modal' }
+]
 
-export type TourAction = "next" | "back" | "skip";
+export const stepTitle = (step: TourStep): string => t(`tour.${step.id}`)
 
-/** Résultat d'une action : nouvelle étape, ou fin du tutoriel (terminé ou passé) */
-export type TourResult = { step: number } | { done: "finished" | "skipped" };
+export type TourAction = 'next' | 'back' | 'skip'
+
+export type TourResult = { step: number } | { done: 'finished' | 'skipped' }
 
 export function tourReduce(step: number, action: TourAction, count = TOUR_STEPS.length): TourResult {
-  if (action === "skip") return { done: "skipped" };
-  if (action === "back") return { step: Math.max(0, step - 1) };
-  return step >= count - 1 ? { done: "finished" } : { step: step + 1 };
+  if (action === 'skip') return { done: 'skipped' }
+  if (action === 'back') return { step: Math.max(0, step - 1) }
+  return step >= count - 1 ? { done: 'finished' } : { step: step + 1 }
 }
 
-/**
- * Le tutoriel s'ouvre tout seul au lancement tant qu'il n'a été ni terminé ni passé,
- * même sans dossier de jeux : l'étape 2 sert alors à choisir le premier dossier.
- */
+/** Auto-opens until finished or skipped, even without a folder (step 2 picks the first one) */
 export function shouldAutoStartTour(settings: { tutorialDone: boolean }): boolean {
-  return !settings.tutorialDone;
+  return !settings.tutorialDone
 }
 
-/** Ligne d'état de l'étape « Où sont tes jeux ? » */
+/** Status line of the 'Where are your games?' step */
 export function libraryStatus(games: { kind: string }[]): string {
-  const fangames = games.filter((g) => g.kind === "fangame").length;
-  const roms = games.length - fangames;
-  const plural = (n: number, one: string, many: string): string => `${n} ${n > 1 ? many : one}`;
-  return `${plural(games.length, "jeu trouvé", "jeux trouvés")} · ${plural(fangames, "fangame", "fangames")}, ${plural(roms, "ROM", "ROMs")}`;
+  const fangames = games.filter((g) => g.kind === 'fangame').length
+  const roms = games.length - fangames
+  return `${t('folders.gamesFound', { n: games.length })} · ${t('folders.fangames', { n: fangames })}, ${t('folders.roms', { n: roms })}`
 }

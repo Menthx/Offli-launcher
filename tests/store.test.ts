@@ -11,7 +11,9 @@ describe('mergeSettings', () => {
   })
 
   it("ignore l'ancien champ args des émulateurs", () => {
-    const s = mergeSettings(structuredClone(DEFAULT_SETTINGS), { emulators: { gba: { path: 'C:/mGBA/mGBA.exe', args: ['-f', '{rom}'] } } })
+    const s = mergeSettings(structuredClone(DEFAULT_SETTINGS), {
+      emulators: { gba: { path: 'C:/mGBA/mGBA.exe', args: ['-f', '{rom}'] } }
+    })
     expect(s.emulators.gba).toEqual({ path: 'C:/mGBA/mGBA.exe' })
     expect(s.emulators.nds).toEqual({ path: '' })
   })
@@ -36,17 +38,23 @@ describe('mergeSettings', () => {
 
   it('laisse Big Picture en fenêtre par défaut', () => {
     expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), {}).bigPictureFullscreen).toBe(false)
-    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { viewMode: 'bigpicture' }).bigPictureFullscreen).toBe(false)
-    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { bigPictureFullscreen: true }).bigPictureFullscreen).toBe(true)
-    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { bigPictureFullscreen: 'oui' }).bigPictureFullscreen).toBe(false)
+    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { viewMode: 'bigpicture' }).bigPictureFullscreen).toBe(
+      false
+    )
+    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { bigPictureFullscreen: true }).bigPictureFullscreen).toBe(
+      true
+    )
+    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { bigPictureFullscreen: 'oui' }).bigPictureFullscreen).toBe(
+      false
+    )
   })
 
-  it('prend le thème Console par défaut et garde un thème connu', () => {
-    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), {}).theme).toBe('console')
-    for (const theme of ['electrique', 'pokeball', 'emeraude'] as const) {
+  it('prend le thème Poké Ball par défaut et garde un thème connu', () => {
+    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), {}).theme).toBe('pokeball')
+    for (const theme of ['doux', 'console', 'electrique', 'emeraude'] as const) {
       expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { theme }).theme).toBe(theme)
     }
-    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { theme: 'offli' }).theme).toBe('console')
+    expect(mergeSettings(structuredClone(DEFAULT_SETTINGS), { theme: 'offli' }).theme).toBe('pokeball')
   })
 
   it('garde startView et ignore une valeur inconnue', () => {

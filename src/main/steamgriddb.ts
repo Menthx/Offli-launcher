@@ -1,11 +1,8 @@
-/**
- * Client SteamGridDB (API v2), utilisé seulement dans le process principal :
- * la clé API ne passe jamais au rendu.
- */
+/** SteamGridDB API v2 client, main process only: the API key never reaches the renderer */
 
 const API = 'https://www.steamgriddb.com/api/v2'
 const TIMEOUT_MS = 10_000
-/** Jaquettes portrait, dans l'ordre de préférence */
+/** Portrait covers, in order of preference */
 const DIMENSIONS = '600x900,342x482'
 export const GRIDS_PER_PAGE = 24
 
@@ -31,7 +28,7 @@ export interface SgdbGrid {
   height: number
 }
 
-/** Seules les URL https de steamgriddb.com (et sous-domaines, ex. cdn2) sont acceptées */
+/** Only https URLs on steamgriddb.com (and subdomains, e.g. cdn2) */
 export function isSteamGridDbUrl(value: unknown): value is string {
   if (typeof value !== 'string') return false
   try {
@@ -70,13 +67,12 @@ export class SteamGridDb {
     }
   }
 
-  /** Jeux SteamGridDB correspondant à un nom */
   async search(term: string): Promise<SgdbGame[]> {
     const q = term.trim()
     if (!q) return []
-    const body = await this.get<{ data?: { id?: unknown; name?: unknown; release_date?: unknown }[] }>(
-      `/search/autocomplete/${encodeURIComponent(q)}`
-    )
+    const body = await this.get<{
+      data?: { id?: unknown; name?: unknown; release_date?: unknown }[]
+    }>(`/search/autocomplete/${encodeURIComponent(q)}`)
     return (body.data ?? []).flatMap((g) =>
       typeof g.id === 'number' && typeof g.name === 'string'
         ? [
@@ -90,26 +86,42 @@ export class SteamGridDb {
     )
   }
 
-  /** Une page de jaquettes portrait d'un jeu ; les URL hors steamgriddb.com sont écartées */
+  /** One page of portrait covers; URLs outside steamgriddb.com are dropped */
   async grids(gameId: number, page: number): Promise<{ grids: SgdbGrid[]; hasMore: boolean }> {
-    const body = await this.get<{ data?: { id?: unknown; url?: unknown; thumb?: unknown; width?: unknown; height?: unknown }[] }>(
-      `/grids/game/${gameId}?dimensions=${DIMENSIONS}&page=${page}&limit=${GRIDS_PER_PAGE}`
-    )
+    const body = await this.get<{
+      data?: {
+        id?: unknown
+        url?: unknown
+        thumb?: unknown
+        width?: unknown
+        height?: unknown
+      }[]
+    }>(`/grids/game/${gameId}?dimensions=${DIMENSIONS}&page=${page}&limit=${GRIDS_PER_PAGE}`)
     const raw = body.data ?? []
     const grids = raw.flatMap((g) =>
       typeof g.id === 'number' && isSteamGridDbUrl(g.url) && isSteamGridDbUrl(g.thumb)
-        ? [{ id: g.id, url: g.url, thumb: g.thumb, width: Number(g.width) || 0, height: Number(g.height) || 0 }]
+        ? [
+            {
+              id: g.id,
+              url: g.url,
+              thumb: g.thumb,
+              width: Number(g.width) || 0,
+              height: Number(g.height) || 0
+            }
+          ]
         : []
     )
     return { grids, hasMore: raw.length >= GRIDS_PER_PAGE }
   }
 
-  /** Télécharge une image (URL steamgriddb.com uniquement) */
+  /** steamgriddb.com URLs only */
   async download(url: string): Promise<Buffer> {
     if (!isSteamGridDbUrl(url)) throw new SgdbError('network')
     let res: Response
     try {
-      res = await this.fetchImpl(url, { signal: AbortSignal.timeout(TIMEOUT_MS) })
+      res = await this.fetchImpl(url, {
+        signal: AbortSignal.timeout(TIMEOUT_MS)
+      })
     } catch {
       throw new SgdbError('network')
     }

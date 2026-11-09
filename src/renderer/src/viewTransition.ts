@@ -1,70 +1,68 @@
-import { flushSync } from "react-dom";
+import { nextTick } from 'vue'
 
-/**
- * Animations de la bibliothèque avec la View Transitions API de Chromium.
- * Sans l'API, ou si l'utilisateur préfère réduire les animations, le changement
- * est appliqué tout de suite, sans animation.
- */
+/** Library animations with the View Transitions API; applied instantly without the API or with reduced motion */
 
-type StartViewTransition = (update: () => void) => { finished: Promise<void> };
+type StartViewTransition = (update: () => void | Promise<void>) => { finished: Promise<void> }
 
 function startViewTransition(): StartViewTransition | undefined {
-  const doc = document as Document & { startViewTransition?: StartViewTransition };
-  if (!doc.startViewTransition) return undefined;
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
-  return doc.startViewTransition.bind(doc);
-}
-
-/** Applique un changement d'état React en animant la page entre l'avant et l'après */
-export function animate(update: () => void): void {
-  const start = startViewTransition();
-  if (!start) {
-    update();
-    return;
+  const doc = document as Document & {
+    startViewTransition?: StartViewTransition
   }
-  start(() => flushSync(update));
+  if (!doc.startViewTransition) return undefined
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined
+  return doc.startViewTransition.bind(doc)
 }
 
-const HERO = "hero-cover";
+export function animate(update: () => void): void {
+  const start = startViewTransition()
+  if (!start) {
+    update()
+    return
+  }
+  // The browser waits for Vue to patch the DOM before taking the new snapshot
+  start(async () => {
+    update()
+    await nextTick()
+  })
+}
 
-/** Jaquette d'un jeu dans la grille principale (pas dans « Récemment joués ») */
+const HERO = 'hero-cover'
+
+/** Card cover in the main grid (not in 'Recently played') */
 function cardCover(id: string | undefined): HTMLElement | null {
-  if (!id) return null;
-  return document.querySelector<HTMLElement>(`.lib-main .grid .card[data-game="${CSS.escape(id)}"] .cover`);
+  if (!id) return null
+  return document.querySelector<HTMLElement>(`.lib-main .grid .card[data-game="${CSS.escape(id)}"] .cover`)
 }
 
 function detailCover(): HTMLElement | null {
-  return document.querySelector<HTMLElement>(".lib-detail .cover");
+  return document.querySelector<HTMLElement>('.game-page .gp-hero__art')
 }
 
 function name(el: HTMLElement | null, value: string): void {
-  if (el) el.style.setProperty("view-transition-name", value);
+  if (el) el.style.setProperty('view-transition-name', value)
 }
 
-/**
- * Sélection d'un jeu : la jaquette de la carte vole vers celle de la fiche (élément partagé),
- * et fait le trajet inverse quand la fiche se ferme. Le nom de transition n'est posé que
- * pendant l'animation, sur un seul élément à la fois de chaque côté.
- */
+/** Shared-element transition between the card cover and the game page banner; the transition name is set only during the animation */
 export function animateSelection(fromId: string | undefined, toId: string | undefined, apply: () => void): void {
-  const start = startViewTransition();
+  const start = startViewTransition()
   if (!start || fromId === toId) {
-    apply();
-    return;
+    apply()
+    return
   }
-  // Avant : la carte cliquée (ouverture, changement de jeu) ou la fiche (fermeture)
-  const before = toId ? cardCover(toId) : detailCover();
-  name(before, HERO);
-  let after: HTMLElement | null = null;
-  const transition = start(() => {
-    flushSync(apply);
-    name(before, "");
-    // Après : la jaquette de la fiche, ou la carte du jeu qu'on vient de fermer
-    after = toId ? detailCover() : cardCover(fromId);
-    name(after, HERO);
-  });
+  // Before: the clicked card (open, switch) or the page banner (close)
+  const before = toId ? cardCover(toId) : detailCover()
+  name(before, HERO)
+  let after: HTMLElement | null = null
+  const transition = start(async () => {
+    apply()
+    await nextTick()
+    name(before, '')
+    // After: the banner art, or the card of the game just closed
+    after = toId ? detailCover() : cardCover(fromId)
+    name(after, HERO)
+  })
   void transition.finished.finally(() => {
-    name(before, "");
-    name(after, "");
-  });
+    name(before, '')
+    name(after, '')
+  })
 }

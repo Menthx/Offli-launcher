@@ -1,0 +1,140 @@
+/* 'Doux' theme: tokens from the 'Soft Dark Theme' DA pack; higher surfaces are lighter (inset < bg < surface < elevated) */
+:root {
+  color-scheme: dark;
+
+  /* Surfaces, lowest to highest */
+  --color-inset: #121418;
+  --color-bg: #16181d;
+  --color-surface: #1e2127;
+  --color-surface-hover: #252931;
+  --color-elevated: #2a2e37;
+  --color-elevated-hover: #323743;
+  --color-scrim: rgba(8, 9, 12, 0.62);
+
+  /* Borders and text */
+  --color-border: #2e333c;
+  --color-border-strong: #3a404b;
+  --color-text: #d6d9de;
+  --color-text-muted: #9ea5b0;
+  --color-text-subtle: #6b727d;
+
+  /* Selection = accent-soft background + accent text, never a large solid accent area */
+  --color-accent: #7fa7e8;
+  --color-accent-hover: #95b6ec;
+  --color-accent-soft: rgba(127, 167, 232, 0.12);
+  --color-accent-text: #10131a;
+  --color-focus-ring: rgba(127, 167, 232, 0.35);
+
+  /* States, always on a 12 % soft background */
+  --color-success: #8cc7a0;
+  --color-success-soft: rgba(140, 199, 160, 0.12);
+  --color-warning: #e3c07e;
+  --color-warning-soft: rgba(227, 192, 126, 0.12);
+  --color-danger: #e48c8c;
+  --color-danger-soft: rgba(228, 140, 140, 0.12);
+
+  /* Launcher-specific: Play button, favorite, badges, gamepad */
+  --play-bg: var(--color-accent);
+  --play-bg-hover: var(--color-accent-hover);
+  --play-text: var(--color-accent-text);
+  --fav-on: var(--color-warning);
+  --badge-fan: var(--color-warning);
+  --badge-rom: var(--color-accent);
+  --pad-a: var(--color-success);
+  --pad-b: var(--color-danger);
+  --pad-x: var(--color-warning);
+
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Type */
+  --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.7;
+
+  /* Spacing (4 px base) */
+  --space-0-5: 2px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.28);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
+
+  /* Icon buttons (padding = (size − icon) ÷ 2) */
+  --icon-btn-sm: 24px;
+  --icon-btn-md: 28px;
+  --icon-btn-lg: 32px;
+  --icon-btn-xl: 36px;
+  --icon-gap: var(--space-1);
+  --icon-text-gap: var(--space-2);
+
+  /* Scrollbar, menus */
+  --scrollbar-size: 10px;
+  --scrollbar-inset: 2px;
+  --scrollbar-thumb: var(--color-border-strong);
+  --scrollbar-thumb-hover: var(--color-text-subtle);
+  --scrollbar-thumb-active: var(--color-text-muted);
+  --menu-padding: var(--space-1);
+  --menu-item-padding-y: 7px;
+  --menu-item-padding-x: 10px;
+  --menu-offset: var(--space-1);
+
+  /* Tooltips */
+  --tooltip-font-size: var(--font-size-xs);
+  --tooltip-padding-y: 6px;
+  --tooltip-padding-x: var(--space-2);
+  --tooltip-radius: var(--radius-sm);
+  --tooltip-offset: var(--space-2);
+  --tooltip-max-width: 280px;
+  --tooltip-delay: 400ms;
+
+  /* Play button */
+  --play-btn-height: 52px;
+
+  /* Settings window: nav (surface) | content (elevated) | groups (one step higher) */
+  --settings-width: 820px;
+  --settings-height: 560px;
+  --settings-nav-width: 220px;
+  --settings-nav-padding: var(--space-4);
+  --settings-content-padding: var(--space-8);
+  --settings-section-gap: var(--space-6);
+  --settings-group-padding-x: var(--space-4);
+  --settings-row-min-height: 52px;
+  --settings-nav-bg: var(--color-surface);
+  --settings-content-bg: var(--color-elevated);
+  --settings-group-bg: var(--color-elevated-hover);
+
+  /* Library */
+  --lib-side-width: 220px;
+  --card-width: 170px;
+
+  /* Transitions */
+  --t-fast: 120ms ease;
+  --t-normal: 200ms ease;
+}

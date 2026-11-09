@@ -1,19 +1,16 @@
-/*
- * Animations de la bibliothèque (View Transitions API), communes à tous les thèmes.
- * Les durées sont des variables : un thème peut les redéfinir.
- */
+/* Library animations (View Transitions API), shared by every theme */
 :root {
   --motion-duration: 280ms;
   --motion-hero: 380ms;
   --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* La fiche est un élément à part : elle glisse depuis la droite à l'ouverture, et inversement */
-.lib-detail {
+/* The game page rises in, and back out */
+.game-page {
   view-transition-name: detail;
 }
 
-/* Le reste de la page ne fond pas : seuls les éléments nommés bougent */
+/* Only named elements move, the rest of the page doesn't fade */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
@@ -24,15 +21,15 @@
   animation-timing-function: var(--motion-ease);
 }
 
-/* Jaquette partagée entre la carte et la fiche */
+/* Cover shared between the card and the sheet */
 ::view-transition-group(hero-cover) {
   animation-duration: var(--motion-hero);
-  /* Au-dessus de la fiche qui s'ouvre, sinon la jaquette passe dessous */
+  /* Above the opening sheet */
   z-index: 10;
 }
 ::view-transition-old(hero-cover),
 ::view-transition-new(hero-cover) {
-  /* La jaquette change de proportions (3:4 → 16:10) : on garde l'image entière pendant le vol */
+  /* Aspect ratio changes (3:4 → 16:10): keep the whole image while flying */
   height: 100%;
   object-fit: cover;
 }
@@ -47,17 +44,17 @@
 @keyframes vt-detail-in {
   from {
     opacity: 0;
-    transform: translateX(48px);
+    transform: translateY(12px);
   }
 }
 @keyframes vt-detail-out {
   to {
     opacity: 0;
-    transform: translateX(48px);
+    transform: translateY(12px);
   }
 }
 
-/* Cartes : elles glissent vers leur nouvelle place (groupe), apparaissent et disparaissent en fondu */
+/* Cards slide to their new place and fade in / out */
 .card {
   view-transition-class: card;
 }
@@ -81,14 +78,14 @@
   }
 }
 
-/* Petit indicateur de chargement (bouton Scanner) */
+/* Small loading indicator (Scan button) */
 .spinner {
   display: inline-block;
   width: 14px;
   height: 14px;
   flex: none;
-  border: 2px solid var(--border);
-  border-top-color: var(--accent);
+  border: 2px solid var(--color-border-strong);
+  border-top-color: var(--color-accent);
   border-radius: 50%;
   animation: spin var(--motion-spin, 0.8s) linear infinite;
 }
@@ -98,7 +95,7 @@
   }
 }
 
-/* Apparition des fenêtres et bulles du tutoriel */
+/* Tutorial dialogs and bubbles appear */
 @keyframes tour-in {
   from {
     opacity: 0;
@@ -113,7 +110,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* Pas de rotation : l'anneau reste fixe, le texte « Scan… » suffit */
+  /* No spinning: the 'Scanning…' text is enough */
   .spinner {
     animation: none;
   }

@@ -4,6 +4,8 @@
 
 ![La bibliothèque d'Offli-Launcher, thème Console](docs/capture.png)
 
+Les ajouts récents (thème Doux, langues, Big Picture, sauvegarde…) sont résumés dans [AJOUTS.md](AJOUTS.md).
+
 ## Télécharger
 
 Va sur la page des [versions (Releases)](https://github.com/Menthx/Offli-launcher/releases/latest) et prends le fichier qui correspond à ton ordinateur :
@@ -38,10 +40,12 @@ Si ça ne suffit pas : Réglages Système > Confidentialité et sécurité, puis
 
 - **Trouve tes jeux tout seul** : fangames RPG Maker et Pokémon SDK, romhacks GB, GBC, GBA, DS et 3DS. Les ROMs officielles non modifiées sont rangées à part.
 - **Regroupe les versions** d'un même fangame : une seule carte, et tu choisis la version dans la fiche.
-- **Met des jaquettes automatiquement** : écran titre du jeu, jaquette du jeu de base pour les romhacks, ou ton image à toi.
-- **Retient tes favoris et ton temps de jeu**, avec une section « Récemment joués ».
+- **Met des jaquettes automatiquement** : icône du jeu ou écran titre, jaquette du jeu de base pour les romhacks, ou ton image à toi.
+- **Retient tes favoris et ton temps de jeu**, avec une section « Récemment joués » et un tri par nom, date ou temps de jeu.
+- **Sauvegarde** : exporte et réimporte favoris, temps de jeu, noms, images et réglages (Paramètres > Bibliothèque).
 - **Big Picture** : un affichage pour jouer au clavier ou à la manette, depuis le canapé.
-- **4 thèmes de couleurs** : Console, Électrique, Poké Ball et Émeraude.
+- **En français, anglais ou espagnol** : la langue du système par défaut, modifiable dans Paramètres > Affichage.
+- **5 thèmes de couleurs** : Poké Ball (par défaut), Doux, Console, Électrique et Émeraude.
 - **Chemin des fichiers masqué** dans la fiche : il ne s'affiche que si tu cliques sur « Afficher » (pratique pour les captures d'écran).
 - **Renomme un jeu** en cliquant sur son nom dans la fiche.
 
@@ -56,7 +60,7 @@ Si ça ne suffit pas : Réglages Système > Confidentialité et sécurité, puis
 | Échap                      | Vider la recherche, fermer une fenêtre, quitter Big Picture |
 | F11                        | Passer de la bibliothèque à Big Picture, et inversement     |
 
-En Big Picture, à la manette : la croix ou le stick pour choisir, **A** pour jouer, **X** pour les favoris, **B** pour revenir à la bibliothèque. Au clavier : les flèches, **Entrée**, **F** et **Échap**.
+En Big Picture, à la manette : la croix ou le stick pour choisir, **LB** / **RB** pour changer de section, **Y** pour changer le tri, **A** pour jouer, **X** pour les favoris, **B** pour revenir à la bibliothèque. Au clavier : les flèches, **Q** / **E**, **S**, **Entrée**, **F** et **Échap**.
 
 ## Questions fréquentes
 

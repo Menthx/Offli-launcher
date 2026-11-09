@@ -26,7 +26,7 @@ describe('readHeader', () => {
 
   it('lit le titre interne GBC (Cristal)', () => {
     const buf = withAscii(0x150, 0x134, 'PM_CRYSTAL')
-    buf.set([0x42, 0x59, 0x54, 0x45], 0x13f) // code fabricant BYTE
+    buf.set([0x42, 0x59, 0x54, 0x45], 0x13f) // BYTE maker code
     buf[0x143] = 0xc0
     expect(readHeader('gbc', buf)?.base?.name).toBe('Cristal')
   })

@@ -15,17 +15,23 @@ async function file(path: string, content: string | Buffer = ''): Promise<void> 
 
 beforeAll(async () => {
   root = await mkdtemp(join(tmpdir(), 'offli-names-'))
-  // Projet Pokémon SDK : project.studio passe avant Title=Untitled
+  // Pokémon SDK: project.studio wins over Title=Untitled
   await file('gamerenaissance/Game.exe')
   await file('gamerenaissance/Game.ini', '[Game]\r\nLibrary=RGSS104E.dll\r\nTitle=Untitled\r\n')
-  await file('gamerenaissance/project.studio', JSON.stringify({ title: 'Projet Renaissance', iconPath: 'project_icon.png' }))
-  // Titre technique : nom du dossier
+  await file(
+    'gamerenaissance/project.studio',
+    JSON.stringify({ title: 'Projet Renaissance', iconPath: 'project_icon.png' })
+  )
+  // Technical title: folder name
   await file('InfiniteFusion2/InfiniteFusion2.exe')
   await file('InfiniteFusion2/Game.ini', '[Game]\r\nLibrary=RGSS104E.dll\r\nTitle=infinitefusion-hoenn\r\n')
-  // .ini en Latin-1
+  // Latin-1 .ini
   await file('Plastic/Game.exe')
-  await file('Plastic/Game.ini', Buffer.from('[Game]\r\nLibrary=RGSS104E.dll\r\nTitle=Pokémon Plastic Pyrite\r\n', 'latin1'))
-  // ROMs patchées qui gardent le nom du jeu de base
+  await file(
+    'Plastic/Game.ini',
+    Buffer.from('[Game]\r\nLibrary=RGSS104E.dll\r\nTitle=Pokémon Plastic Pyrite\r\n', 'latin1')
+  )
+  // Patched ROMs still named like their base game
   await file('Pokemon Odyssey COMPLETE v4.0.3/Pokemon - FireRed Version (USA, Europe) (patched).gba')
   await file('Pokemon X Monster hunter/Pokemon - Emerald Version (USA, Europe) (patched).gba')
   await file('Lazarus/Pokemon Lazarus v1.0.gba')

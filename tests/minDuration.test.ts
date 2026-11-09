@@ -4,7 +4,7 @@ import { withMinDuration } from '../src/renderer/src/minDuration'
 beforeEach(() => vi.useFakeTimers())
 afterEach(() => vi.useRealTimers())
 
-/** Avance les faux minuteurs et indique si la promesse est terminée */
+/** Advances fake timers and tells whether the promise settled */
 async function settledAfter(p: Promise<void>, ms: number): Promise<boolean> {
   let done = false
   void p.then(() => (done = true))

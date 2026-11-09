@@ -5,7 +5,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { parseRgssIni, pickFangameExe, scanLibrary } from '../src/main/scanner'
 import type { Game } from '../src/shared/types'
 
-const INI = (title: string): string => `[Game]\r\nLibrary=RGSS104E.dll\r\nScripts=Data\\Scripts.rxdata\r\nTitle=${title}\r\n`
+const INI = (title: string): string =>
+  `[Game]\r\nLibrary=RGSS104E.dll\r\nScripts=Data\\Scripts.rxdata\r\nTitle=${title}\r\n`
 
 let root: string
 let games: Game[]
@@ -17,25 +18,25 @@ async function file(path: string, content: string | Buffer = ''): Promise<void> 
 
 beforeAll(async () => {
   root = await mkdtemp(join(tmpdir(), 'offli-fan-'))
-  // Exécutable nommé comme son .ini (Fallen.ini → Fallen.exe), avec un Game.ini en plus
+  // Exe named like its .ini, with an extra Game.ini
   await file('beta/PokeFallen (Fr 1.1.3)/Fallen.exe')
   await file('beta/PokeFallen (Fr 1.1.3)/Fallen.ini', INI('PokeFallen'))
   await file('beta/PokeFallen (Fr 1.1.3)/Game.ini', INI('PokeFallen'))
-  // Pas de Game.exe : le seul .exe qui n'est pas un outil
+  // No Game.exe: the only non-tool .exe
   await file('InfiniteFusion2/Game.ini', INI('Infinite Fusion'))
   await file('InfiniteFusion2/InfiniteFusion2.exe')
   await file('InfiniteFusion2/InfiniteFusion2-performance.exe')
-  // Jeu installé par un launcher : nommé d'après le dossier parent
+  // Installed by a launcher: named after the parent folder
   await file('Regis/Launcher.exe')
   await file('Regis/app/app_data.json', JSON.stringify({ start_exe_path: 'Game.exe' }))
   await file('Regis/app/Game.exe')
   await file('Regis/app/ruby.exe')
   await file('Regis/patcher/PatchKit Default Patcher.exe')
-  // Data/ et une RGSS*.dll, sans .ini
+  // Data/ and an RGSS*.dll, no .ini
   await file('Sans ini/Game.exe')
   await file('Sans ini/RGSS102E.dll')
   await mkdir(join(root, 'Sans ini/Data'), { recursive: true })
-  // Outils et launchers seuls : ignorés
+  // Tools and launchers alone: ignored
   await file('PKHeX.exe')
   await file('Renaissance launcher/launcher.exe')
   await file('Renaissance launcher/uninstall.exe')

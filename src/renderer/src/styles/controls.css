@@ -1,0 +1,166 @@
+/* Buttons, Play, icon buttons, badges, fields, switch, segmented control */
+
+/* Secondary button (legacy .ghost class) */
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+.ghost:hover:not(:disabled) { background: var(--color-elevated); }
+.ghost:disabled { opacity: 0.45; cursor: not-allowed; }
+.ghost.danger { background: var(--color-danger-soft); border-color: transparent; color: var(--color-danger); }
+
+/* Primary non-launch action (legacy .cta class) */
+.cta {
+  height: 36px;
+  padding: 0 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.cta:hover { background: var(--color-accent-hover); }
+
+/* Icon in a tinted square, label centered despite the icon */
+.play {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: var(--play-btn-height);
+  padding: 0 var(--space-4) 0 var(--space-2);
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--play-bg);
+  color: var(--play-text);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.play:hover { background: var(--play-bg-hover); }
+.play:active { transform: translateY(1px); }
+.play-icon {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--play-text) 14%, transparent);
+}
+.play-label { flex: 1; text-align: center; padding-right: 36px; }
+
+/* Flat icon buttons */
+.icon-btn, .round-close {
+  width: var(--icon-btn-md);
+  height: var(--icon-btn-md);
+  flex: none;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.icon-btn:hover:not(:disabled), .round-close:hover { background: var(--color-surface-hover); color: var(--color-text); }
+.icon-btn:disabled { opacity: 0.4; cursor: default; }
+.round-close { width: var(--icon-btn-lg); height: var(--icon-btn-lg); }
+
+/* Sidebar square buttons (Big Picture, update, settings) */
+.icon-square, .settings-btn {
+  position: relative;
+  width: var(--icon-btn-xl);
+  height: var(--icon-btn-xl);
+  flex: none;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.icon-square:hover:not(:disabled), .settings-btn:hover { background: var(--color-surface-hover); color: var(--color-text); }
+
+.row-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-accent);
+  font: inherit;
+  cursor: pointer;
+}
+.link:hover { color: var(--color-accent-hover); text-decoration: underline; }
+
+/* Dot + colored text on a soft background */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-hover);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+.badge.fan, .badge.rom, .badge.fav { --c: var(--badge-fan); background: color-mix(in srgb, var(--c) 14%, transparent); color: var(--c); }
+.badge.rom { --c: var(--badge-rom); }
+.badge.fav { --c: var(--fav-on); }
+.badge.fan::before, .badge.rom::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+/* Inset fields */
+.input, .name-input, .sgdb-search input {
+  height: 36px;
+  width: 100%;
+  min-width: 0;
+  padding: 0 12px;
+  background: var(--color-inset);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.input:not(.select__trigger):focus, :is(.name-input, .sgdb-search input):focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--color-focus-ring); }
+.field { display: grid; gap: 6px; }
+.field label, .field .label { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
+.field-row { display: flex; gap: var(--space-2); width: 100%; }
+.field-inline { display: flex; align-items: center; gap: var(--space-3); }
+.field-inline .select { width: min(320px, 100%); }
+
+/* Switch */
+.toggle { width: 36px; height: 20px; flex: none; padding: 2px; border: none; border-radius: var(--radius-full); background: var(--color-border-strong); cursor: pointer; transition: background var(--t-normal); }
+.toggle[aria-checked='true'] { background: var(--color-accent); }
+.toggle span { display: block; width: 16px; height: 16px; border-radius: 50%; background: var(--color-text); transition: transform var(--t-normal); }
+.toggle[aria-checked='true'] span { transform: translateX(16px); background: var(--color-accent-text); }
+
+/* Inset rail, raised active segment */
+.seg { display: inline-flex; gap: 2px; padding: 3px; border-radius: var(--radius-md); background: var(--color-inset); border: 1px solid var(--color-border); }
+.seg button { height: 28px; padding: 0 12px; border: none; border-radius: var(--radius-sm); background: transparent; color: var(--color-text-muted); font-size: var(--font-size-sm); cursor: pointer; }
+.seg button:hover { color: var(--color-text); }
+.seg button[aria-checked='true'] { background: var(--color-elevated); color: var(--color-text); box-shadow: var(--shadow-sm); }

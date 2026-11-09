@@ -1,0 +1,8 @@
+out
+dist
+node_modules
+package-lock.json
+# Les feuilles de style suivent l'écriture compacte du pack DA (une règle par ligne)
+*.css
+*.md
+*.yml

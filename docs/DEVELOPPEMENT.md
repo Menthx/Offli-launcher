@@ -33,18 +33,19 @@ Pour chaque jeu, la première source trouvée est utilisée, puis mise en cache 
 
 1. l'image choisie dans Offli-Launcher (« Changer l'image ») ;
 2. une image posée à côté du jeu : `cover.png` dans le dossier d'un fangame ; `cover.png` pour une ROM (les captures d'émulateur comme `<rom>-0.png` ne sont jamais utilisées) ;
-3. pour un fangame, l'écran titre dans `Graphics/Titles` (`title.png`, sinon la plus grande image hors crédits, splash, intro, fonds et calques d’effet), sinon `Icon.png` ou `project_icon.png` ;
-4. SteamGridDB, si activé avec une clé API ; avec une clé, « ⋯ > Choisir sur SteamGridDB… » permet aussi de choisir la jaquette soi-même (la clé reste dans le process principal) ;
-5. pour un romhack, la jaquette du jeu de base, téléchargée depuis [libretro-thumbnails](https://github.com/libretro-thumbnails) ;
-6. pour une ROM NDS, l'icône embarquée dans le fichier.
+3. pour un fangame, le logo ou l'écran titre dans `Graphics/Titles` : seules les images dont le nom contient « logo » ou « title » (ou « titulo », « titre », « titel ») sont candidates, hors crédits, splash, intro, invites et calques. Chacune est notée sur une copie de 48 px (part de pixels opaques × nombre de couleurs) : les contours, masques et silhouettes sont écartés, un logo passe devant un écran complet, une image en portrait a un petit bonus. Les écrans titre d'exemple de Pokémon Essentials sont ignorés (`main/cover/titles.ts`) ;
+4. pour un fangame, l'icône de son `.exe` si elle fait au moins 48 px et n'est pas l'icône par défaut du moteur (Poké Ball d'Essentials, engrenage de Pokémon Studio), sinon `Icon.png`, `project_icon.png` ou `graphics/icons/game.png` (Pokémon Studio) ;
+5. SteamGridDB, si activé avec une clé API ; avec une clé, « ⋯ > Choisir sur SteamGridDB… » permet aussi de choisir la jaquette soi-même (la clé reste dans le process principal) ;
+6. pour un romhack, la jaquette du jeu de base, téléchargée depuis [libretro-thumbnails](https://github.com/libretro-thumbnails) ;
+7. pour un fangame, son icône `.exe` même petite (une icône par défaut du moteur laisse la carte avec le nom), sinon l'icône système si elle fait au moins 48 px ; pour une ROM NDS, l'icône embarquée dans le fichier.
 
 Sans image, la carte reste vide avec le nom du jeu.
 
 ## Thème
 
-Toutes les couleurs sont dans `src/renderer/src/theme/` : un fichier par thème, qui définit des variables sémantiques (`--bg`, `--surface`, `--text`, `--accent`, `--play`, `--focus`…). Pour ajouter un thème, il suffit d'ajouter un fichier sous `:root[data-theme="<nom>"]` et de l'importer dans `theme/index.ts`.
+Les tokens viennent du pack DA « Thème sombre doux » : `src/renderer/src/theme/tokens.css` définit les surfaces (`--color-inset` < `--color-bg` < `--color-surface` < `--color-elevated`), le texte, l'accent, les états, les rayons, les espacements, les ombres et la typo (Inter, JetBrains Mono). Les styles sont rangés par zone dans `src/renderer/src/styles/` (base, contrôles, bibliothèque, fiche, paramètres, superpositions, Big Picture, tutoriel) et n'utilisent que ces tokens. Un thème ne redéfinit que les couleurs `--color-*` (et `--play-bg`, `--fav-on`, `--badge-*`, `--pad-*`) sous `:root[data-theme="<nom>"]`, importé dans `theme/index.ts`.
 
-Quatre thèmes, au choix dans Paramètres > Affichage > Thème : **Console** (par défaut, `theme/console.css`), **Électrique** (`theme/electrique.css`), **Poké Ball** (`theme/pokeball.css`) et **Émeraude** (`theme/emeraude.css`). Le bouton JOUER reste vert dans tous. Contrastes vérifiés (WCAG AA : 4,5:1 pour le texte, 3:1 pour les composants et le texte large).
+Cinq thèmes, au choix dans Paramètres > Affichage > Thème : **Doux** (`theme/tokens.css`), **Console** (`theme/console.css`), **Électrique** (`theme/electrique.css`), **Poké Ball** (par défaut, `theme/pokeball.css`) et **Émeraude** (`theme/emeraude.css`). Le bouton Jouer prend l'accent dans Doux et reste vert dans les quatre autres. Contrastes vérifiés (WCAG AA : 4,5:1 pour le texte, 3:1 pour les composants et le texte large).
 
 ### Console
 
@@ -146,12 +147,23 @@ Les commits suivent [Conventional Commits](https://www.conventionalcommits.org/f
 ```
 src/main/       process Electron : scan, en-têtes ROM, images, lancement, stockage JSON
 src/preload/    pont IPC exposé au rendu (window.offli)
-src/renderer/   interface React : vue Bibliothèque, paramètres
+src/renderer/   interface Vue 3 : Bibliothèque, page du jeu, Big Picture, paramètres, tutoriel
 src/shared/     types partagés
 tests/          tests Vitest
 ```
 
 Les données (paramètres, statistiques, index, cache d'images) sont dans le dossier utilisateur d'Electron. `OFFLI_USER_DATA` permet d'en choisir un autre.
+
+## Interface (Vue)
+
+L'interface est en Vue 3 (`<script setup lang="ts">`, composants monofichiers `.vue`), compilée par `@vitejs/plugin-vue` dans electron-vite ; `npm run typecheck` passe les `.vue` à `vue-tsc`.
+
+- `App.vue` tient l'état de l'appli (données, vue affichée, jeu ouvert) ; les données et leurs actions viennent de `composables/useLibraryData.ts`.
+- Les composants reçoivent des props et remontent des événements (`emit`) ; `v-model` sert aux listes déroulantes, interrupteurs et champs de recherche.
+- Les données venues du process principal sont gardées dans des `shallowRef` : ce sont des objets simples, renvoyés tels quels par IPC (un proxy Vue ne passe pas le pont).
+- `i18n.ts` rend `t()` réactif : changer de langue redessine les textes sans recharger.
+- La logique sans interface (`filters.ts`, `tour.ts`, `folders.ts`, `updateUi.ts`…) reste en TypeScript pur, testée par Vitest.
+- `v-focus` (`directives/focus.ts`) donne le focus à un champ qui apparaît (l'attribut `autofocus` ne marche qu'au chargement de la page).
 
 ## Dépendances
 
@@ -165,3 +177,15 @@ Les paquets dépréciés tirés indirectement par `electron-builder` sont rempla
 ## Mises à jour
 
 `electron-updater` lit les releases GitHub **publiées** (pas les brouillons ni les préversions) grâce aux fichiers `latest*.yml` produits par `release.yml`. L'appli vérifie une fois au démarrage (version empaquetée seulement) ; télécharger et installer demandent un clic. Installation automatique : installeur Windows et AppImage. Windows portable, `.deb` et macOS (non signé) : la nouvelle version est signalée et le bouton ouvre la page de la release. Une version qui n'embarque pas encore l'updater (0.2.0 et avant) ne peut pas se mettre à jour seule.
+
+## Langues (i18n)
+
+L'interface est traduite en français, anglais et espagnol. Les textes sont dans `src/shared/i18n/` : un dossier par langue (`fr/`, `en/`, `es/`), chacun découpé en `app.ts` (bibliothèque, fiche, Big Picture, messages du process principal) et `setup.ts` (paramètres, tutoriel, mises à jour, SteamGridDB). Le français est la référence : TypeScript et `tests/i18n.test.ts` vérifient que chaque langue a exactement les mêmes clés et les mêmes paramètres `{nom}`.
+
+Dans le code : `t('library.launching', { name })`. Une entrée `{ one, other }` choisit le singulier ou le pluriel d'après `{n}` (règles de `Intl.PluralRules`). Le réglage « Langue » (Paramètres > Affichage) vaut `auto` par défaut : la langue du système si elle est disponible, l'anglais sinon. Pour ajouter une langue : copier `en/`, traduire, l'ajouter à `LANGUAGES` et `DICTS` dans `i18n/index.ts` et à la liste acceptée par `mergeSettings` (`store.ts`).
+
+## Règles du code
+
+- **200 lignes au plus par fichier** (210 tolérées), découpé par thème. `npm run check:lines` le vérifie, en CI aussi.
+- **Formatage** : Prettier (`npm run format`, vérifié en CI par `npm run format:check`). Les feuilles de style gardent l'écriture compacte du pack DA (une règle par ligne) et ne passent pas par Prettier.
+- **Contrastes** : `tests/contrast.test.ts` mesure les couleurs des 5 thèmes (WCAG AA : 4,5:1 pour le texte, 3:1 pour les icônes et `--color-text-subtle`, réservé au décoratif).

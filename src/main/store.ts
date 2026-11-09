@@ -9,7 +9,9 @@ export const DEFAULT_SETTINGS: Settings = {
   bigPictureFullscreen: false,
   tutorialDone: false,
   hiddenGames: [],
-  theme: 'console',
+  theme: 'pokeball',
+  language: 'auto',
+  librarySort: 'name',
   emulators: {
     gb: { path: '' },
     gbc: { path: '' },
@@ -25,7 +27,7 @@ export const DEFAULT_SETTINGS: Settings = {
   nameOverrides: {}
 }
 
-/** Petit fichier JSON écrit de façon atomique (fichier temporaire puis renommage) */
+/** Small JSON file written atomically (temp file, then rename) */
 export class JsonFile<T> {
   data: T
   private writing = Promise.resolve()
@@ -56,7 +58,7 @@ export class JsonFile<T> {
   }
 }
 
-/** Garde seulement le chemin de chaque émulateur (l'ancien champ args est ignoré) */
+/** Keeps only each emulator path (the old args field is ignored) */
 function mergeEmulators(fallback: Settings['emulators'], loaded: unknown): Settings['emulators'] {
   const out = { ...fallback }
   for (const key of Object.keys(out) as (keyof Settings['emulators'])[]) {
@@ -67,8 +69,7 @@ function mergeEmulators(fallback: Settings['emulators'], loaded: unknown): Setti
 }
 
 export function mergeSettings(fallback: Settings, loaded: unknown): Settings {
-  // viewMode (ancien nom de startView) et libraryPath (un seul dossier, devenu libraryPaths)
-  // viennent d'anciens fichiers de réglages
+  // viewMode and libraryPath come from older settings files
   const { viewMode, libraryPath, ...l } = (loaded ?? {}) as Partial<Settings> & {
     viewMode?: unknown
     libraryPath?: unknown
@@ -88,19 +89,26 @@ export function mergeSettings(fallback: Settings, loaded: unknown): Settings {
         : viewMode === 'bigpicture'
           ? 'bigpicture'
           : fallback.startView,
-    bigPictureFullscreen: typeof l.bigPictureFullscreen === 'boolean' ? l.bigPictureFullscreen : fallback.bigPictureFullscreen,
+    bigPictureFullscreen:
+      typeof l.bigPictureFullscreen === 'boolean' ? l.bigPictureFullscreen : fallback.bigPictureFullscreen,
     tutorialDone: typeof l.tutorialDone === 'boolean' ? l.tutorialDone : fallback.tutorialDone,
     hiddenGames: Array.isArray(l.hiddenGames) ? l.hiddenGames.filter((id): id is string => typeof id === 'string') : [],
-    theme: (['console', 'electrique', 'pokeball', 'emeraude'] as const).includes(l.theme as Settings['theme'])
+    theme: (['doux', 'console', 'electrique', 'pokeball', 'emeraude'] as const).includes(l.theme as Settings['theme'])
       ? (l.theme as Settings['theme'])
       : fallback.theme,
+    librarySort: (['name', 'recent', 'playtime'] as const).includes(l.librarySort as Settings['librarySort'])
+      ? (l.librarySort as Settings['librarySort'])
+      : fallback.librarySort,
+    language: (['auto', 'fr', 'en', 'es'] as const).includes(l.language as Settings['language'])
+      ? (l.language as Settings['language'])
+      : fallback.language,
     emulators: mergeEmulators(fallback.emulators, l.emulators),
     coverOverrides: { ...(l.coverOverrides ?? {}) },
     nameOverrides: { ...(l.nameOverrides ?? {}) }
   }
 }
 
-/** Applique les noms choisis par l'utilisateur, puis trie par nom affiché */
+/** Applies user names, then sorts by shown name */
 export function applyNames(games: Game[], overrides: Record<string, string>): Game[] {
   return games
     .map((g) => {

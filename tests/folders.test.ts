@@ -17,7 +17,7 @@ describe('liste des dossiers (FolderList)', () => {
     const games = [{ kind: 'fangame' }, { kind: 'romhack' }, { kind: 'baserom' }]
     expect(folderStatus([], games, false)).toBe("Aucun dossier pour l'instant.")
     expect(folderStatus(['D:\\Pokemon'], games, true)).toBe('Scan en cours…')
-    // Les ROMs de base ne comptent pas parmi les jeux
+    // Base ROMs don't count as games
     expect(folderStatus(['D:\\Pokemon'], games, false)).toBe('2 jeux trouvés · 1 fangame, 1 ROM')
   })
 

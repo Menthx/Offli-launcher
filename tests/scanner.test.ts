@@ -10,8 +10,11 @@ beforeAll(async () => {
   root = await mkdtemp(join(tmpdir(), 'offli-'))
   await mkdir(join(root, 'Fangames', 'Reborn', 'Data'), { recursive: true })
   await writeFile(join(root, 'Fangames', 'Reborn', 'Game.exe'), '')
-  await writeFile(join(root, 'Fangames', 'Reborn', 'Game.ini'), '[Game]\r\nLibrary=RGSS104E.dll\r\nTitle=Pokemon Reborn\r\n')
-  // un .gba dans le dossier d'un fangame ne doit pas être compté
+  await writeFile(
+    join(root, 'Fangames', 'Reborn', 'Game.ini'),
+    '[Game]\r\nLibrary=RGSS104E.dll\r\nTitle=Pokemon Reborn\r\n'
+  )
+  // a .gba inside a fangame folder must not be counted
   await writeFile(join(root, 'Fangames', 'Reborn', 'Data', 'junk.gba'), '')
   await mkdir(join(root, 'Fangames', 'Uranium'), { recursive: true })
   await writeFile(join(root, 'Fangames', 'Uranium', 'game.EXE'), '')
